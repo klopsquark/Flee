@@ -39,11 +39,10 @@ jobs:
       - name: Build
         run: dotnet build Flee.sln -c ${{ matrix.configuration }}
 
-      # Timing tests assert wall-clock limits, which shared runners cannot guarantee.
+      # Benchmarks are not run here: shared runners are too noisy (benchmarks/README.md).
       - name: Test
         run: >
           dotnet test Flee.sln -c ${{ matrix.configuration }} --no-build
-          --filter "TestCategory!=Timing"
           --logger "trx;LogFileName=results.trx"
           --results-directory TestResults
           --collect "XPlat Code Coverage"
