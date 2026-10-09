@@ -51,6 +51,7 @@ Entry template:
 | R-014 | Package metadata: licence expression, readme, symbols | build | Phase 3 |
 | R-015 | EmitToAssembly is a no-op and obsolete | api | Phase 3 |
 | R-016 | Benchmarks run on net6.0, net8.0 and net10.0 | build | Phase 3 |
+| R-017 | Nullable reference types off in the library | build | Phase 3 |
 
 ## Entries
 
@@ -323,3 +324,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none.
 - **Verified:** dry run on all three runtimes.
 - **Discussed:** not needed.
+
+### R-017: Nullable reference types off in the library
+
+- **Kind / phase:** build / Phase 3
+- **Commits:** the commit that adds this entry
+- **What:** `<Nullable>disable</Nullable>` in `src/Flee/Flee.csproj` (was `enable`). The test and
+  benchmark projects keep `enable`.
+- **Why:** Upstream switched nullable on in 2022 over 2007 code that was never annotated, which
+  produced about 1,240 warnings per target and buried every useful one. The long-term goal is a
+  fully annotated library: files opt in with `#nullable enable` once annotated, public API first
+  (a Phase 4 item), the parser last; when every file has opted in, the project switches to
+  `enable` with nullable warnings as errors.
+- **Behaviour:** none. Nullable annotations only affect compile-time warnings.
+- **Verified:** solution warnings drop from 2,430 to 450; tests unchanged in Debug and Release on
+  net8.0 and net10.0.
+- **Discussed:** decided by the maintainer on 2026-10-09.

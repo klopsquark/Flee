@@ -10,7 +10,10 @@
              (Directory.Build.props turns this off for single-target projects). -->
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <!-- Off project-wide: the code predates nullable reference types and was never annotated.
+             Files opt in one by one with #nullable enable once annotated (public API first);
+             when all have, this becomes enable. See doc/CHANGE-RATIONALE.md, R-017. -->
+        <Nullable>disable</Nullable>
         <IsPackable>true</IsPackable>
         <IsMainAssembly>true</IsMainAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

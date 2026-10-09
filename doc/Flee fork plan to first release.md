@@ -100,7 +100,7 @@ The project moves to a current SDK and supported targets, with tests and benchma
 
 - [x] Choose the targets: the current long-term-support .NET, plus netstandard2.0 only if you need .NET Framework consumers. Check the support dates when you decide. Decided 2026-10-09: netstandard2.0, netstandard2.1, net8.0, net10.0 (R-011).
 - [x] Remove the `System.Reflection.Emit` 4.x and related package references wherever the target framework already provides them. (R-012)
-- [ ] Decide on nullable annotations. They are switched on over code that was never annotated. Suggested: switch off project-wide, then enable file by file, public API first.
+- [x] Decide on nullable annotations. They are switched on over code that was never annotated. Suggested: switch off project-wide, then enable file by file, public API first. Decided 2026-10-09: off project-wide now; files opt in with `#nullable enable` once annotated; public API in Phase 4, the rest after the release, the parser last; finally enable project-wide with nullable warnings as errors (R-017).
 - [x] Update the test packages. NUnit stays on 3.14; moving to NUnit 4+ is open (R-013).
 - [x] Fix the package metadata: license expression, real project URLs, README in the package, source link, symbols. The license and icon URL fields currently just point at the repository. (R-014)
 - [x] Decide what happens to `EmitToAssembly`. The save call is commented out, so the README's "IL can be saved to an assembly" is no longer true. Remove the option or reimplement it. Decided 2026-10-09: kept as an obsolete no-op (R-015).
@@ -121,6 +121,8 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 - [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
 
 ### Mechanical cleanup
+
+- [ ] Annotate the public API for nullable reference types (`PublicTypes`, `CalcEngine/PublicTypes`, about 25 types), file by file with `#nullable enable`. Real null bugs found on the way get a test and their own fix.
 
 These change no behaviour and each gets its own commit.
 
@@ -202,6 +204,7 @@ Other post-release ideas:
 | Public NuGet package or private use only | Phase 0 | **Decided 2026-10-09:** private feed only, nothing on nuget.org |
 | Target frameworks, and whether netstandard2.0 stays | Phase 3 | **Decided 2026-10-09:** netstandard2.0, netstandard2.1, net8.0, net10.0 |
 | Keep or remove `EmitToAssembly` | Phase 3 | **Decided 2026-10-09:** keep as an obsolete no-op |
+| Nullable reference types | Phase 3 | **Decided 2026-10-09:** off now, files opt in once annotated, public API first (Phase 4) |
 | Rename the `_my` and `_our` prefixes | Phase 4 | Open, purely taste |
 | Your list of API changes and extensions | Phase 5 | Open |
 | Time box for performance work | Phase 7 | Open |

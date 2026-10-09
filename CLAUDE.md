@@ -42,6 +42,8 @@ Decisions made so far (details in the plan's Open decisions table):
 - The first release is source-compatible with Flee 2.0.0. Any deviation is documented.
 - Target frameworks (decided in Phase 3): netstandard2.0, netstandard2.1, net8.0, net10.0.
 - `EmitToAssembly` stays as a no-op for source compatibility.
+- Nullable reference types are off in `src/Flee`. A file opts in with `#nullable enable` once it
+  is annotated; new files start with it. Public API first (Phase 4), the parser last.
 
 ## Branches and pull requests
 
@@ -84,14 +86,21 @@ dotnet test Flee.sln
   CycloneDX SBOM there, and produces a NuGet package. The package goes to `C:\dev\nuget\` when
   that folder exists, otherwise to `build/nuget/`.
 - `/p:SkipSbom=true` skips the SBOM for fast local cycles.
-- The build currently reports about 2,400 warnings (mostly nullable warnings over code that was
-  never annotated). Do not fix them in passing; that is Phase 3 work.
+- The build reports about 450 warnings (mostly uses of the internal obsolete `PropertyDictionary`
+  and unused variables). They are Phase 4 cleanup; do not fix them in passing.
 
 ## State of the tests
 
-As of the start of Phase 1 the test project has 48 test methods; 8 of them fail on the unchanged
-code and the script files are not read by any test. Phase 1 turns the scripts into data-driven
-tests and records every failing case on a known-failures list rather than fixing it.
+1,858 tests per runtime: the 1,756 script cases (data-driven, `test/Flee.Test/ScriptTests`) plus
+fixture tests, many ported from the original VB.NET Flee test project. Cases that fail on the
+unchanged library are listed in `test/Flee.Test/TestScripts/KnownFailures.txt` (explained in
+`doc/known-failures.md`) or marked `[Category("KnownFailure")]`, and reported as skipped. A listed
+case that starts passing fails the run, so remove its entry when you fix it. Three script cases
+crash the process and are never run. The suite runs under the en-GB culture
+(`test/Flee.Test/TestCulture.cs`) because Flee's parser defaults follow the current culture.
+
+`dotnet test` reports success only if the test host did not crash: check for "aborted" in the
+output, not just the pass/fail counts.
 
 ## Writing style for docs and commit messages
 
