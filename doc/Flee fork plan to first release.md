@@ -1,0 +1,203 @@
+# Flee fork: plan to first release
+
+Oct 9, 2026 · @Robert
+
+## Goal and ground rules
+
+The first release is a fork of Flee 2.0.0 that builds on a current .NET SDK, runs a real regression suite, is documented, and depends on nobody else's maintenance. Performance work is a stretch goal for that release and does not block it.
+
+- **Pin behaviour before changing it.** Tests record what the library does today, including its bugs, before any fix.
+- **Measure before optimizing.** The benchmark baseline exists before the SDK or any code changes.
+- **One kind of change per commit.** Mechanical cleanup, bug fixes and API changes never share a commit.
+- **Every phase ends with a green CI run.**
+
+Basis: upstream `mparlak/Flee` at commit `f3b4fe2` (March 2022). Figures in this plan come from reading that commit. Nothing was built or run, so build and test behaviour is unverified.
+
+## Phases at a glance
+
+The phases run strictly in this order; each one protects the next.
+
+| Phase | Content | Done when |
+| --- | --- | --- |
+| 0. Fork setup | Repository, license file, identity, compatibility stance | Decisions are written down and the baseline commit is tagged |
+| 1. Build and tests | Unchanged code builds; script-driven tests run; CI | CI is green and every failing case is on a known-failures list |
+| 2. Benchmark baseline | Benchmark project, test vectors, first numbers | Baseline results are committed for the old runtime |
+| 3. SDK modernization | Target frameworks, dependencies, packaging, warnings | Builds without warnings, tests green, benchmarks compared with baseline |
+| 4. Bug fixes and cleanup | Known failures, converter leftovers, mechanical cleanup | Known-failures list is empty or each entry is consciously deferred |
+| 5. Own adjustments | Your API changes and extensions | Each change has tests and a changelog entry |
+| 6. Documentation | README, language reference, API guide, migration notes | A new user can install, write an expression and extend it from the docs alone |
+| 7. Performance (stretch) | Optimizations chosen from benchmark evidence | Time box is used up, or the chosen items show measured gains |
+| Release | Checklist, package, tag | Package is published |
+
+## Phase 0: Fork setup
+
+This phase settles the choices that are expensive to change later. No code changes yet.
+
+- [ ] Fork `mparlak/Flee` with full history and tag `f3b4fe2` as the baseline.
+- [ ] Add a `LICENSE` file. The grammar header says LGPL 2.1 or later; the repository has no license file today. Keep the existing copyright notices. Check the terms yourself if you distribute commercially.
+- [ ] Choose a package ID and decide whether the root namespace stays `Flee`.
+- [ ] Decide the compatibility stance: drop-in replacement for Flee 2.0.0, or free to break. Suggested: source-compatible for the first release, with every deviation documented.
+- [ ] Keep the fixes from your local copy aside. They go in during Phase 4, once tests can prove them.
+- [ ] Skim the 75 open upstream issues and 2 open pull requests. Collect those with a reproducible case as candidates for Phase 4.
+
+## Phase 1: Build and test sanitation
+
+The unchanged library gets a regression suite that actually runs. Today the test project has 48 test methods, while 1,756 expression cases sit in four script files that no test reads.
+
+| Script file | Cases | Line format |
+| --- | --- | --- |
+| `ValidExpressions.txt` | 1,198 | result type; expression; expected result |
+| `InvalidExpressions.txt` | 251 | result type; expression; expected compile error |
+| `ValidCasts.txt` | 172 | result type; cast expression; expected result |
+| `CheckedTests.txt` | 135 | expression; checked; should overflow |
+
+- [ ] Build the solution with the smallest change that works. Touch only the test project's target if the old runtime is not installed. Note the warning count.
+- [ ] Rebuild the script harness as data-driven NUnit tests, one test case per script line.
+- [ ] Reconstruct the expression owner the scripts expect. They use members such as `bytea` and `sbytea`, and that fixture is not in this repository or its history. The original VB.NET Flee source is the place to look; I have not checked that it is still obtainable.
+- [ ] Run everything and put each failing case on a known-failures list, marked as a category. Do not fix anything yet.
+- [ ] Clean the existing tests: `SimpleCalcEngineTests.TestScripts` is empty, `LongScriptTests` has commented-out file loading, and the timing tests in `Benchmarks.cs` belong in Phase 2.
+- [ ] Set up CI (build and test) on Windows and Linux.
+- [ ] Record line coverage as a starting figure. The coverage collector is already referenced.
+
+The owner fixture is the main risk of this phase. If it cannot be recovered, it has to be inferred from the scripts, which is slower but possible.
+
+## Phase 2: Benchmark baseline
+
+A separate benchmark project records how fast the untouched library is, so later phases can be judged against it. It comes before the SDK change because a new runtime shifts the numbers on its own.
+
+- [ ] Create a `Benchmarks` project with BenchmarkDotNet and move the timing tests out of the test project.
+- [ ] Measure three stages separately: parse only, full compile (parse, emit, delegate creation) and evaluate. Parse-only needs access to internals from the benchmark project.
+- [ ] Record time and allocations for every vector.
+- [ ] Commit the results as the baseline, together with machine and runtime details.
+- [ ] Set a regression threshold for later phases. Suggested start: investigate anything slower by more than 10 %.
+- [ ] Keep benchmarks out of the CI gate. Shared build machines are too noisy for that; run them by hand before and after relevant changes.
+
+### Test vectors
+
+Each vector is a small set of expressions run through all three stages.
+
+| Vector | Example | What it exercises |
+| --- | --- | --- |
+| Constants | `1 + 2 * 3` | Parser and emit floor |
+| Arithmetic with variables | `sqrt(a^2 + b^2)` | Variable reads, imported functions, power |
+| Many variables | Sum of 50 variables | Variable lookup cost at evaluation |
+| Owner members | `Price * Quantity` on an owner object | Field and property access |
+| Mixed numeric types | `int * double + long` style mixes | Type promotion and conversions |
+| Strings | Concatenation and comparison | String handling |
+| Logic and conditionals | Long `and`/`or` chains, nested `if` | Short-circuit code, long-branch second emit pass |
+| `in` lists | `x in (1, 2, 3, ...)` | List membership code |
+| Casts | `cast(x, long)` | Explicit conversions |
+| On-demand variables and functions | Values supplied through events | Event-based resolution path |
+| Large expression | Several hundred terms | Scaling of parse and compile |
+| Calculation engine | 100 dependent expressions, one input changed | Dependency ordering and recalculation |
+| Your own expressions | Taken from your applications | The workload that matters most to you |
+
+The examples are placeholders. The last row deserves the most care, because it decides which optimizations are worth anything to you.
+
+## Phase 3: SDK modernization
+
+The project moves to a current SDK and supported targets, with tests and benchmarks proving nothing else changed. Today it targets net6.0, net5.0, netstandard2.1 and netstandard2.0.
+
+- [ ] Choose the targets: the current long-term-support .NET, plus netstandard2.0 only if you need .NET Framework consumers. Check the support dates when you decide.
+- [ ] Remove the `System.Reflection.Emit` 4.x and related package references wherever the target framework already provides them.
+- [ ] Decide on nullable annotations. They are switched on over code that was never annotated. Suggested: switch off project-wide, then enable file by file, public API first.
+- [ ] Update the test packages.
+- [ ] Fix the package metadata: license expression, real project URLs, README in the package, source link, symbols. The license and icon URL fields currently just point at the repository.
+- [ ] Decide what happens to `EmitToAssembly`. The save call is commented out, so the README's "IL can be saved to an assembly" is no longer true. Remove the option or reimplement it.
+- [ ] Add an `.editorconfig` and analyzers, and treat warnings as errors once the build is clean.
+- [ ] Run the benchmarks on the old and the new runtime and compare both with the baseline. This separates the runtime's effect from yours.
+
+## Phase 4: Cheap bug fixes and cleanup
+
+With tests and a baseline in place, the low-cost defects and the conversion leftovers go. Every fix starts with a failing test.
+
+### Bug fixes
+
+- [ ] Work through the known-failures list from Phase 1.
+- [ ] Check the four `break; // TODO: might not be correct` markers against the intended loop behaviour: two in `InvocationList.cs`, one each in `CalculationEngine.cs` and `ExpressionImports.cs`.
+- [ ] Review the roughly 29 places that combine booleans with `&` or `|`. Both sides are always evaluated there, which is wrong wherever the right side relies on the left.
+- [ ] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`.
+- [ ] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds.
+- [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
+
+### Mechanical cleanup
+
+These change no behaviour and each gets its own commit.
+
+- [ ] Remove the 227 `== true` and `== false` comparisons.
+- [ ] Split the four `Miscellaneous.cs` files into one type per file and make file names match type names.
+- [ ] Replace the non-generic collections (about 69 uses) between analyzer and elements with typed ones.
+- [ ] Decide whether to rename the `_my` and `_our` field prefixes, about 1,100 occurrences. It is a matter of taste; if you do it, do it in a single commit.
+- [ ] Resolve `PropertyDictionary`: it is marked obsolete but still backs three public classes. Drop the attribute now; replacing it belongs to Phase 5.
+
+## Phase 5: Adjustments to your needs
+
+This is where the fork starts to differ from Flee on purpose. The concrete list is yours and is still open.
+
+- [ ] Write down the API changes and extensions you want, and mark each as additive or breaking.
+- [ ] Add a public API baseline file so that every change to the public surface shows up in review. The surface is small, about 25 types.
+- [ ] Give each change its tests and a changelog entry.
+
+The code review turned up four structural items that would make extensions easier. They are candidates, not commitments.
+
+- **String-keyed options.** `ExpressionOptions`, `ExpressionParserOptions` and `ExpressionContext` store their settings in a dictionary keyed by name. Plain typed fields would be simpler and safer.
+- **Leaked parser types.** `ParseException` and its error enums are public and come from the bundled parser runtime. Wrapping them in an exception type of your own now keeps later parser experiments from breaking users.
+- **Element creation.** Elements are created through `Activator.CreateInstance` from a `Type`. Factories or direct construction would make adding operators more explicit.
+- **Compile-time plumbing.** Elements fetch their context from a service container, 15 lookups in total. A typed compile context object would be easier to follow.
+
+## Phase 6: Documentation
+
+Documentation is written after the API settles, so it describes what ships. Upstream offers a short README and a wiki page of examples.
+
+- [ ] **README:** what the fork is, how it relates to Flee, status, installation and one worked example.
+- [ ] **Language reference:** operators and precedence, literal forms, `if`, `cast` and `in`, type promotion rules, case-insensitivity, the configurable decimal and argument separators. `Expression.grammar` covers 40 tokens and 29 productions; the rest is defined in code and has to be written down.
+- [ ] **API guide:** contexts, imports, variables, on-demand variables and functions, expression owners, options and the calculation engine.
+- [ ] **XML comments on every public type.** `Resources/DocComments.xml` holds about 1,200 lines of original API documentation with examples and is a good source.
+- [ ] **Architecture note:** the pipeline from parser to element tree to IL emission, for your future self.
+- [ ] **Limitations:** no NativeAOT or iOS because of runtime IL generation, and what is and is not thread-safe.
+- [ ] **Migration notes from Flee 2.0.0** and a changelog.
+- [ ] Compile the documentation examples as tests so they cannot go stale.
+
+## Phase 7: Performance optimization (stretch)
+
+Optimization is the last, optional goal for the first release: it gets a fixed time box, and the release ships without it if the box runs out. Each change needs before-and-after numbers from the Phase 2 vectors and must leave behaviour untouched.
+
+Start by profiling the vectors, then pick from the evidence. From reading the code, these are the candidates, most promising first:
+
+1. **Variable reads at evaluation.** Each read is a dictionary lookup by name plus an interface call. Resolving the variable once at compile time would remove the lookup from the hot path.
+2. **Compile path.** Expressions with long branches are emitted twice, elements are created by reflection, and some helper methods are looked up by name on every compile. Caching and direct construction are cheap wins if compile time matters to you.
+3. **Context cloning and locking.** Every compiled expression clones its context, and parsing takes a lock per context. This matters for compiling many expressions or compiling from several threads.
+4. **Parser allocations.** The tokenizer and parser allocate heavily. Only worth touching if the parse-only benchmark shows a large share of compile time, and it overlaps with the parser experiments below.
+
+This ranking is a reading of the code, not a measurement. The profile may reorder it.
+
+## First release checklist
+
+- [ ] CI is green on every target.
+- [ ] The known-failures list is empty, or each remaining entry is documented as a limitation.
+- [ ] Benchmarks show no regression beyond the threshold against the baseline.
+- [ ] Documentation, changelog and migration notes are complete.
+- [ ] Package ID, version number and license metadata are final.
+- [ ] The package is published and the release is tagged.
+
+## After the first release: parser and grammar experiments
+
+These are deliberately unplanned and start only once the release is out. They are noted here so the earlier phases do not close the door on them.
+
+- **The seam is narrow.** Only three files outside the `Parsing` folder touch the parser, and the contract is one call that turns a string into an element tree.
+- **Candidates:** a hand-written recursive-descent or Pratt parser, ANTLR 4 as the shipped parser, or ANTLR 4 only as a workbench for the grammar.
+- **What the earlier phases already provide:** the script corpus as a specification (Phase 1), the parse-only benchmark (Phase 2), your own parse exception type (Phase 5) and the written language reference (Phase 6).
+- **How to stay safe:** keep the current parser behind a switch and run both over every valid and invalid test expression until they agree.
+
+## Open decisions
+
+| Decision | Needed by | Suggestion |
+| --- | --- | --- |
+| Package ID and root namespace | Phase 0 | New package ID; keep the `Flee` namespace if you want drop-in use |
+| Drop-in compatible with Flee 2.0.0, or free to break | Phase 0 | Source-compatible for the first release |
+| Public NuGet package or private use only | Phase 0 | Open |
+| Target frameworks, and whether netstandard2.0 stays | Phase 3 | Current long-term-support .NET; netstandard2.0 only if you need it |
+| Keep or remove `EmitToAssembly` | Phase 3 | Remove unless you use it |
+| Rename the `_my` and `_our` prefixes | Phase 4 | Open, purely taste |
+| Your list of API changes and extensions | Phase 5 | Open |
+| Time box for performance work | Phase 7 | Open |
