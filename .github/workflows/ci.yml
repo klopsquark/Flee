@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop, master, 'claude/**' ]
+  pull_request:
+    branches: [ develop, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.configuration }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+        configuration: [ Debug, Release ]
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # GitVersion needs the full history
+
+      # The 10.0 SDK builds every target; the 6.0 runtime runs the tests (net6.0).
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            6.0.x
+            10.0.x
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build Flee.sln -c ${{ matrix.configuration }}
+
+      # Timing tests assert wall-clock limits, which shared runners cannot guarantee.
+      - name: Test
+        run: >
+          dotnet test Flee.sln -c ${{ matrix.configuration }} --no-build
+          --filter "TestCategory!=Timing"
+          --logger "trx;LogFileName=results.trx"
+          --results-directory TestResults
+          --collect "XPlat Code Coverage"
+
+      - name: Summarize tests and coverage
+        if: always()
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as ET
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          for trx in glob.glob('TestResults/**/*.trx', recursive=True):
+              c = ET.parse(trx).getroot().find('.//t:ResultSummary/t:Counters', ns)
+              print(f"**Tests:** {c.get('total')} total, {c.get('passed')} passed, "
+                    f"{c.get('failed')} failed, {int(c.get('total')) - int(c.get('executed'))} not run "
+                    f"(known failures)\n")
+          for cov in glob.glob('TestResults/**/coverage.cobertura.xml', recursive=True):
+              r = ET.parse(cov).getroot()
+              print(f"**Line coverage:** {float(r.get('line-rate')) * 100:.1f} %, "
+                    f"**branch coverage:** {float(r.get('branch-rate')) * 100:.1f} %\n")
+          EOF
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.configuration }}
+          path: TestResults
