@@ -1,0 +1,6 @@
+next-version: 2.6.0
+assembly-versioning-scheme: MajorMinorPatch
+mode: ContinuousDeployment
+branches: {}
+ignore:
+  sha: []

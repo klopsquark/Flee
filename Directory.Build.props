@@ -1,0 +1,105 @@
+<Project>
+
+    <PropertyGroup>
+        <!-- Explicit, so every project gets the same language level regardless
+             of its target framework's default. -->
+        <LangVersion>latest</LangVersion>
+        <Authors>Flee Contributors; klopsquark</Authors>
+        <Company>Flee</Company>
+        <Copyright>Copyright © 2022 Flee Contributors</Copyright>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Directory.Build.props is evaluated BEFORE the SDK defaults
+             Configuration, so building a .csproj directly (rather than via the
+             .sln, which passes Configuration explicitly) would otherwise
+             resolve Configuration-dependent paths without a Debug/Release
+             segment. Default it here so both routes agree. -->
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
+        <!-- Centralize all output to a single directory. Projects that build
+             several target frameworks must set AppendTargetFrameworkToOutputPath
+             back to true, or the frameworks overwrite each other's output. -->
+        <BaseOutputPath>$(MSBuildThisFileDirectory)build\$(MSBuildProjectName)\</BaseOutputPath>
+        <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+        <!-- Runtime assemblies folder for external applications -->
+        <RuntimeBundleName>Flee</RuntimeBundleName>
+        <RuntimeAssembliesFolder>$(MSBuildThisFileDirectory)build\runtime\$(RuntimeBundleName)\</RuntimeAssembliesFolder>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- NuGet packaging: only projects that set IsPackable=true produce a
+             package (today just Flee, on every build via
+             GeneratePackageOnBuild); tests and anything else are not packable.
+             Packages land in the maintainer's local feed when it exists on
+             this machine, else under build/nuget/; pass
+             /p:PackageOutputPath=... to override either. -->
+        <IsPackable>false</IsPackable>
+        <PackageOutputPath Condition="'$(PackageOutputPath)' == '' AND Exists('C:\dev\nuget')">C:\dev\nuget\</PackageOutputPath>
+        <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)build\nuget\</PackageOutputPath>
+        <RepositoryUrl>https://github.com/klopsquark/Flee</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+    <!-- Copy main assemblies to the runtime folder, but exclude experiments.
+         Runs once per target framework; a project that builds several
+         frameworks gets one subfolder per framework, so they don't overwrite
+         each other. The outer multi-targeting build has no assemblies of its
+         own and is skipped. -->
+    <Target Name="CopyToRuntime" AfterTargets="Build" Condition="'$(IsMainAssembly)' == 'true' AND '$(IsExperimentOnly)' != 'true' AND '$(IsCrossTargetingBuild)' != 'true'">
+        <PropertyGroup>
+            <_RuntimeDestination>$(RuntimeAssembliesFolder)</_RuntimeDestination>
+            <_RuntimeDestination Condition="'$(TargetFrameworks)' != ''">$(RuntimeAssembliesFolder)$(TargetFramework)\</_RuntimeDestination>
+        </PropertyGroup>
+        <ItemGroup>
+            <RuntimeFiles Include="$(OutputPath)*.dll"/>
+            <RuntimeFiles Include="$(OutputPath)*.exe"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(RuntimeFiles)"
+              DestinationFolder="$(_RuntimeDestination)"
+              SkipUnchangedFiles="true"/>
+    </Target>
+
+    <!-- Optional: Add a message for experiment-only projects -->
+    <Target Name="ShowExperimentMessage" AfterTargets="Build" Condition="'$(IsExperimentOnly)' == 'true'">
+        <Message Text="$(MSBuildProjectName): Experiment-only project - skipping runtime deployment" Importance="normal"/>
+    </Target>
+
+    <!-- CycloneDX SBOM (Cyber Resilience Act readiness). Lands in
+       build/runtime/Flee/sbom.json next to the runtime assemblies.
+       Same gating as CopyToRuntime: only IsMainAssembly projects emit an SBOM,
+       never the test project, never experiments. It runs once per project:
+       after CopyToRuntime for a single framework, and in the outer build
+       (after every framework is built) for a project with several, since
+       CycloneDX covers all of a project's frameworks in one pass.
+       Needs the CycloneDX tool from .config/dotnet-tools.json
+       (`dotnet tool restore`).
+       Set <SkipSbom>true</SkipSbom> or pass /p:SkipSbom=true to bypass for fast dev cycles. -->
+    <!-- The outer multi-targeting build never compiles, so GitVersion has not
+         set $(Version) there yet; run its GetVersion first when the project
+         uses GitVersion, or the SBOM would say 1.0.0. -->
+    <Target Name="_SbomGetVersion" Condition="'$(DisableGitVersionTask)' == 'false'" DependsOnTargets="GetVersion"/>
+
+    <Target
+            Name="GenerateSbom"
+            AfterTargets="Build;CopyToRuntime"
+            DependsOnTargets="_SbomGetVersion"
+            Condition="'$(IsMainAssembly)' == 'true' AND '$(IsExperimentOnly)' != 'true' AND '$(SkipSbom)' != 'true' AND ('$(TargetFrameworks)' == '' OR '$(IsCrossTargetingBuild)' == 'true')"
+    >
+        <!-- $(RuntimeAssembliesFolder) ends with '\'; quoting it directly turns the closing
+             '\"' into an escaped quote on Windows, corrupting the output flag value. Strip
+             the trailing backslash into a local property before passing. -->
+        <PropertyGroup>
+            <_SbomOutputDir>$(RuntimeAssembliesFolder.TrimEnd('\'))</_SbomOutputDir>
+        </PropertyGroup>
+        <Message Text="Generating CycloneDX SBOM for $(MSBuildProjectName) v$(Version)..." Importance="high"/>
+        <Exec
+                Command="dotnet CycloneDX &quot;$(MSBuildProjectFullPath)&quot; --output &quot;$(_SbomOutputDir)&quot; --json --filename sbom.json --set-version &quot;$(Version)&quot; --set-name &quot;$(RuntimeBundleName)&quot;"
+                WorkingDirectory="$(MSBuildThisFileDirectory)"
+                ContinueOnError="false"
+        />
+    </Target>
+
+</Project>
