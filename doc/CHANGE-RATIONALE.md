@@ -41,6 +41,9 @@ Entry template:
 | R-004 | Test suite runs under en-GB; culture behaviour pinned | test | Phase 1 |
 | R-005 | LongScriptTests read their script files | test | Phase 1 |
 | R-006 | Timing category and CI workflow | build, test | Phase 1 |
+| R-007 | Flee internals visible to the benchmark project | build | Phase 2 |
+| R-008 | Benchmark project; timing tests moved out of the test project | build, test | Phase 2 |
+| R-009 | Original individual and calc-engine tests ported | test | Phase 1 |
 
 ## Entries
 
@@ -153,4 +156,62 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** locally on Windows: 1,657 pass, 150 known failures, 0 fail with the CI filter
   and coverage; line coverage 66.8 % (8,553 of 12,797 lines). The workflow itself has not run
   yet; the first push will show the Linux result.
+- **Discussed:** not needed.
+
+### R-007: Flee internals visible to the benchmark project
+
+- **Kind / phase:** build / Phase 2
+- **Commits:** 965f5f9
+- **What:** `<InternalsVisibleTo Include="Flee.Benchmarks" />` in `src/Flee/Flee.csproj`.
+- **Why:** The plan asks for the parse stage to be measured on its own. The only way into it is
+  `ExpressionContext.Parse` plus the setup `Expression<T>` does before calling it, all internal.
+  The alternative, a public parse API, would be an API change and belongs to Phase 5 at the
+  earliest.
+- **Behaviour:** none. The attribute only grants access to an assembly named Flee.Benchmarks;
+  Flee is not strong-named, so it does not restrict anything either.
+- **Verified:** solution builds; tests unchanged.
+- **Discussed:** not needed (plan item).
+
+### R-008: Benchmark project; timing tests moved out of the test project
+
+- **Kind / phase:** build, test / Phase 2
+- **Commits:** 9673ced, 966030e, and the BenchmarkDotNet 0.15.8 update
+- **What:** New `benchmarks/Flee.Benchmarks` (BenchmarkDotNet 0.15.8, net6.0) with 15 vectors
+  through parse, compile and evaluate, a calculation-engine and a variable-write benchmark.
+  `test/Flee.Test/ExpressionTests/Benchmarks.cs` is deleted; its two workloads live on as
+  `VariableBenchmarks` and the `Legacy*` vectors. CI drops the Timing filter.
+- **Why:** Plan, Phase 2. net6.0 is the baseline runtime because it is upstream's newest target;
+  Phase 3 adds the new runtime to the same project so both can be compared. BenchmarkDotNet
+  0.15.8 is the newest release (November 2025) and still supports net6.0; the project first
+  used 0.14.0 and moved before the baseline was recorded, so all results share one version. The legacy
+  `SmallBranching` expression contains a typo (`OF` for `OR`) and never compiled; the old test
+  hid it by compiling `SmallExpression` twice. The benchmark corrects the typo.
+- **Behaviour:** none.
+- **Verified:** dry run of all 48 benchmarks succeeds; tests: 1,657 pass, 150 known failures.
+- **Discussed:** not needed. The 10 % regression threshold is the plan's suggestion, and the
+  vector with the maintainer's own expressions is still open.
+
+### R-009: Original individual and calc-engine tests ported
+
+- **Kind / phase:** test / Phase 1
+- **Commits:** c51a3d9, b56253b, 1af6e3b
+- **What:** From the original VB.NET test project: 31 of the 32 `IndividualTests` (new
+  `ExpressionTests/IndividualTests.cs`), the script-driven `SimpleCalcEngineTests` (filling the
+  empty stub, one case per line of `SimpleCalcEngineTests.txt`), and 12 `CalcEngineTestFixture`
+  tests that the C# conversion had lost. Original names and expectations are kept.
+- **Why:** They cover threading, imports, owners, overload resolution, on-demand variables and
+  functions, cloning and the calculation engine, none of which the scripts reach. Adaptations,
+  each commented in the code: internal type names (`Ciloci.Flee.*` became `Flee.*`), a .NET
+  Framework-only `Math` method, NUnit 3 `Assert.Throws` for `ExpectedException`, worker-thread
+  failures rethrown on the test thread, and a rebuilt `CaseSensitiveOwner` (the original was a
+  binary-only DLL). `TestStringQuote` is left out: `ExpressionParserOptions.StringQuote` no longer
+  exists. The original overload test caught every exception, so its "ambiguous" cases could not
+  fail; the port checks them.
+- **Known failures:** two, marked `[Category("KnownFailure")]` and ignored with the cause:
+  `TestOverloadResolution` (two calls resolve to an overload instead of being rejected as
+  ambiguous; for `ReferenceType4("abc")` the original expectation looks wrong, C# picks the same
+  overload) and `TestElementNamesInResourceFile` (three element classes have no entry in
+  `ElementNames.resx`).
+- **Behaviour:** none (test only).
+- **Verified:** Debug: 1,704 pass, 152 ignored, 0 fail. Release: 0 fail.
 - **Discussed:** not needed.
