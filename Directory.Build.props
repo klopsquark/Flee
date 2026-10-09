@@ -1,0 +1,22 @@
+<Project>
+
+    <PropertyGroup>
+        <!-- Explicit, so every project gets the same language level regardless
+             of its target framework's default. -->
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- Directory.Build.props is evaluated BEFORE the SDK defaults
+             Configuration, so building a .csproj directly (rather than via the
+             .sln, which passes Configuration explicitly) would otherwise
+             resolve Configuration-dependent paths without a Debug/Release
+             segment. Default it here so both routes agree. -->
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+</Project>
