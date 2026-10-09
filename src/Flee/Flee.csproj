@@ -9,6 +9,9 @@
         <Company>Flee</Company>
         <Product>Flee</Product>
         <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+        <!-- Several target frameworks: keep one output folder per framework
+             (Directory.Build.props turns this off for single-target projects). -->
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

@@ -13,6 +13,13 @@
              resolve Configuration-dependent paths without a Debug/Release
              segment. Default it here so both routes agree. -->
         <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
+        <!-- Centralize all output to a single directory. Projects that build
+             several target frameworks must set AppendTargetFrameworkToOutputPath
+             back to true, or the frameworks overwrite each other's output. -->
+        <BaseOutputPath>$(MSBuildThisFileDirectory)build\$(MSBuildProjectName)\</BaseOutputPath>
+        <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
 
     <PropertyGroup>
