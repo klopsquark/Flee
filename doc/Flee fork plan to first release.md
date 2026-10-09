@@ -98,12 +98,12 @@ The examples are placeholders. The last row deserves the most care, because it d
 
 The project moves to a current SDK and supported targets, with tests and benchmarks proving nothing else changed. Today it targets net6.0, net5.0, netstandard2.1 and netstandard2.0.
 
-- [ ] Choose the targets: the current long-term-support .NET, plus netstandard2.0 only if you need .NET Framework consumers. Check the support dates when you decide.
-- [ ] Remove the `System.Reflection.Emit` 4.x and related package references wherever the target framework already provides them.
+- [x] Choose the targets: the current long-term-support .NET, plus netstandard2.0 only if you need .NET Framework consumers. Check the support dates when you decide. Decided 2026-10-09: netstandard2.0, netstandard2.1, net8.0, net10.0 (R-011).
+- [x] Remove the `System.Reflection.Emit` 4.x and related package references wherever the target framework already provides them. (R-012)
 - [ ] Decide on nullable annotations. They are switched on over code that was never annotated. Suggested: switch off project-wide, then enable file by file, public API first.
-- [ ] Update the test packages.
-- [ ] Fix the package metadata: license expression, real project URLs, README in the package, source link, symbols. The license and icon URL fields currently just point at the repository.
-- [ ] Decide what happens to `EmitToAssembly`. The save call is commented out, so the README's "IL can be saved to an assembly" is no longer true. Remove the option or reimplement it.
+- [x] Update the test packages. NUnit stays on 3.14; moving to NUnit 4+ is open (R-013).
+- [x] Fix the package metadata: license expression, real project URLs, README in the package, source link, symbols. The license and icon URL fields currently just point at the repository. (R-014)
+- [x] Decide what happens to `EmitToAssembly`. The save call is commented out, so the README's "IL can be saved to an assembly" is no longer true. Remove the option or reimplement it. Decided 2026-10-09: kept as an obsolete no-op (R-015).
 - [ ] Add an `.editorconfig` and analyzers, and treat warnings as errors once the build is clean.
 - [ ] Run the benchmarks on the old and the new runtime and compare both with the baseline. This separates the runtime's effect from yours.
 
@@ -189,6 +189,10 @@ These are deliberately unplanned and start only once the release is out. They ar
 - **What the earlier phases already provide:** the script corpus as a specification (Phase 1), the parse-only benchmark (Phase 2), your own parse exception type (Phase 5) and the written language reference (Phase 6).
 - **How to stay safe:** keep the current parser behind a switch and run both over every valid and invalid test expression until they agree.
 
+Other post-release ideas:
+
+- **Reimplement `EmitToAssembly` on net10.0** with `PersistedAssemblyBuilder` (.NET 9+), so the generated IL can be saved and inspected with ILSpy or ILVerify. netstandard and net8.0 have no such API. The saved assembly is for inspection only, since expressions may read private owner members.
+
 ## Open decisions
 
 | Decision | Needed by | Suggestion |
@@ -196,8 +200,8 @@ These are deliberately unplanned and start only once the release is out. They ar
 | Package ID and root namespace | Phase 0 | **Decided 2026-10-09:** package ID `Flee`, namespace `Flee` |
 | Drop-in compatible with Flee 2.0.0, or free to break | Phase 0 | **Decided 2026-10-09:** source-compatible with Flee 2.0.0 |
 | Public NuGet package or private use only | Phase 0 | **Decided 2026-10-09:** private feed only, nothing on nuget.org |
-| Target frameworks, and whether netstandard2.0 stays | Phase 3 | Current long-term-support .NET; netstandard2.0 only if you need it |
-| Keep or remove `EmitToAssembly` | Phase 3 | Remove unless you use it |
+| Target frameworks, and whether netstandard2.0 stays | Phase 3 | **Decided 2026-10-09:** netstandard2.0, netstandard2.1, net8.0, net10.0 |
+| Keep or remove `EmitToAssembly` | Phase 3 | **Decided 2026-10-09:** keep as an obsolete no-op |
 | Rename the `_my` and `_our` prefixes | Phase 4 | Open, purely taste |
 | Your list of API changes and extensions | Phase 5 | Open |
 | Time box for performance work | Phase 7 | Open |

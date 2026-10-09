@@ -44,6 +44,13 @@ Entry template:
 | R-007 | Flee internals visible to the benchmark project | build | Phase 2 |
 | R-008 | Benchmark project; timing tests moved out of the test project | build, test | Phase 2 |
 | R-009 | Original individual and calc-engine tests ported | test | Phase 1 |
+| R-010 | IL length check reads ILGenerator.ILOffset | fix | Phase 3 |
+| R-011 | Target frameworks netstandard2.0/2.1, net8.0, net10.0; tests on net8.0 and net10.0 | build, test | Phase 3 |
+| R-012 | Reflection.Emit packages only for netstandard2.0 | build | Phase 3 |
+| R-013 | Test packages updated | test | Phase 3 |
+| R-014 | Package metadata: licence expression, readme, symbols | build | Phase 3 |
+| R-015 | EmitToAssembly is a no-op and obsolete | api | Phase 3 |
+| R-016 | Benchmarks run on net6.0, net8.0 and net10.0 | build | Phase 3 |
 
 ## Entries
 
@@ -214,4 +221,105 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `ElementNames.resx`).
 - **Behaviour:** none (test only).
 - **Verified:** Debug: 1,704 pass, 152 ignored, 0 fail. Release: 0 fail.
+- **Discussed:** not needed.
+
+### R-010: IL length check reads ILGenerator.ILOffset
+
+- **Kind / phase:** fix / Phase 3
+- **Commits:** a57e2ed
+- **What:** `Utility.GetILGeneratorLength` returns `ilg.ILOffset` instead of reading the private
+  field `ILGenerator.m_length` by reflection.
+- **Why:** The field does not exist on .NET 8 and later. Every compile in a Debug build of Flee
+  then threw `NullReferenceException` from the Debug-only length check (upstream PR #117, issues
+  #110 and #82). `ILOffset` is public, has the same value and exists on every target.
+- **Behaviour:** Debug builds on .NET 8+ work. Release builds never ran this code.
+- **Verified:** with the old code the suite on net8.0 Debug failed 1,511 tests with
+  `NullReferenceException`; with the fix it passes as on net6.0.
+- **Discussed:** not needed (required by the target decision, R-011).
+
+### R-011: Target frameworks netstandard2.0/2.1, net8.0, net10.0; tests on net8.0 and net10.0
+
+- **Kind / phase:** build, test / Phase 3
+- **Commits:** 2c066c0, 84724ae
+- **What:** Flee targets netstandard2.0, netstandard2.1, net8.0 and net10.0 instead of net6.0,
+  net5.0, netstandard2.1 and netstandard2.0. The tests run on net8.0 and net10.0; CI installs the
+  .NET 8 runtime instead of .NET 6.
+- **Why:** .NET 5 and 6 are out of support; net8.0 and net10.0 are the current long-term-support
+  releases. Apps on .NET 5 to 7 still get the netstandard2.1 build.
+- **Behaviour:** consumers on .NET 8+ get a build compiled for their runtime. No source change.
+  One known failure changed shape: `mouse.shareddt.gettype().name` threw
+  `InvalidProgramException` on .NET 6 and crashes the process on .NET 8 and 10, so it moved to
+  the `crash` category.
+- **Verified:** net8.0 and net10.0: 1,704 pass, 152 known failures, the same list as on net6.0.
+- **Discussed:** decided by the maintainer on 2026-10-09.
+
+### R-012: Reflection.Emit packages only for netstandard2.0
+
+- **Kind / phase:** build / Phase 3
+- **Commits:** f0975d5
+- **What:** `System.Reflection.Emit`, `.ILGeneration` and `.Lightweight` 4.7.0 are referenced only
+  for netstandard2.0. `System.Reflection` 4.3.0 and `System.ComponentModel` 4.3.0 are removed.
+- **Why:** The plan's item. All other targets have Reflection.Emit built in, and the two 4.3.0
+  packages were not needed by any target. Fewer stale transitive dependencies for consumers.
+- **Behaviour:** none.
+- **Verified:** all four targets build; tests unchanged.
+- **Discussed:** not needed.
+
+### R-013: Test packages updated
+
+- **Kind / phase:** test / Phase 3
+- **Commits:** e6783b8
+- **What:** Microsoft.NET.Test.Sdk 18.10.1, NUnit3TestAdapter 6.3.0, coverlet.collector 10.1.0,
+  NUnit 3.14.0.
+- **Why:** The plan's item. NUnit stays on 3.x: NUnit 4 and 5 move the classic asserts
+  (`Assert.AreEqual` and friends, used throughout the suite) to `ClassicAssert`, which would mean
+  touching nearly every test. That is a separate decision.
+- **Behaviour:** none.
+- **Verified:** results unchanged on both runtimes.
+- **Discussed:** not needed; moving to NUnit 4+ is open.
+
+### R-014: Package metadata: licence expression, readme, symbols
+
+- **Kind / phase:** build / Phase 3
+- **Commits:** 89c455a
+- **What:** `PackageLicenseExpression LGPL-2.1-or-later` replaces a licence URL that pointed at the
+  upstream repository; the icon URL (also the repository page) is dropped; the package carries
+  `README.md`, a `.snupkg` symbol package and repository information for Source Link. The
+  description names the fork.
+- **Why:** The plan's item; removes the NU5125 and NU5048 pack warnings.
+- **Behaviour:** none in the library.
+- **Verified:** packed to a scratch folder and read the nuspec: licence expression, readme,
+  repository commit and the four lib folders are present; netstandard2.0 alone depends on the
+  Reflection.Emit packages.
+- **Discussed:** not needed. Found in passing, left for Phase 6: the package ships
+  `Resources/DocComments.xml` as a content file, which NuGet adds to every consuming project.
+
+### R-015: EmitToAssembly is a no-op and obsolete
+
+- **Kind / phase:** api / Phase 3
+- **Commits:** ede53c2 (pinning tests), da0cbf6
+- **What:** `ExpressionOptions.EmitToAssembly` keeps its getter and setter but no longer does
+  anything, and carries `[Obsolete]`. The code that re-emitted each expression into an in-memory
+  assembly is removed.
+- **Why:** The assembly was never saved (the save call was commented out because .NET Core could
+  not save dynamic assemblies), so the option only cost compile time and leaked memory: such
+  assemblies are never unloaded. Keeping the property keeps the fork source-compatible; callers
+  get a compiler warning that tells them it has no effect.
+- **Behaviour:** compiling with the option set is faster and no longer leaks; results are the
+  same. Code that sets the option gets warning CS0618.
+- **Verified:** new `EmitToAssemblyTests` pass before and after; full suite unchanged in Debug and
+  Release on both runtimes.
+- **Discussed:** decided by the maintainer on 2026-10-09 (keep as a no-op). Reimplementing it on
+  net10.0 with `PersistedAssemblyBuilder` (.NET 9+) is noted as a post-release idea.
+
+### R-016: Benchmarks run on net6.0, net8.0 and net10.0
+
+- **Kind / phase:** build / Phase 3
+- **Commits:** bf2f858
+- **What:** The benchmark project targets net6.0, net8.0 and net10.0, so `--runtimes` compares
+  them in one run.
+- **Why:** The plan asks for the old and the new runtime to be compared with the baseline. On
+  net6.0 Flee now comes from its netstandard2.1 build, because net6.0 is no longer a Flee target.
+- **Behaviour:** none.
+- **Verified:** dry run on all three runtimes.
 - **Discussed:** not needed.
