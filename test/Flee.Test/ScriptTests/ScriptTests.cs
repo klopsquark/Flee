@@ -23,12 +23,11 @@ namespace Flee.Test.ScriptTests
     // The original harness ran under en-CA as .NET Framework defined it in 2007: dates
     // dd/MM/yyyy, '.' as decimal separator. Since .NET 5 (ICU) en-CA dates are yyyy-MM-dd,
     // which breaks both the date literals (their default format follows the current culture)
-    // and the expected values. en-GB matches the original assumptions on every platform.
-    [SetCulture(CultureName)]
+    // and the expected values. The assembly-wide test culture, en-GB (TestCulture.cs),
+    // matches the original assumptions on every platform.
     public class ScriptTests
     {
-        private const string CultureName = "en-GB";
-        private static readonly CultureInfo TestCulture = CultureInfo.GetCultureInfo(CultureName);
+        private static readonly CultureInfo TestCulture = CultureInfo.GetCultureInfo(Flee.Test.TestCulture.Name);
 
         private TypeDescriptionProvider? _intProvider;
         private TypeDescriptionProvider? _stringProvider;
