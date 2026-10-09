@@ -134,7 +134,7 @@ namespace Flee.Test.ScriptTests
 
         // ----- Contexts, as set up by the original harness -----
 
-        private static ExpressionContext CreateGenericContext(object owner)
+        internal static ExpressionContext CreateGenericContext(object owner)
         {
             ExpressionContext context = new ExpressionContext(owner);
 
