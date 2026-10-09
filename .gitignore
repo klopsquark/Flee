@@ -265,3 +265,5 @@ __pycache__/
 ######################
 .DS_Store
 .DS_Store?
+# BenchmarkDotNet output (results worth keeping are copied to benchmarks/results)
+BenchmarkDotNet.Artifacts/
