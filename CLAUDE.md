@@ -95,7 +95,7 @@ dotnet test Flee.sln
 fixture tests, many ported from the original VB.NET Flee test project. Cases that fail on the
 unchanged library are listed in `test/Flee.Test/TestScripts/KnownFailures.txt` (explained in
 `doc/known-failures.md`) or marked `[Category("KnownFailure")]`, and reported as skipped. A listed
-case that starts passing fails the run, so remove its entry when you fix it. Three script cases
+case that starts passing fails the run, so remove its entry when you fix it. Four script cases
 crash the process and are never run. The suite runs under the en-GB culture
 (`test/Flee.Test/TestCulture.cs`) because Flee's parser defaults follow the current culture.
 
