@@ -26,9 +26,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <!-- NuGet packaging: packages land in the maintainer's local feed
-             when it exists on this machine, else under build/nuget/; pass
+        <!-- NuGet packaging: only projects that set IsPackable=true produce a
+             package (today just Flee, on every build via
+             GeneratePackageOnBuild); tests and anything else are not packable.
+             Packages land in the maintainer's local feed when it exists on
+             this machine, else under build/nuget/; pass
              /p:PackageOutputPath=... to override either. -->
+        <IsPackable>false</IsPackable>
         <PackageOutputPath Condition="'$(PackageOutputPath)' == '' AND Exists('C:\dev\nuget')">C:\dev\nuget\</PackageOutputPath>
         <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)build\nuget\</PackageOutputPath>
         <RepositoryUrl>https://github.com/klopsquark/Flee</RepositoryUrl>
