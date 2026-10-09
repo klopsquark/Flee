@@ -68,7 +68,7 @@ A separate benchmark project records how fast the untouched library is, so later
 - [x] Create a `Benchmarks` project with BenchmarkDotNet and move the timing tests out of the test project. `benchmarks/Flee.Benchmarks`.
 - [x] Measure three stages separately: parse only, full compile (parse, emit, delegate creation) and evaluate. Parse-only needs access to internals from the benchmark project.
 - [x] Record time and allocations for every vector.
-- [ ] Commit the results as the baseline, together with machine and runtime details.
+- [x] Commit the results as the baseline, together with machine and runtime details. `benchmarks/results/baseline-net6.0`.
 - [x] Set a regression threshold for later phases. Suggested start: investigate anything slower by more than 10 %. Adopted, see `benchmarks/README.md`.
 - [x] Keep benchmarks out of the CI gate. Shared build machines are too noisy for that; run them by hand before and after relevant changes.
 
