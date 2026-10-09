@@ -1,0 +1,170 @@
+' Script cases that fail on the unchanged library (upstream f3b4fe2), recorded in Phase 1.
+' Phase 4 fixes them or keeps them deliberately. Every entry is checked on each run: the case
+' must still fail, and the script line must still read as given here, so the list stays exact.
+' Causes and counts per category: doc/known-failures.md.
+'
+' Format: File;Line;Category;Script line (exactly as in the script file)
+'
+' Categories:
+'   crash                     Crashes the test process (access violation from invalid IL);
+'                             never run. Cause: GetType() called on a value type.
+'   unsigned-literal          UInt32/UInt64 values above Int32/Int64.MaxValue cannot be
+'                             emitted; compiling fails with OverflowException.
+'   real-overflow-undetected  Double/single literals beyond the range compile to infinity
+'                             instead of failing with ConstantOverflow (.NET Core 3.0+ parsing).
+'   in-collection             "x in list" rejects IList and Hashtable.
+'   valuetype-gettype         GetType() on a static value-type field: InvalidProgramException.
+'   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
+'   wrong-reason              Rejected as expected, but with a different CompileExceptionReason
+'                             than the script states. The original harness never checked it.
+'   script-error              The script line itself is wrong.
+ValidExpressions.txt;67;unsigned-literal;uint32;4294967295U;4294967295
+ValidExpressions.txt;68;unsigned-literal;uint32;3000000000U;3000000000
+ValidExpressions.txt;82;unsigned-literal;uint64;18446744073709551615UL;18446744073709551615
+ValidExpressions.txt;83;unsigned-literal;uint64;18446744073709551615LU;18446744073709551615
+ValidExpressions.txt;107;unsigned-literal;uint32;0xFFFFFFFFU;4294967295
+ValidExpressions.txt;110;debug-il-length;int64;0xFFFFFFFFL;4294967295
+ValidExpressions.txt;117;unsigned-literal;uint64;0xFfffffffffffffffLU;18446744073709551615
+ValidExpressions.txt;120;debug-il-length;uint64;0xFFFFFFFFUL;4294967295
+ValidExpressions.txt;267;unsigned-literal;uint32;2147483648U / 2u;1073741824
+ValidExpressions.txt;268;unsigned-literal;uint32;uint.maxvalue / uint.maxvalue;1
+ValidExpressions.txt;269;unsigned-literal;uint64;9223372036854775808LU / 2LU;4611686018427387904
+ValidExpressions.txt;270;unsigned-literal;uint64;ulong.maxvalue / ulong.maxvalue;1
+ValidExpressions.txt;319;unsigned-literal;uint32;2147483648U % 5U;3
+ValidExpressions.txt;320;unsigned-literal;uint64;9223372036854775808LU % 5LU;3
+ValidExpressions.txt;330;unsigned-literal;int64;-uint.maxvalue;-4294967295
+ValidExpressions.txt;470;unsigned-literal;boolean;uint.minvalue < uint.maxvalue;true
+ValidExpressions.txt;474;unsigned-literal;boolean;uint.maxvalue = uint.maxvalue;true
+ValidExpressions.txt;478;unsigned-literal;boolean;0xFFFFFFFFU > 0U;true
+ValidExpressions.txt;479;unsigned-literal;boolean;0xFFFFFFFFU < 0U;false
+ValidExpressions.txt;482;unsigned-literal;boolean;ulong.minvalue < ulong.maxvalue;true
+ValidExpressions.txt;486;unsigned-literal;boolean;ulong.maxvalue = ulong.maxvalue;true
+ValidExpressions.txt;490;unsigned-literal;boolean;uint.maxvalue >= uint.maxvalue;true
+ValidExpressions.txt;491;unsigned-literal;boolean;uint.maxvalue > 0U;true
+ValidExpressions.txt;492;unsigned-literal;boolean;uint.maxvalue = int.minvalue;false
+ValidExpressions.txt;493;unsigned-literal;boolean;int.maxvalue <> uint.maxvalue;true
+ValidExpressions.txt;543;unsigned-literal;uint32;uint.maxvalue and uint.minvalue;0
+ValidExpressions.txt;544;unsigned-literal;uint32;uint.maxvalue xor uint.maxvalue;0
+ValidExpressions.txt;545;unsigned-literal;uint32;uint.maxvalue or 1U;4294967295
+ValidExpressions.txt;551;unsigned-literal;uint64;ulong.maxvalue and ulong.minvalue;0
+ValidExpressions.txt;552;unsigned-literal;uint64;ulong.maxvalue or ulong.minvalue;18446744073709551615
+ValidExpressions.txt;592;unsigned-literal;uint32;not uint.maxvalue;0
+ValidExpressions.txt;593;unsigned-literal;uint64;not ulong.maxvalue;0
+ValidExpressions.txt;867;crash;String;DateTimeA.GetType().Name;DateTime
+ValidExpressions.txt;913;unsigned-literal;uint32;4000000000U + 2U;4000000002
+ValidExpressions.txt;917;unsigned-literal;uint32;uint.maxvalue - uint.maxvalue;0
+ValidExpressions.txt;918;unsigned-literal;uint32;uint.maxvalue - uint.minvalue;4294967295
+ValidExpressions.txt;939;unsigned-literal;uint64;ulong.maxvalue - ulong.maxvalue;0
+ValidExpressions.txt;941;unsigned-literal;int64;4294967295U + 1000;4294968295
+ValidExpressions.txt;942;unsigned-literal;int64;4294967295U * 2;8589934590
+ValidExpressions.txt;943;unsigned-literal;int64;1000+4294967295U;4294968295
+ValidExpressions.txt;944;unsigned-literal;int64;2*4294967295U;8589934590
+ValidExpressions.txt;945;unsigned-literal;int64;uint.MaxValue- int.MinValue;6442450943
+ValidExpressions.txt;946;unsigned-literal;int64;uint.MaxValue- int.MaxValue;2147483648
+ValidExpressions.txt;955;unsigned-literal;single;uint.maxvalue;4.2949673E+9
+ValidExpressions.txt;956;unsigned-literal;double;uint.maxvalue;4294967295.0
+ValidExpressions.txt;957;unsigned-literal;single;ulong.maxvalue;1.84467441E+19
+ValidExpressions.txt;958;unsigned-literal;double;ulong.maxvalue;1.8446744073709552E+19
+ValidExpressions.txt;1057;crash;string;datetimea.gettype().fullname.split(chararr)[1];DateTime
+ValidExpressions.txt;1106;unsigned-literal;uint32;2147483648;2147483648
+ValidExpressions.txt;1107;unsigned-literal;uint32;4294967295;4294967295
+ValidExpressions.txt;1110;unsigned-literal;uint64;18446744073709551615;18446744073709551615
+ValidExpressions.txt;1113;unsigned-literal;uint32;4294967295U;4294967295
+ValidExpressions.txt;1121;unsigned-literal;uint64;9223372036854775808L;9223372036854775808
+ValidExpressions.txt;1122;unsigned-literal;uint64;18446744073709551615L;18446744073709551615
+ValidExpressions.txt;1126;unsigned-literal;uint64;9223372036854775808LU;9223372036854775808
+ValidExpressions.txt;1127;unsigned-literal;uint64;18446744073709551615ul;18446744073709551615
+ValidExpressions.txt;1131;unsigned-literal;uint32;0xFFFFFFFF;4294967295
+ValidExpressions.txt;1134;unsigned-literal;uint64;0x8000000000000000;9223372036854775808
+ValidExpressions.txt;1135;unsigned-literal;uint64;0xFFFFFFFFFFFFFFFF;18446744073709551615
+ValidExpressions.txt;1148;unsigned-literal;uint32;uint.maxvalue >> 2;1073741823
+ValidExpressions.txt;1149;unsigned-literal;uint32;uint.maxvalue << 2;4294967292
+ValidExpressions.txt;1177;unsigned-literal;uint32;0x80000000 >> -1;1
+ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
+ValidExpressions.txt;1257;valuetype-gettype;string;mouse.shareddt.gettype().name;DateTime
+ValidExpressions.txt;1313;in-collection;boolean;"a" in list;true
+ValidExpressions.txt;1314;in-collection;boolean;100 in list;true
+ValidExpressions.txt;1315;in-collection;boolean;'.' in list;false
+ValidExpressions.txt;1316;in-collection;boolean;45.67 in list;false
+ValidExpressions.txt;1318;in-collection;boolean;"abc" in Dict;true
+ValidExpressions.txt;1319;in-collection;boolean;100 in Dict;true
+ValidExpressions.txt;1320;in-collection;boolean;"zzz" in Dict;false
+InvalidExpressions.txt;3;wrong-reason;System.Int32;2147483648;ConstantOverflow
+InvalidExpressions.txt;4;wrong-reason;System.Int32;2147483649;ConstantOverflow
+InvalidExpressions.txt;5;wrong-reason;System.Int32;400000000000;ConstantOverflow
+InvalidExpressions.txt;6;wrong-reason;System.Int32;-2147483649;ConstantOverflow
+InvalidExpressions.txt;7;wrong-reason;System.Int32;-3000000000;ConstantOverflow
+InvalidExpressions.txt;9;real-overflow-undetected;System.Object;1.34E+400;ConstantOverflow
+InvalidExpressions.txt;10;real-overflow-undetected;System.Double;-1.7976931348623157E+309;ConstantOverflow
+InvalidExpressions.txt;11;real-overflow-undetected;System.Double;1.7976931348623157E+309;ConstantOverflow
+InvalidExpressions.txt;12;real-overflow-undetected;System.Double;-1.8976931348623157E+308;ConstantOverflow
+InvalidExpressions.txt;13;real-overflow-undetected;System.Double;1.8976931348623157E+308;ConstantOverflow
+InvalidExpressions.txt;15;real-overflow-undetected;System.Single;1.234e+100f;ConstantOverflow
+InvalidExpressions.txt;16;real-overflow-undetected;System.Single;-1.234e+100f;ConstantOverflow
+InvalidExpressions.txt;18;wrong-reason;System.uint32;4294967296U;ConstantOverflow
+InvalidExpressions.txt;19;wrong-reason;System.uint32;10000000000U;ConstantOverflow
+InvalidExpressions.txt;21;wrong-reason;System.int64;9223372036854775808L;ConstantOverflow
+InvalidExpressions.txt;22;wrong-reason;System.int64;-9223372036854775809L;ConstantOverflow
+InvalidExpressions.txt;23;wrong-reason;System.int64;10000000000000000000L;ConstantOverflow
+InvalidExpressions.txt;24;wrong-reason;System.int64;-10000000000000000000L;ConstantOverflow
+InvalidExpressions.txt;61;wrong-reason;System.object;-uint64.maxvalue;TypeMismatch
+InvalidExpressions.txt;88;wrong-reason;System.object;uint64.minvalue = int64.minvalue;TypeMismatch
+InvalidExpressions.txt;140;wrong-reason;system.object;string.length;TypeMismatch
+InvalidExpressions.txt;143;wrong-reason;System.object;string.alignConst;TypeMismatch
+InvalidExpressions.txt;152;wrong-reason;System.object;math.max(1,2,3);TypeMismatch
+InvalidExpressions.txt;153;wrong-reason;System.object;math.cos();TypeMismatch
+InvalidExpressions.txt;159;wrong-reason;System.object;math.cos("abc");TypeMismatch
+InvalidExpressions.txt;160;wrong-reason;System.object;math.cos(true);TypeMismatch
+InvalidExpressions.txt;161;wrong-reason;System.object;string.copy(100);TypeMismatch
+InvalidExpressions.txt;162;wrong-reason;System.object;string.copy(100);TypeMismatch
+InvalidExpressions.txt;163;wrong-reason;System.object;Doubleit(3.45);TypeMismatch
+InvalidExpressions.txt;164;wrong-reason;System.object;Doubleit();TypeMismatch
+InvalidExpressions.txt;169;wrong-reason;System.object;if();TypeMismatch
+InvalidExpressions.txt;170;wrong-reason;System.object;if("a");TypeMismatch
+InvalidExpressions.txt;171;wrong-reason;System.object;if("a",100);TypeMismatch
+InvalidExpressions.txt;173;wrong-reason;System.object;if("a",100,200,300);TypeMismatch
+InvalidExpressions.txt;189;wrong-reason;system.object;cast(100, blah);InvalidExplicitCast
+InvalidExpressions.txt;197;wrong-reason;System.object;cast(datetimea, Guid);InvalidExplicitCast
+InvalidExpressions.txt;198;wrong-reason;System.object;cast(int32a, Guid);InvalidExplicitCast
+InvalidExpressions.txt;201;wrong-reason;System.object;cast(22.34, Version);InvalidExplicitCast
+InvalidExpressions.txt;204;wrong-reason;System.object;cast("abc", Guid);InvalidExplicitCast
+InvalidExpressions.txt;205;wrong-reason;system.object;cast(ICollectionA, Guid);InvalidExplicitCast
+InvalidExpressions.txt;208;wrong-reason;System.object;cast("abc",Version);InvalidExplicitCast
+InvalidExpressions.txt;210;wrong-reason;System.object;cast("abc", IDisposable);InvalidExplicitCast
+InvalidExpressions.txt;217;wrong-reason;System.object;cast("abc", Array);InvalidExplicitCast
+InvalidExpressions.txt;221;wrong-reason;System.object;cast(stringarr, Version);InvalidExplicitCast
+InvalidExpressions.txt;223;wrong-reason;System.object;cast(stringarr, iComparable);InvalidExplicitCast
+InvalidExpressions.txt;225;wrong-reason;System.object;cast(arraya, IComparable);InvalidExplicitCast
+InvalidExpressions.txt;230;wrong-reason;System.object;cast(delegateanull, Icomparable);InvalidExplicitCast
+InvalidExpressions.txt;234;wrong-reason;System.object;cast(delegatea, Icomparable);InvalidExplicitCast
+InvalidExpressions.txt;241;wrong-reason;System.object;cast("abc", System.text.encoding);InvalidExplicitCast
+InvalidExpressions.txt;242;wrong-reason;System.object;cast(stringarr, System.text.encoding[]);InvalidExplicitCast
+InvalidExpressions.txt;247;wrong-reason;System.object;bytea[0];TypeMismatch
+InvalidExpressions.txt;252;wrong-reason;System.object;stringdict[100];TypeMismatch
+InvalidExpressions.txt;260;wrong-reason;System.string;cast('^',string);TypeMismatch
+InvalidExpressions.txt;277;wrong-reason;System.string;"\z";TypeMismatch
+InvalidExpressions.txt;278;wrong-reason;System.string;"\Uzzzz";TypeMismatch
+InvalidExpressions.txt;298;wrong-reason;System.object;cast(null, int);TypeMismatch
+InvalidExpressions.txt;300;wrong-reason;System.object;Math.cos(null);TypeMismatch
+InvalidExpressions.txt;305;wrong-reason;System.object;sum4(100.24, 13.4);TypeMismatch
+InvalidExpressions.txt;306;wrong-reason;System.object;sum4(100, "a");TypeMismatch
+InvalidExpressions.txt;307;wrong-reason;System.object;sum4("a");TypeMismatch
+InvalidExpressions.txt;309;wrong-reason;System.object;StringA.$a;TypeMismatch
+InvalidExpressions.txt;310;wrong-reason;System.object;$a.$b;TypeMismatch
+InvalidExpressions.txt;312;wrong-reason;System.boolean;100 in 100;TypeMismatch
+InvalidExpressions.txt;316;wrong-reason;System.boolean;'a' in ();TypeMismatch
+InvalidExpressions.txt;323;wrong-reason;System.object;#123/11/2008#;SyntaxError
+InvalidExpressions.txt;324;wrong-reason;System.object;#12/13/2008#;SyntaxError
+InvalidExpressions.txt;325;wrong-reason;System.object;#45/06/2008#;SyntaxError
+InvalidExpressions.txt;327;wrong-reason;System.object;##1.44:30#;SyntaxError
+InvalidExpressions.txt;331;wrong-reason;System.object;##0.00:44.12345678#;InvalidFormat
+InvalidExpressions.txt;333;script-error;System.int32;KeyboardA.structA["s", 100, 45.5];200
+ValidCasts.txt;100;unsigned-literal;uint32;cast(ulong.Maxvalue, uint);4294967295
+ValidCasts.txt;107;unsigned-literal;int64;cast(ulong.maxvalue, long);-1
+ValidCasts.txt;209;unsigned-literal;int32;cast(uint.maxvalue, int);-1
+ValidCasts.txt;211;unsigned-literal;int64;cast(ulong.maxvalue, long);-1
+CheckedTests.txt;19;unsigned-literal;uint.maxvalue + 1U;false;false
+CheckedTests.txt;22;unsigned-literal;ulong.maxvalue + 1UL;false;false
+CheckedTests.txt;51;unsigned-literal;uint.maxvalue * uint.maxvalue;false;false
+CheckedTests.txt;54;unsigned-literal;ulong.maxvalue * ulong.maxvalue;false;false
+CheckedTests.txt;108;unsigned-literal;cast(ulong.maxvalue,int);false;false

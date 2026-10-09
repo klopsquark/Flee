@@ -16,4 +16,9 @@
       <ProjectReference Include="..\..\src\Flee\Flee.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <!-- The script tests read these from the output folder. -->
+      <None Update="TestScripts\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
 </Project>
