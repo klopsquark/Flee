@@ -5,7 +5,10 @@ using NUnit.Framework;
 
 namespace Flee.Test.ExpressionTests
 {
+    // These tests assert wall-clock limits, so they fail on slow or shared machines and under
+    // coverage instrumentation. CI excludes the category; Phase 2 moves them to the benchmark project.
     [TestFixture]
+    [Category("Timing")]
     public class Benchmarks : Core
     {
         [Test(Description = "Test that setting variables is fast")]
