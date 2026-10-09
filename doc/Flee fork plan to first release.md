@@ -33,12 +33,12 @@ The phases run strictly in this order; each one protects the next.
 
 This phase settles the choices that are expensive to change later. No code changes yet.
 
-- [ ] Fork `mparlak/Flee` with full history and tag `f3b4fe2` as the baseline.
-- [ ] Add a `LICENSE` file. The grammar header says LGPL 2.1 or later; the repository has no license file today. Keep the existing copyright notices. Check the terms yourself if you distribute commercially.
+- [x] Fork `mparlak/Flee` with full history and tag `f3b4fe2` as the baseline. Tag: `upstream-baseline`.
+- [x] Add a `LICENSE` file. The grammar header says LGPL 2.1 or later; the repository has no license file today. Keep the existing copyright notices. Check the terms yourself if you distribute commercially.
 - [ ] Choose a package ID and decide whether the root namespace stays `Flee`.
 - [ ] Decide the compatibility stance: drop-in replacement for Flee 2.0.0, or free to break. Suggested: source-compatible for the first release, with every deviation documented.
 - [ ] Keep the fixes from your local copy aside. They go in during Phase 4, once tests can prove them.
-- [ ] Skim the 75 open upstream issues and 2 open pull requests. Collect those with a reproducible case as candidates for Phase 4.
+- [x] Skim the 75 open upstream issues and 2 open pull requests. Collect those with a reproducible case as candidates for Phase 4. Result: `doc/upstream-issues.md`, 8 reproducible bugs still present.
 
 ## Phase 1: Build and test sanitation
 
