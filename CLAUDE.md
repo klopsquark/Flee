@@ -35,6 +35,14 @@ These come from the plan and from the maintainer, and apply to every change.
 - **`README.markdown` is upstream's README and stays untouched.** `README.md` is the fork's own.
 - Keep the plan current: tick off finished items and record decisions in its Open decisions table.
 
+Decisions made so far (details in the plan's Open decisions table):
+
+- Package ID and namespace stay `Flee`. Packages go to the maintainer's private feed only, never
+  to nuget.org (where `Flee` belongs to upstream).
+- The first release is source-compatible with Flee 2.0.0. Any deviation is documented.
+- Target frameworks stay as they are (net6.0, net5.0, netstandard2.1, netstandard2.0) unless the
+  maintainer decides otherwise in Phase 3.
+
 ## Branches and pull requests
 
 - `develop` is the default branch and the integration branch. `master` mirrors upstream.

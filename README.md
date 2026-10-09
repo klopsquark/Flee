@@ -13,7 +13,8 @@ Upstream's original README is kept unchanged as [README.markdown](README.markdow
 
 ## Status
 
-Pre-release. Nothing is published yet, and the package name is not decided.
+Pre-release. The package keeps the ID `Flee` and goes to a private feed only; nothing is
+published on nuget.org. The first release stays source-compatible with Flee 2.0.0.
 
 The road to the first release is in [doc/Flee fork plan to first release.md](doc/Flee%20fork%20plan%20to%20first%20release.md).
 In short:
