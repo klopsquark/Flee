@@ -12,6 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
+        <IsMainAssembly>true</IsMainAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageVersion>2.0.0</PackageVersion>
         <Title>Flee</Title>
