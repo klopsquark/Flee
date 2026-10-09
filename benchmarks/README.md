@@ -39,10 +39,18 @@ not there yet.
 
 ## Running
 
-Always in Release, on a quiet machine (close other work, plugged in):
+Always in Release, on a quiet machine (close other work, plugged in). The project targets
+net6.0 (the baseline runtime; Flee comes from its netstandard2.1 build there), net8.0 and
+net10.0. One runtime:
 
 ```
-dotnet run -c Release --project benchmarks/Flee.Benchmarks -- --filter *
+dotnet run -c Release -f net10.0 --project benchmarks/Flee.Benchmarks -- --filter *
+```
+
+Several runtimes in one run, with ratios against the first:
+
+```
+dotnet run -c Release -f net10.0 --project benchmarks/Flee.Benchmarks -- --filter * --runtimes net6.0 net8.0 net10.0
 ```
 
 `--filter *Stage*` or `--filter *Large*` narrows the run; `--job short` gives a quick, rough

@@ -2,9 +2,11 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <!-- net6.0 is the baseline runtime (the newest target of upstream Flee 2.0.0).
-             Phase 3 adds the new runtime so both can be compared with one project. -->
-        <TargetFramework>net6.0</TargetFramework>
+        <!-- net6.0 is the baseline runtime (the newest target of upstream Flee 2.0.0); there Flee
+             comes from its netstandard2.1 build. net8.0 and net10.0 are the current targets.
+             benchmarks/README.md shows how to run one runtime or several. -->
+        <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
+        <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <!-- BenchmarkDotNet needs optimized code and complains about a debugger. -->
