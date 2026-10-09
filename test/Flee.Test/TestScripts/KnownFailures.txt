@@ -6,14 +6,13 @@
 ' Format: File;Line;Category;Script line (exactly as in the script file)
 '
 ' Categories:
-'   crash                     Crashes the test process (access violation from invalid IL);
-'                             never run. Cause: GetType() called on a value type.
+'   crash                     Crashes the test process (invalid IL); never run.
+'                             Cause: GetType() called on a value type.
 '   unsigned-literal          UInt32/UInt64 values above Int32/Int64.MaxValue cannot be
 '                             emitted; compiling fails with OverflowException.
 '   real-overflow-undetected  Double/single literals beyond the range compile to infinity
 '                             instead of failing with ConstantOverflow (.NET Core 3.0+ parsing).
 '   in-collection             "x in list" rejects IList and Hashtable.
-'   valuetype-gettype         GetType() on a static value-type field: InvalidProgramException.
 '   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
 '   wrong-reason              Rejected as expected, but with a different CompileExceptionReason
 '                             than the script states. The original harness never checked it.
@@ -81,7 +80,7 @@ ValidExpressions.txt;1148;unsigned-literal;uint32;uint.maxvalue >> 2;1073741823
 ValidExpressions.txt;1149;unsigned-literal;uint32;uint.maxvalue << 2;4294967292
 ValidExpressions.txt;1177;unsigned-literal;uint32;0x80000000 >> -1;1
 ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
-ValidExpressions.txt;1257;valuetype-gettype;string;mouse.shareddt.gettype().name;DateTime
+ValidExpressions.txt;1257;crash;string;mouse.shareddt.gettype().name;DateTime
 ValidExpressions.txt;1313;in-collection;boolean;"a" in list;true
 ValidExpressions.txt;1314;in-collection;boolean;100 in list;true
 ValidExpressions.txt;1315;in-collection;boolean;'.' in list;false

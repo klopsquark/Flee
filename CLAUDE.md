@@ -40,8 +40,8 @@ Decisions made so far (details in the plan's Open decisions table):
 - Package ID and namespace stay `Flee`. Packages go to the maintainer's private feed only, never
   to nuget.org (where `Flee` belongs to upstream).
 - The first release is source-compatible with Flee 2.0.0. Any deviation is documented.
-- Target frameworks stay as they are (net6.0, net5.0, netstandard2.1, netstandard2.0) unless the
-  maintainer decides otherwise in Phase 3.
+- Target frameworks (decided in Phase 3): netstandard2.0, netstandard2.1, net8.0, net10.0.
+- `EmitToAssembly` stays as a no-op for source compatibility.
 
 ## Branches and pull requests
 
@@ -55,21 +55,22 @@ Decisions made so far (details in the plan's Open decisions table):
 
 | Path | Content |
 | --- | --- |
-| `src/Flee` | The library. Targets net6.0, net5.0, netstandard2.1, netstandard2.0 |
+| `src/Flee` | The library. Targets netstandard2.0, netstandard2.1, net8.0, net10.0 |
 | `src/Flee/Parsing` | Bundled Grammatica parser runtime, the generated parser and `Expression.grammar` |
 | `src/Flee/ExpressionElements` | One class per language construct; each emits its own IL |
 | `src/Flee/InternalTypes` | `Expression<T>`, IL generator, branch manager, implicit conversions |
 | `src/Flee/PublicTypes` | `ExpressionContext`, options, imports, variables, exceptions |
 | `src/Flee/CalcEngine` | `CalculationEngine` and `SimpleCalcEngine` |
-| `test/Flee.Test` | NUnit tests (net6.0) |
+| `test/Flee.Test` | NUnit tests, run on net8.0 and net10.0 |
+| `benchmarks/Flee.Benchmarks` | BenchmarkDotNet project; results in `benchmarks/results` |
 | `test/Flee.Test/TestScripts` | Expression script files: `ValidExpressions.txt`, `InvalidExpressions.txt`, `ValidCasts.txt`, `CheckedTests.txt` and others |
 | `doc` | Plan, findings, change rationale, upstream issue triage |
 | `build` | All build output (git-ignored), see below |
 
 ## Build and test
 
-Requires a .NET SDK that can build net6.0 and the .NET 6 runtime for the tests
-(the .NET 10 SDK works).
+Requires the .NET 10 SDK, and the .NET 8 runtime for the net8.0 test run. The benchmark project
+also targets net6.0 (the baseline runtime) and needs the .NET 6 runtime to run there.
 
 ```
 dotnet tool restore            # once: CycloneDX, used for the SBOM step

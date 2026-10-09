@@ -4,7 +4,8 @@ Script cases that fail on the unchanged library (upstream `f3b4fe2`), as recorde
 The authoritative list is `test/Flee.Test/TestScripts/KnownFailures.txt`; this page explains it.
 Phase 4 works through it: each category is fixed, or kept and documented as a limitation.
 
-Measured on 2026-10-09 with net6.0 on Windows, test culture en-GB.
+Measured on 2026-10-09 with net6.0 on Windows, test culture en-GB. Since Phase 3 the tests run
+on net8.0 and net10.0 with exactly the same list.
 
 ## Overview
 
@@ -14,9 +15,8 @@ Measured on 2026-10-09 with net6.0 on Windows, test culture en-GB.
 | `wrong-reason` | 62 | test expectation | Rejected correctly, but with a different `CompileExceptionReason` than the script says |
 | `real-overflow-undetected` | 7 | runtime change | Out-of-range real literals become infinity instead of `ConstantOverflow` |
 | `in-collection` | 7 | bug | `x in list` rejects non-generic `IList` and `Hashtable` |
-| `crash` | 3 | bug | `GetType()` on a value-type field: access violation, process dies |
+| `crash` | 4 | bug | `GetType()` on a value-type field: the process dies |
 | `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| `valuetype-gettype` | 1 | bug | `GetType()` on a static value-type field: `InvalidProgramException` |
 | `script-error` | 1 | test data | The script line is a valid expression in the invalid-expressions file |
 | **Total** | **150** | | of 1,756 cases (1,606 pass) |
 
@@ -75,13 +75,14 @@ IDictionary") suggests the non-generic interfaces were meant, probably lost in t
 conversion (inferred, not checked against the VB source). The existing test
 `IN_OperatorTest` only covers generic collections.
 
-### crash (3) and valuetype-gettype (1)
+### crash (4)
 
 `DateTimeA.GetType().Name` (an instance field of type `DateTime`) crashes the test process with
-an access violation; `mouse.shareddt.gettype().name` (a static `DateTime` field) throws
-`InvalidProgramException`. Both point at calling `Object.GetType()` on an unboxed value type.
-Not analysed further yet. The three crash cases are never run, because they would take the
-whole test run down.
+an access violation. `mouse.shareddt.gettype().name` (a static `DateTime` field) threw
+`InvalidProgramException` on .NET 6; on .NET 8 and 10 it crashes the process with an internal
+CLR error, so it moved from its own category `valuetype-gettype` to `crash` in Phase 3. Both
+point at calling `Object.GetType()` on an unboxed value type. Not analysed further yet. Crash
+cases are never run, because they would take the whole test run down.
 
 ### debug-il-length (2)
 
