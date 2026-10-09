@@ -51,13 +51,13 @@ The unchanged library gets a regression suite that actually runs. Today the test
 | `ValidCasts.txt` | 172 | result type; cast expression; expected result |
 | `CheckedTests.txt` | 135 | expression; checked; should overflow |
 
-- [ ] Build the solution with the smallest change that works. Touch only the test project's target if the old runtime is not installed. Note the warning count.
-- [ ] Rebuild the script harness as data-driven NUnit tests, one test case per script line.
-- [ ] Reconstruct the expression owner the scripts expect. They use members such as `bytea` and `sbytea`, and that fixture is not in this repository or its history. The original VB.NET Flee source is the place to look; I have not checked that it is still obtainable.
-- [ ] Run everything and put each failing case on a known-failures list, marked as a category. Do not fix anything yet.
-- [ ] Clean the existing tests: `SimpleCalcEngineTests.TestScripts` is empty, `LongScriptTests` has commented-out file loading, and the timing tests in `Benchmarks.cs` belong in Phase 2.
-- [ ] Set up CI (build and test) on Windows and Linux.
-- [ ] Record line coverage as a starting figure. The coverage collector is already referenced.
+- [x] Build the solution with the smallest change that works. Touch only the test project's target if the old runtime is not installed. Note the warning count. Result: builds unchanged with the .NET 10 SDK and the .NET 6 runtime; 2,412 warnings (Debug, whole solution), almost all nullable warnings.
+- [x] Rebuild the script harness as data-driven NUnit tests, one test case per script line. `test/Flee.Test/ScriptTests`.
+- [x] Reconstruct the expression owner the scripts expect. Found and ported: the original VB.NET test project survives in `george-playstudiosasia/PlayStudios.Flee` (LGPL 2.1). Its individual and calc-engine tests were ported too (R-009). They use members such as `bytea` and `sbytea`, and that fixture is not in this repository or its history. The original VB.NET Flee source is the place to look; I have not checked that it is still obtainable.
+- [x] Run everything and put each failing case on a known-failures list, marked as a category. Do not fix anything yet. 150 of 1,756 script cases, see `doc/known-failures.md`.
+- [x] Clean the existing tests: `SimpleCalcEngineTests.TestScripts` is empty, `LongScriptTests` has commented-out file loading, and the timing tests in `Benchmarks.cs` belong in Phase 2.
+- [x] Set up CI (build and test) on Windows and Linux. `.github/workflows/ci.yml`, Debug and Release.
+- [x] Record line coverage as a starting figure. The coverage collector is already referenced. 66.8 % (8,553 of 12,797 lines) after the script tests, before the ported individual tests.
 
 The owner fixture is the main risk of this phase. If it cannot be recovered, it has to be inferred from the scripts, which is slower but possible.
 
@@ -65,12 +65,12 @@ The owner fixture is the main risk of this phase. If it cannot be recovered, it 
 
 A separate benchmark project records how fast the untouched library is, so later phases can be judged against it. It comes before the SDK change because a new runtime shifts the numbers on its own.
 
-- [ ] Create a `Benchmarks` project with BenchmarkDotNet and move the timing tests out of the test project.
-- [ ] Measure three stages separately: parse only, full compile (parse, emit, delegate creation) and evaluate. Parse-only needs access to internals from the benchmark project.
-- [ ] Record time and allocations for every vector.
+- [x] Create a `Benchmarks` project with BenchmarkDotNet and move the timing tests out of the test project. `benchmarks/Flee.Benchmarks`.
+- [x] Measure three stages separately: parse only, full compile (parse, emit, delegate creation) and evaluate. Parse-only needs access to internals from the benchmark project.
+- [x] Record time and allocations for every vector.
 - [ ] Commit the results as the baseline, together with machine and runtime details.
-- [ ] Set a regression threshold for later phases. Suggested start: investigate anything slower by more than 10 %.
-- [ ] Keep benchmarks out of the CI gate. Shared build machines are too noisy for that; run them by hand before and after relevant changes.
+- [x] Set a regression threshold for later phases. Suggested start: investigate anything slower by more than 10 %. Adopted, see `benchmarks/README.md`.
+- [x] Keep benchmarks out of the CI gate. Shared build machines are too noisy for that; run them by hand before and after relevant changes.
 
 ### Test vectors
 
