@@ -93,6 +93,12 @@ namespace Flee.PublicTypes
             set { _myProperties.SetValue("StringComparison", value); }
         }
 
+        /// <summary>
+        /// Has no effect. Upstream Flee emitted the IL a second time into an in-memory assembly
+        /// that was never saved, because .NET Core cannot save dynamic assemblies. Kept so that
+        /// existing code still compiles.
+        /// </summary>
+        [Obsolete("EmitToAssembly has no effect: generated IL cannot be saved to an assembly on this platform.")]
         public bool EmitToAssembly
         {
             get { return _myProperties.GetValue<bool>("EmitToAssembly"); }

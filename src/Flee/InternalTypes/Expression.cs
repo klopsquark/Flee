@@ -18,7 +18,6 @@ namespace Flee.InternalTypes
         private ExpressionEvaluator<T> _myEvaluator;
 
         private object _myOwner;
-        private const string EmitAssemblyName = "FleeExpression";
 
         private const string DynamicMethodName = "Flee Expression";
         public Expression(string expression, ExpressionContext context, bool isGeneric)
@@ -93,12 +92,6 @@ namespace Flee.InternalTypes
 
             ilg.ValidateLength();
 
-            // Emit to an assembly if required
-            if (options.EmitToAssembly == true)
-            {
-                EmitToAssembly(ilg, rootElement, services);
-            }
-
             Type delegateType = typeof(ExpressionEvaluator<>).MakeGenericType(typeof(T));
             _myEvaluator = (ExpressionEvaluator<T>)dm.CreateDelegate(delegateType);
         }
@@ -125,34 +118,6 @@ namespace Flee.InternalTypes
             dest.AddService(typeof(ExpressionContext), _myContext);
             dest.AddService(typeof(IExpression), this);
             dest.AddService(typeof(ExpressionInfo), _myInfo);
-        }
-
-        /// <summary>
-        /// Emit to an assembly. We've already computed long branches at this point,
-        /// so we emit as a second pass
-        /// </summary>
-        /// <param name="ilg"></param>
-        /// <param name="rootElement"></param>
-        /// <param name="services"></param>
-        private static void EmitToAssembly(FleeILGenerator ilg, ExpressionElement rootElement, IServiceContainer services)
-        {
-            AssemblyName assemblyName = new AssemblyName(EmitAssemblyName);
-
-            string assemblyFileName = string.Format("{0}.dll", EmitAssemblyName);
-
-            AssemblyBuilder assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.Run);
-            ModuleBuilder moduleBuilder = assemblyBuilder.DefineDynamicModule(assemblyFileName);
-
-            MethodBuilder mb = moduleBuilder.DefineGlobalMethod("Evaluate", MethodAttributes.Public | MethodAttributes.Static, typeof(T), new Type[] {
-            typeof(object),typeof(ExpressionContext),typeof(VariableCollection)});
-            // already emitted once for local use,
-            ilg.PrepareSecondPass(mb.GetILGenerator());
-
-            rootElement.Emit(ilg, services);
-
-            moduleBuilder.CreateGlobalFunctions();
-            //assemblyBuilder.Save(assemblyFileName);
-            assemblyBuilder.CreateInstance(assemblyFileName);
         }
 
         private void ValidateOwner(object owner)
