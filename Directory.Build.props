@@ -77,9 +77,15 @@
        Needs the CycloneDX tool from .config/dotnet-tools.json
        (`dotnet tool restore`).
        Set <SkipSbom>true</SkipSbom> or pass /p:SkipSbom=true to bypass for fast dev cycles. -->
+    <!-- The outer multi-targeting build never compiles, so GitVersion has not
+         set $(Version) there yet; run its GetVersion first when the project
+         uses GitVersion, or the SBOM would say 1.0.0. -->
+    <Target Name="_SbomGetVersion" Condition="'$(DisableGitVersionTask)' == 'false'" DependsOnTargets="GetVersion"/>
+
     <Target
             Name="GenerateSbom"
             AfterTargets="Build;CopyToRuntime"
+            DependsOnTargets="_SbomGetVersion"
             Condition="'$(IsMainAssembly)' == 'true' AND '$(IsExperimentOnly)' != 'true' AND '$(SkipSbom)' != 'true' AND ('$(TargetFrameworks)' == '' OR '$(IsCrossTargetingBuild)' == 'true')"
     >
         <!-- $(RuntimeAssembliesFolder) ends with '\'; quoting it directly turns the closing

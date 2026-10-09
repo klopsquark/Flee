@@ -14,7 +14,6 @@
         <IsPackable>true</IsPackable>
         <IsMainAssembly>true</IsMainAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageVersion>2.0.0</PackageVersion>
         <Title>Flee</Title>
         <PackageProjectUrl>https://github.com/klopsquark/Flee</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/mparlak/Flee</PackageLicenseUrl>
@@ -31,6 +30,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.ComponentModel" Version="4.3.0" />
         <PackageReference Include="System.Reflection" Version="4.3.0" />
         <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
