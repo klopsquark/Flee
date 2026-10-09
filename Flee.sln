@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F066EAAB-8E70-4DE7-BA46-155394D693DC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{27702D54-E6F5-4E37-A3FE-6B5FBD5AB138}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flee", "src\Flee\Flee.csproj", "{9D5D3F0D-037A-4816-AF3E-C394A496D625}"
@@ -14,7 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9D5D3F0D-037A-4816-AF3E-C394A496D625} = {F066EAAB-8E70-4DE7-BA46-155394D693DC}
 		{7C2B9FF7-8310-48A3-B6FE-125B8A0CD04C} = {27702D54-E6F5-4E37-A3FE-6B5FBD5AB138}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
