@@ -23,6 +23,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <!-- NuGet packaging: packages land in the maintainer's local feed
+             when it exists on this machine, else under build/nuget/; pass
+             /p:PackageOutputPath=... to override either. -->
+        <PackageOutputPath Condition="'$(PackageOutputPath)' == '' AND Exists('C:\dev\nuget')">C:\dev\nuget\</PackageOutputPath>
+        <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)build\nuget\</PackageOutputPath>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
