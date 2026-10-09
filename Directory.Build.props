@@ -4,6 +4,9 @@
         <!-- Explicit, so every project gets the same language level regardless
              of its target framework's default. -->
         <LangVersion>latest</LangVersion>
+        <Authors>Flee Contributors; klopsquark</Authors>
+        <Company>Flee</Company>
+        <Copyright>Copyright © 2022 Flee Contributors</Copyright>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,6 +31,7 @@
              /p:PackageOutputPath=... to override either. -->
         <PackageOutputPath Condition="'$(PackageOutputPath)' == '' AND Exists('C:\dev\nuget')">C:\dev\nuget\</PackageOutputPath>
         <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)build\nuget\</PackageOutputPath>
+        <RepositoryUrl>https://github.com/klopsquark/Flee</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 

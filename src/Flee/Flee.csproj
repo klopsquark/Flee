@@ -4,9 +4,6 @@
         <AssemblyName>Flee</AssemblyName>
         <AssemblyTitle>Flee</AssemblyTitle>
         <Description>Flee is Fast Lightweight Expression Evaluator.</Description>
-        <Copyright>Copyright © 2022 Flee Contributors</Copyright>
-        <Authors>Flee Contributors</Authors>
-        <Company>Flee</Company>
         <Product>Flee</Product>
         <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
         <!-- Several target frameworks: keep one output folder per framework
@@ -17,10 +14,9 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageVersion>2.0.0</PackageVersion>
         <Title>Flee</Title>
-        <PackageProjectUrl>https://github.com/mparlak/Flee</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/klopsquark/Flee</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/mparlak/Flee</PackageLicenseUrl>
         <PackageIconUrl>https://github.com/mparlak/Flee</PackageIconUrl>
-        <RepositoryUrl>https://github.com/mparlak/Flee</RepositoryUrl>
         <PackageTags>flee,expression evaluator,Expression Evaluator for c#</PackageTags>
     </PropertyGroup>
 
