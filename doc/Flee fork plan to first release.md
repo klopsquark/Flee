@@ -104,8 +104,8 @@ The project moves to a current SDK and supported targets, with tests and benchma
 - [x] Update the test packages. NUnit stays on 3.14; moving to NUnit 4+ is open (R-013).
 - [x] Fix the package metadata: license expression, real project URLs, README in the package, source link, symbols. The license and icon URL fields currently just point at the repository. (R-014)
 - [x] Decide what happens to `EmitToAssembly`. The save call is commented out, so the README's "IL can be saved to an assembly" is no longer true. Remove the option or reimplement it. Decided 2026-10-09: kept as an obsolete no-op (R-015).
-- [ ] Add an `.editorconfig` and analyzers, and treat warnings as errors once the build is clean.
-- [ ] Run the benchmarks on the old and the new runtime and compare both with the baseline. This separates the runtime's effect from yours.
+- [x] Add an `.editorconfig` and analyzers, and treat warnings as errors once the build is clean. `.editorconfig` added (R-018); the SDK analyzers run at their default level. The build still has 450 warnings, so warnings as errors moves to the end of Phase 4.
+- [x] Run the benchmarks on the old and the new runtime and compare both with the baseline. This separates the runtime's effect from yours. `benchmarks/results/phase3-runtimes`: .NET 10 about 45 % faster overall; calculation-engine loading 24 times slower on .NET 10 (Phase 4 item).
 
 ## Phase 4: Cheap bug fixes and cleanup
 
@@ -119,6 +119,9 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 - [ ] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`.
 - [ ] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds.
 - [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
+
+- [ ] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`).
+- [ ] Clear the remaining build warnings (obsolete `PropertyDictionary` uses, unused variables), then treat warnings as errors.
 
 ### Mechanical cleanup
 

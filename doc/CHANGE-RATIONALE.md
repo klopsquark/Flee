@@ -52,6 +52,7 @@ Entry template:
 | R-015 | EmitToAssembly is a no-op and obsolete | api | Phase 3 |
 | R-016 | Benchmarks run on net6.0, net8.0 and net10.0 | build | Phase 3 |
 | R-017 | Nullable reference types off in the library | build | Phase 3 |
+| R-018 | .editorconfig describing the existing style | build | Phase 3 |
 
 ## Entries
 
@@ -340,3 +341,18 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** solution warnings drop from 2,430 to 450; tests unchanged in Debug and Release on
   net8.0 and net10.0.
 - **Discussed:** decided by the maintainer on 2026-10-09.
+
+### R-018: .editorconfig describing the existing style
+
+- **Kind / phase:** build / Phase 3
+- **Commits:** the commit that adds this entry
+- **What:** A root `.editorconfig`: UTF-8 (with BOM for C#), CRLF, four-space indents, braces on
+  their own line, keyword types (`int`, `string`). Script files under `TestScripts` are left
+  exactly as they are.
+- **Why:** The plan's item. It writes down the style the code already uses so editors keep to it.
+  Nothing is enforced in the build: making style rules or analyzer findings into errors only makes
+  sense once the build is clean, and the remaining 450 warnings are Phase 4 cleanup. The .NET SDK
+  analyzers already run at their default level; raising it is a later decision.
+- **Behaviour:** none; the build output is identical (450 warnings, 0 errors).
+- **Verified:** full rebuild.
+- **Discussed:** not needed. Warnings as errors moves to the end of Phase 4.
