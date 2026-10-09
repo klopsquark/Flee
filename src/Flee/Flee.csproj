@@ -22,6 +22,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- The benchmark project measures the parse stage on its own, which needs internals. -->
+        <InternalsVisibleTo Include="Flee.Benchmarks" />
+    </ItemGroup>
+
+    <ItemGroup>
         <None Remove="Resources\DocComments.xml" />
     </ItemGroup>
 
