@@ -3,7 +3,7 @@
     <PropertyGroup>
         <AssemblyName>Flee</AssemblyName>
         <AssemblyTitle>Flee</AssemblyTitle>
-        <Description>Flee is Fast Lightweight Expression Evaluator.</Description>
+        <Description>Flee (Fast Lightweight Expression Evaluator) parses expressions such as sqrt(a^2 + b^2) at runtime and compiles them to IL. Maintained fork of mparlak/Flee.</Description>
         <Product>Flee</Product>
         <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net10.0</TargetFrameworks>
         <!-- Several target frameworks: keep one output folder per framework
@@ -16,10 +16,19 @@
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>Flee</Title>
         <PackageProjectUrl>https://github.com/klopsquark/Flee</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/mparlak/Flee</PackageLicenseUrl>
-        <PackageIconUrl>https://github.com/mparlak/Flee</PackageIconUrl>
+        <PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>flee,expression evaluator,Expression Evaluator for c#</PackageTags>
+        <!-- Symbols as a separate .snupkg; Source Link (built into the SDK) points the PDBs at the
+             repository, so debuggers can fetch the sources. -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
+    </ItemGroup>
 
     <ItemGroup>
         <!-- The benchmark project measures the parse stage on its own, which needs internals. -->
