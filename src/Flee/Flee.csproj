@@ -39,8 +39,10 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-        <PackageReference Include="System.Reflection" Version="4.3.0" />
+    </ItemGroup>
+
+    <!-- netstandard2.0 lacks Reflection.Emit; every other target has it built in. -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
