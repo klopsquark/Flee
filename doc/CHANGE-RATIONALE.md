@@ -55,6 +55,7 @@ Entry template:
 | R-018 | .editorconfig describing the existing style | build | Phase 3 |
 | R-019 | Generated code no longer inlines Flee's helpers (.NET 10 first-call cost) | perf, fix | Phase 4 |
 | R-020 | Expected reasons in InvalidExpressions.txt updated | test | Phase 4 |
+| R-021 | UInt32 and UInt64 constants above the signed maximum compile | fix | Phase 4 |
 
 ## Entries
 
@@ -401,3 +402,21 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   10 in `benchmarks/results/phase4-net10-first-call`. The calculation engine still loads 1.6
   times slower on .NET 10 than on .NET 8; recorded, not investigated further.
 - **Discussed:** maintainer asked for the investigation (2026-10-10); not needed for the fix.
+
+### R-021: UInt32 and UInt64 constants above the signed maximum compile
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `UInt32LiteralElement` and `UInt64LiteralElement` emit their value with an unchecked
+  conversion to the signed IL constant instead of `Convert.ToInt32` / `Convert.ToInt64`.
+- **Why:** The checked conversion threw `OverflowException` for every value above
+  `Int32.MaxValue` (uint) or `Int64.MaxValue` (ulong), so expressions such as `4294967295U`,
+  `0xFFFFFFFF` or `uint.maxvalue` did not compile at all. IL has no unsigned constants; the bits
+  are the same, which is what an unchecked cast gives. Upstream #83 fixed the same pattern in
+  `LiteralElement` only.
+- **Behaviour:** these expressions now compile and give the right values. Nothing that compiled
+  before changes, because the conversion only differs for values that used to throw.
+- **Verified:** the 67 script cases of the `unsigned-literal` category pass and leave the
+  known-failures list (failing first, as pinned in Phase 1). Debug: 1,836 pass, 22 skipped;
+  Release: 1,838 and 20; net8.0 and net10.0.
+- **Discussed:** not needed (bug fix).

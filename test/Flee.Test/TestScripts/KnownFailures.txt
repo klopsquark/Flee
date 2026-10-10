@@ -8,74 +8,14 @@
 ' Categories:
 '   crash                     Crashes the test process (invalid IL); never run.
 '                             Cause: GetType() called on a value type.
-'   unsigned-literal          UInt32/UInt64 values above Int32/Int64.MaxValue cannot be
-'                             emitted; compiling fails with OverflowException.
 '   real-overflow-undetected  Double/single literals beyond the range compile to infinity
 '                             instead of failing with ConstantOverflow (.NET Core 3.0+ parsing).
 '   in-collection             "x in list" rejects IList and Hashtable.
 '   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
-ValidExpressions.txt;67;unsigned-literal;uint32;4294967295U;4294967295
-ValidExpressions.txt;68;unsigned-literal;uint32;3000000000U;3000000000
-ValidExpressions.txt;82;unsigned-literal;uint64;18446744073709551615UL;18446744073709551615
-ValidExpressions.txt;83;unsigned-literal;uint64;18446744073709551615LU;18446744073709551615
-ValidExpressions.txt;107;unsigned-literal;uint32;0xFFFFFFFFU;4294967295
 ValidExpressions.txt;110;debug-il-length;int64;0xFFFFFFFFL;4294967295
-ValidExpressions.txt;117;unsigned-literal;uint64;0xFfffffffffffffffLU;18446744073709551615
 ValidExpressions.txt;120;debug-il-length;uint64;0xFFFFFFFFUL;4294967295
-ValidExpressions.txt;267;unsigned-literal;uint32;2147483648U / 2u;1073741824
-ValidExpressions.txt;268;unsigned-literal;uint32;uint.maxvalue / uint.maxvalue;1
-ValidExpressions.txt;269;unsigned-literal;uint64;9223372036854775808LU / 2LU;4611686018427387904
-ValidExpressions.txt;270;unsigned-literal;uint64;ulong.maxvalue / ulong.maxvalue;1
-ValidExpressions.txt;319;unsigned-literal;uint32;2147483648U % 5U;3
-ValidExpressions.txt;320;unsigned-literal;uint64;9223372036854775808LU % 5LU;3
-ValidExpressions.txt;330;unsigned-literal;int64;-uint.maxvalue;-4294967295
-ValidExpressions.txt;470;unsigned-literal;boolean;uint.minvalue < uint.maxvalue;true
-ValidExpressions.txt;474;unsigned-literal;boolean;uint.maxvalue = uint.maxvalue;true
-ValidExpressions.txt;478;unsigned-literal;boolean;0xFFFFFFFFU > 0U;true
-ValidExpressions.txt;479;unsigned-literal;boolean;0xFFFFFFFFU < 0U;false
-ValidExpressions.txt;482;unsigned-literal;boolean;ulong.minvalue < ulong.maxvalue;true
-ValidExpressions.txt;486;unsigned-literal;boolean;ulong.maxvalue = ulong.maxvalue;true
-ValidExpressions.txt;490;unsigned-literal;boolean;uint.maxvalue >= uint.maxvalue;true
-ValidExpressions.txt;491;unsigned-literal;boolean;uint.maxvalue > 0U;true
-ValidExpressions.txt;492;unsigned-literal;boolean;uint.maxvalue = int.minvalue;false
-ValidExpressions.txt;493;unsigned-literal;boolean;int.maxvalue <> uint.maxvalue;true
-ValidExpressions.txt;543;unsigned-literal;uint32;uint.maxvalue and uint.minvalue;0
-ValidExpressions.txt;544;unsigned-literal;uint32;uint.maxvalue xor uint.maxvalue;0
-ValidExpressions.txt;545;unsigned-literal;uint32;uint.maxvalue or 1U;4294967295
-ValidExpressions.txt;551;unsigned-literal;uint64;ulong.maxvalue and ulong.minvalue;0
-ValidExpressions.txt;552;unsigned-literal;uint64;ulong.maxvalue or ulong.minvalue;18446744073709551615
-ValidExpressions.txt;592;unsigned-literal;uint32;not uint.maxvalue;0
-ValidExpressions.txt;593;unsigned-literal;uint64;not ulong.maxvalue;0
 ValidExpressions.txt;867;crash;String;DateTimeA.GetType().Name;DateTime
-ValidExpressions.txt;913;unsigned-literal;uint32;4000000000U + 2U;4000000002
-ValidExpressions.txt;917;unsigned-literal;uint32;uint.maxvalue - uint.maxvalue;0
-ValidExpressions.txt;918;unsigned-literal;uint32;uint.maxvalue - uint.minvalue;4294967295
-ValidExpressions.txt;939;unsigned-literal;uint64;ulong.maxvalue - ulong.maxvalue;0
-ValidExpressions.txt;941;unsigned-literal;int64;4294967295U + 1000;4294968295
-ValidExpressions.txt;942;unsigned-literal;int64;4294967295U * 2;8589934590
-ValidExpressions.txt;943;unsigned-literal;int64;1000+4294967295U;4294968295
-ValidExpressions.txt;944;unsigned-literal;int64;2*4294967295U;8589934590
-ValidExpressions.txt;945;unsigned-literal;int64;uint.MaxValue- int.MinValue;6442450943
-ValidExpressions.txt;946;unsigned-literal;int64;uint.MaxValue- int.MaxValue;2147483648
-ValidExpressions.txt;955;unsigned-literal;single;uint.maxvalue;4.2949673E+9
-ValidExpressions.txt;956;unsigned-literal;double;uint.maxvalue;4294967295.0
-ValidExpressions.txt;957;unsigned-literal;single;ulong.maxvalue;1.84467441E+19
-ValidExpressions.txt;958;unsigned-literal;double;ulong.maxvalue;1.8446744073709552E+19
 ValidExpressions.txt;1057;crash;string;datetimea.gettype().fullname.split(chararr)[1];DateTime
-ValidExpressions.txt;1106;unsigned-literal;uint32;2147483648;2147483648
-ValidExpressions.txt;1107;unsigned-literal;uint32;4294967295;4294967295
-ValidExpressions.txt;1110;unsigned-literal;uint64;18446744073709551615;18446744073709551615
-ValidExpressions.txt;1113;unsigned-literal;uint32;4294967295U;4294967295
-ValidExpressions.txt;1121;unsigned-literal;uint64;9223372036854775808L;9223372036854775808
-ValidExpressions.txt;1122;unsigned-literal;uint64;18446744073709551615L;18446744073709551615
-ValidExpressions.txt;1126;unsigned-literal;uint64;9223372036854775808LU;9223372036854775808
-ValidExpressions.txt;1127;unsigned-literal;uint64;18446744073709551615ul;18446744073709551615
-ValidExpressions.txt;1131;unsigned-literal;uint32;0xFFFFFFFF;4294967295
-ValidExpressions.txt;1134;unsigned-literal;uint64;0x8000000000000000;9223372036854775808
-ValidExpressions.txt;1135;unsigned-literal;uint64;0xFFFFFFFFFFFFFFFF;18446744073709551615
-ValidExpressions.txt;1148;unsigned-literal;uint32;uint.maxvalue >> 2;1073741823
-ValidExpressions.txt;1149;unsigned-literal;uint32;uint.maxvalue << 2;4294967292
-ValidExpressions.txt;1177;unsigned-literal;uint32;0x80000000 >> -1;1
 ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
 ValidExpressions.txt;1257;crash;string;mouse.shareddt.gettype().name;DateTime
 ValidExpressions.txt;1313;in-collection;boolean;"a" in list;true
@@ -92,12 +32,3 @@ InvalidExpressions.txt;12;real-overflow-undetected;System.Double;-1.897693134862
 InvalidExpressions.txt;13;real-overflow-undetected;System.Double;1.8976931348623157E+308;ConstantOverflow
 InvalidExpressions.txt;15;real-overflow-undetected;System.Single;1.234e+100f;ConstantOverflow
 InvalidExpressions.txt;16;real-overflow-undetected;System.Single;-1.234e+100f;ConstantOverflow
-ValidCasts.txt;100;unsigned-literal;uint32;cast(ulong.Maxvalue, uint);4294967295
-ValidCasts.txt;107;unsigned-literal;int64;cast(ulong.maxvalue, long);-1
-ValidCasts.txt;209;unsigned-literal;int32;cast(uint.maxvalue, int);-1
-ValidCasts.txt;211;unsigned-literal;int64;cast(ulong.maxvalue, long);-1
-CheckedTests.txt;19;unsigned-literal;uint.maxvalue + 1U;false;false
-CheckedTests.txt;22;unsigned-literal;ulong.maxvalue + 1UL;false;false
-CheckedTests.txt;51;unsigned-literal;uint.maxvalue * uint.maxvalue;false;false
-CheckedTests.txt;54;unsigned-literal;ulong.maxvalue * ulong.maxvalue;false;false
-CheckedTests.txt;108;unsigned-literal;cast(ulong.maxvalue,int);false;false

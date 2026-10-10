@@ -11,22 +11,21 @@ on net8.0 and net10.0 with exactly the same list.
 
 | Category | Cases | Kind | Short cause |
 | --- | ---: | --- | --- |
-| `unsigned-literal` | 67 | bug | UInt32/UInt64 constants above the signed maximum cannot be emitted |
 | `real-overflow-undetected` | 7 | runtime change | Out-of-range real literals become infinity instead of `ConstantOverflow` |
 | `in-collection` | 7 | bug | `x in list` rejects non-generic `IList` and `Hashtable` |
 | `crash` | 4 | bug | `GetType()` on a value-type field: the process dies |
 | `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| **Total** | **87** | | of 1,756 cases (1,669 pass) |
+| **Total** | **20** | | of 1,756 cases (1,736 pass) |
 
-In a Release build the two `debug-il-length` cases pass, so the totals are 85 and 1,671.
+In a Release build the two `debug-il-length` cases pass, so the totals are 18 and 1,738.
 
-The list started with 150 cases. 63 left it in Phase 4 when the expected reasons in
+The list started with 150 cases. In Phase 4, 63 left it when the expected reasons in
 `InvalidExpressions.txt` were updated (categories `wrong-reason` and `script-error`, see the last
-section).
+section), and 67 when the `unsigned-literal` bug was fixed (R-021, described below).
 
 ## Categories
 
-### unsigned-literal (67)
+### unsigned-literal (67, fixed in Phase 4)
 
 Any `uint` value above `Int32.MaxValue` or `ulong` value above `Int64.MaxValue` fails to compile
 with `OverflowException`, whether written as a literal (`4294967295U`, `0xFFFFFFFF`) or reached
@@ -37,7 +36,8 @@ conversion before emitting it:
 - `src/Flee/ExpressionElements/Literals/Integral/UInt64.cs:29`: `Convert.ToInt64(_myValue)`
 
 An unchecked reinterpretation (`unchecked((int)_myValue)`) is what the IL needs. Upstream #83
-fixed the same pattern in one place (`LiteralElement`), not in these two. All CheckedTests
+fixed the same pattern in one place (`LiteralElement`), not in these two. Fixed that way in
+Phase 4 (R-021); all 67 cases pass. All CheckedTests
 entries in this category fail for the same reason: the compile error surfaces as an
 `OverflowException` that the test reads as an arithmetic overflow.
 

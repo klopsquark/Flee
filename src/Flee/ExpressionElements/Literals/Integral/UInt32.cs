@@ -26,7 +26,9 @@ namespace Flee.ExpressionElements.Literals.Integral
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            EmitLoad(Convert.ToInt32(_myValue), ilg);
+            // The IL constant is the same bits, read as signed; unchecked so values above
+            // Int32.MaxValue do not throw (R-021).
+            EmitLoad(unchecked((int)_myValue), ilg);
         }
 
         public override System.Type ResultType => typeof(UInt32);
