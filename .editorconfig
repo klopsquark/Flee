@@ -1,5 +1,6 @@
 # Editor settings for the Flee fork. They describe the style the code already uses, so editors
-# keep to it; nothing here is enforced in the build yet (see doc/CHANGE-RATIONALE.md, R-018).
+# keep to it (see doc/CHANGE-RATIONALE.md, R-018). Warnings are errors (R-044); the parser
+# section below lowers the warnings that wait for doc/deferred.md, D-03.
 
 root = true
 

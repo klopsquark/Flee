@@ -35,8 +35,16 @@ How to use it:
 | D-20 | NUnit 4 or 5 for the test project | When convenient | Open |
 | D-21 | Benchmark vector with the maintainer's own expressions | Phase 7, or earlier if expressions are supplied | Open |
 | D-22 | Fixes from the maintainer's local Flee copy | When supplied | Open |
-| D-23 | `Resources/DocComments.xml` is shipped as a content file | Phase 6 | Open |
+| D-23 | `Resources/DocComments.xml` is shipped as a content file | Phase 6 | **Done** (R-049) |
 | D-24 | Other names the IDE may flag | When convenient | Open |
+| D-25 | Syntax errors in calculation-engine and batch expressions leak `ParserLogException` | Before the release, if approved | Open |
+| D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | Open |
+| D-27 | Evaluating a variable created by `DefineVariable` before it has a value | Before the release, if approved | Open |
+| D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | Open |
+| D-29 | `SimpleCalcEngine` clears the variables before checking the new expression | Before the release, if approved | Open |
+| D-30 | Changing `Options.CaseSensitive` empties the variables | Phase 5 | Open |
+| D-31 | `ParseCulture`: LCID comparison and multi-character separators | Phase 5 | Open |
+| D-32 | Small oddities found while writing the XML comments | When touched | Open |
 
 ## Entries
 
@@ -222,6 +230,7 @@ How to use it:
   it to every consuming project. Its text (about 1,200 lines of original API documentation) belongs
   in XML documentation comments instead (plan, Phase 6).
 - **Pick up:** Phase 6.
+- **Done:** R-049. The text is now in XML comments (R-048) and the package ships `Flee.xml`.
 
 ### D-24: Other names the IDE may flag
 
@@ -229,3 +238,84 @@ How to use it:
   match the IDE's defaults, for example private fields in PascalCase such as
   `ShortCircuitInfo.Labels`.
 - **Pick up:** when convenient, with the same Roslyn-based rename.
+
+### D-25: Syntax errors in calculation-engine and batch expressions leak `ParserLogException`
+
+- **What:** `ExpressionContext.ParseIdentifiers` (`src/Flee/PublicTypes/ExpressionContext.cs`) runs
+  the identifier parser without the `try`/`catch` that `DoParse` has. A syntax error in an
+  expression given to `BatchLoader.Add`, `SimpleCalcEngine.AddDynamic` or `AddGeneric` therefore
+  throws the internal `Flee.Parsing.ParserLogException` instead of `ExpressionCompileException`.
+- **Origin:** found while writing the XML comments (R-048); confirmed by running it.
+- **Why it waits:** it changes which exception callers see, so it needs the maintainer's yes. The
+  fix itself is outside the parser.
+- **Pick up:** before the release if approved: pin it with a known-failure test, then wrap the
+  exception as `DoParse` does.
+
+### D-26: `BatchLoader` with an unknown name throws `KeyNotFoundException`
+
+- **What:** a batch expression that references a name that is neither in the batch nor a variable
+  makes `CalculationEngine.BatchLoad` throw `KeyNotFoundException`
+  (`src/Flee/CalcEngine/PublicTypes/BatchLoader.cs`), not a compile error naming the atom.
+- **Origin:** XML comments (R-048); confirmed by running it. Related to R-039, which fixed the same
+  symptom for `CalculationEngine.Add`.
+- **Pick up:** before the release if approved, with a known-failure test first.
+
+### D-27: Evaluating a variable created by `DefineVariable` before it has a value
+
+- **What:** `VariableCollection.DefineVariable` creates the variable without a value. An expression
+  that reads it before the indexer sets one throws `NullReferenceException`
+  (`GenericVariable<T>.Value` is still null; `src/Flee/InternalTypes/GenericVariable.cs`).
+- **Origin:** XML comments (R-048); confirmed by running it. The comment now says to set a value
+  first.
+- **Choice:** evaluate to the type's default, as the indexer does when set to null, or throw a
+  clear exception. Needs the maintainer's yes.
+- **Pick up:** before the release if approved.
+
+### D-28: Cloned contexts share option and import state with the original
+
+- **What:** `ExpressionOptions.Clone` and `ExpressionParserOptions.Clone` keep their owner pointing
+  at the original context and share the parse culture. Changing `DecimalSeparator` and calling
+  `RecreateParser` on a clone leaves the clone's parser unchanged and breaks the original's
+  (`1.5` then fails with `FormatException`). `ImportBase.Clone` is shallow: a cloned
+  `NamespaceImport` shares its child list, so `AddType` on a cloned context shows up in the
+  original, and the shared children get their context reassigned on every compile.
+- **Origin:** XML comments (R-048); confirmed by running it. This also matters for the
+  thread-safety statements in `doc/limitations.md`.
+- **Why it waits:** `Expression<T>` clones its context on every compile, so the fix touches the
+  compile path; it needs tests for the clone semantics first.
+- **Pick up:** before the release if approved, otherwise Phase 5.
+
+### D-29: `SimpleCalcEngine` clears the variables before checking the new expression
+
+- **What:** `SimpleCalcEngine.AddDynamic` and `AddGeneric` call `Context.Variables.Clear()` before
+  they check for a duplicate name or compile (`src/Flee/CalcEngine/PublicTypes/SimpleCalcEngine.cs`).
+  A failed add still loses every variable.
+- **Origin:** XML comments (R-048), from reading the code.
+- **Pick up:** before the release if approved, with D-25.
+
+### D-30: Changing `Options.CaseSensitive` empties the variables
+
+- **What:** `VariableCollection` rebuilds its dictionary with the new comparer when
+  `CaseSensitive` changes, and the new dictionary is empty. The XML comment now says so.
+- **Origin:** XML comments (R-048); confirmed by running it.
+- **Choice:** copy the variables into the new dictionary (and fail on names that now collide), or
+  keep the behaviour. It may be deliberate, so it is not treated as a bug yet.
+- **Pick up:** Phase 5.
+
+### D-31: `ParseCulture`: LCID comparison and multi-character separators
+
+- **What:** setting `ExpressionOptions.ParseCulture` compares cultures by LCID only, so custom
+  cultures (all LCID 4096) and modified clones of the current culture are ignored. The decimal and
+  list separators go through `Convert.ToChar`, which throws for cultures whose separator is longer
+  than one character.
+- **Origin:** XML comments (R-048), from reading the code; not run.
+- **Pick up:** Phase 5, with tests for such cultures first.
+
+### D-32: Small oddities found while writing the XML comments
+
+- `BatchLoadCompileException` prints "atom '$a'": a `$` left over from the old reference syntax.
+- The root namespace import is named `"true"` (`ExpressionImports`).
+- `VariableCollection.Copy` subscribes to `CaseSensitiveChanged` a second time; harmless.
+- Two malformed comments in the parser (`ExpressionAnalyzer.cs`, `TokenNFA.cs`) are reported as
+  CS1570 suggestions; they belong to D-03.
+- **Pick up:** when the code is touched.

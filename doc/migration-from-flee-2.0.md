@@ -14,6 +14,9 @@ links to its entry in [CHANGE-RATIONALE.md](CHANGE-RATIONALE.md).
   have no dependencies (R-012).
 - The package carries an SPDX licence expression (LGPL-2.1-or-later), the README, symbols and Source
   Link (R-014).
+- The package ships XML documentation (`Flee.xml`) for IntelliSense. It no longer adds
+  `Resources/DocComments.xml` to your project; delete that file if an earlier version left it
+  there (R-049).
 
 ## Compile-time differences for your code
 

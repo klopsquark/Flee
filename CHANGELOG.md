@@ -11,13 +11,14 @@ brackets).
 
 - Targets net8.0 and net10.0 next to netstandard2.0 and netstandard2.1 [R-011].
 - Nullable reference type annotations on the public API [R-038].
+- XML documentation (`Flee.xml`) for the public API, so IntelliSense shows it [R-048, R-049].
 - Symbol package and Source Link [R-014].
 - Documentation: language reference, API guide, architecture, limitations, migration notes.
 
 ### Changed
 
-- Package metadata: SPDX licence expression `LGPL-2.1-or-later`, the fork's README; the package
-  ships `Resources/DocComments.xml` as before [R-014].
+- Package metadata: SPDX licence expression `LGPL-2.1-or-later`, the fork's README [R-014].
+- The package no longer adds `Resources/DocComments.xml` to consuming projects [R-049].
 - Versions come from GitVersion, starting at 2.6.0 [R-001].
 - net5.0 and net6.0 builds removed; those runtimes use the netstandard2.1 build [R-011].
 - `System.Reflection.Emit` packages are only referenced for netstandard2.0 [R-012].

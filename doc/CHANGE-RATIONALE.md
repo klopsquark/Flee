@@ -82,6 +82,8 @@ Entry template:
 | R-045 | cast(x, char) converts properly (and no longer throws after R-035) | fix | Phase 4 |
 | R-046 | Documentation examples run as tests | test | Phase 6 |
 | R-047 | API guide examples run as tests and are kept in sync | test | Phase 6 |
+| R-048 | XML documentation comments on the public API | docs | Phase 6 |
+| R-049 | Package ships Flee.xml instead of DocComments.xml | build | Phase 6 |
 
 ## Entries
 
@@ -921,3 +923,46 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   sync test fail. Writing them found that `AddMethod` by name throws `AmbiguousMatchException` for
   overloaded methods, so the guide shows the `MethodInfo` overload.
 - **Discussed:** not needed (plan item).
+
+### R-048: XML documentation comments on the public API
+
+- **Kind / phase:** docs / Phase 6
+- **Commits:** cf8fc8a
+- **What:** every public type and every public or protected member outside `src/Flee/Parsing` has
+  a `///` comment: 27 types, 185 types and members in all. 138 are ported from
+  `Resources/DocComments.xml`, the original Flee API documentation; 47 are new (mostly
+  `SimpleCalcEngine`, the import classes' collection members and the exception constructors).
+  Sandcastle-only tags became standard ones. Two internal comments with wrong `param` names were
+  corrected. Comment lines only, no code changes.
+- **Why:** plan, Phase 6: XML comments on every public type, so IntelliSense shows them.
+- **Behaviour:** none.
+- **Where the old text was wrong:** it now says what the code does. `EmitToAssembly` does not save
+  anything; the variable indexer does not reject a value of another type (D-09); calculation-engine
+  atoms are referenced by plain name, not with `$`; the dependency graph prints one line per
+  expression; an owner may be of a derived type; the `Clone` remark ended mid-sentence. New facts,
+  each checked by running it: changing `CaseSensitive` empties the variables, `RecreateParser` is
+  needed after changing separators, `DefineVariable` leaves the variable without a value,
+  `SimpleCalcEngine.Add*` clears the variables, `AddMethod` by name throws for overloads.
+- **Verified:** every example was compiled and run against the built library under en-GB; only the
+  `CalculationEngine` example needed a fix (undeclared `engine`, `$` names) and now gives 500, then
+  700. Missing-comment warnings (CS1591) outside the parser went from 182 to 0. Bugs noticed on the
+  way are recorded, not fixed: `doc/deferred.md`, D-25 to D-32.
+- **Discussed:** not needed (plan item).
+
+### R-049: Package ships Flee.xml instead of DocComments.xml
+
+- **Kind / phase:** build / Phase 6
+- **Commits:** 8754877
+- **What:** `Flee.csproj` sets `GenerateDocumentationFile`, so every target writes `Flee.xml` and
+  the package carries it next to `Flee.dll`. `Resources/DocComments.xml` and its `Content` item are
+  removed. `.editorconfig` turns CS1591 off for `src/Flee/Parsing` and lowers CS1570 there to a
+  suggestion, because the parser has two malformed comments and is not edited before the release.
+- **Why:** D-23: the content file landed in every consuming project. With warnings as errors, a
+  public member without a comment now fails the build.
+- **Behaviour:** consuming projects no longer get `Resources/DocComments.xml`; they get IntelliSense
+  for Flee instead.
+- **Verified:** Debug and Release build with no warnings beyond NETSDK1138; 2,005 tests pass per
+  runtime in both. Packed to a scratch folder: `lib/<tfm>/Flee.xml` for all four targets, no
+  `contentFiles`.
+- **Discussed:** the parser exemption follows the rule that the parser is not touched; editing the
+  two comments instead would be a separate commit if the maintainer prefers it.
