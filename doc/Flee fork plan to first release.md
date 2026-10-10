@@ -13,6 +13,8 @@ The first release is a fork of Flee 2.0.0 that builds on a current .NET SDK, run
 
 Basis: upstream `mparlak/Flee` at commit `f3b4fe2` (March 2022). Figures in this plan come from reading that commit. Nothing was built or run, so build and test behaviour is unverified.
 
+Work that is postponed, and alternatives that were not taken, are listed in `doc/deferred.md`.
+
 ## Phases at a glance
 
 The phases run strictly in this order; each one protects the next.

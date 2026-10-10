@@ -34,6 +34,8 @@ These come from the plan and from the maintainer, and apply to every change.
 - **Licence:** LGPL 2.1 or later (`LICENSE`). Keep every existing copyright notice.
 - **`README.markdown` is upstream's README and stays untouched.** `README.md` is the fork's own.
 - Keep the plan current: tick off finished items and record decisions in its Open decisions table.
+- **Everything postponed, and every alternative not taken, goes into `doc/deferred.md`** (id,
+  origin, why it waits, when to pick it up), in the same pull request that defers it.
 
 Decisions made so far (details in the plan's Open decisions table):
 
