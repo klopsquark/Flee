@@ -34,6 +34,10 @@ dotnet_style_predefined_type_for_member_access = true:suggestion
 dotnet_diagnostic.CS0618.severity = suggestion
 dotnet_diagnostic.CS0168.severity = suggestion
 dotnet_diagnostic.CA2200.severity = suggestion
+# The parser gets no XML comments before the first release (doc/deferred.md, D-03): missing
+# comments are not reported there, and its two malformed ones stay visible as suggestions.
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.CS1570.severity = suggestion
 
 [*.{csproj,props,targets,xml,resx,config}]
 indent_size = 4

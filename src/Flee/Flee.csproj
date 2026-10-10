@@ -14,6 +14,10 @@
              Files opt in one by one with #nullable enable once annotated (public API first);
              when all have, this becomes enable. See doc/CHANGE-RATIONALE.md, R-017. -->
         <Nullable>disable</Nullable>
+        <!-- Writes Flee.xml next to the assembly, so the package ships the XML comments for
+             IntelliSense. Missing comments (CS1591) fail the build outside src/Flee/Parsing,
+             which .editorconfig exempts. -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <IsMainAssembly>true</IsMainAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -36,14 +40,6 @@
     <ItemGroup>
         <!-- The benchmark project measures the parse stage on its own, which needs internals. -->
         <InternalsVisibleTo Include="Flee.Benchmarks" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="Resources\DocComments.xml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Resources\DocComments.xml" />
     </ItemGroup>
 
     <ItemGroup>
