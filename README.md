@@ -13,24 +13,28 @@ Upstream's original README is kept unchanged as [README.markdown](README.markdow
 
 ## Status
 
-Pre-release. The package keeps the ID `Flee` and goes to a private feed only; nothing is
-published on nuget.org. The first release stays source-compatible with Flee 2.0.0.
+Pre-release, version 2.6.0. All planned bug fixes and cleanup for the first release are done; see
+[CHANGELOG.md](CHANGELOG.md). The package keeps the ID `Flee` and goes to a private feed only;
+nothing is published on nuget.org. The release is source-compatible with Flee 2.0.0; what you may
+notice when upgrading is in [doc/migration-from-flee-2.0.md](doc/migration-from-flee-2.0.md).
 
 The road to the first release is in [doc/Flee fork plan to first release.md](doc/Flee%20fork%20plan%20to%20first%20release.md).
-In short:
-
-| Phase | Content |
-| --- | --- |
-| 0 | Fork setup: baseline, licence, identity, compatibility stance |
-| 1 | Build and tests: the 1,756 script cases run as NUnit tests, CI on Windows and Linux |
-| 2 | Benchmark baseline with BenchmarkDotNet |
-| 3 | SDK modernization |
-| 4 | Bug fixes and mechanical cleanup |
-| 6 | Documentation |
-| 7 | Performance (stretch goal) |
-
 Every code change, with its reason and how it was verified, is recorded in
-[doc/CHANGE-RATIONALE.md](doc/CHANGE-RATIONALE.md).
+[doc/CHANGE-RATIONALE.md](doc/CHANGE-RATIONALE.md); work postponed until after the release is in
+[doc/deferred.md](doc/deferred.md).
+
+## Installation
+
+Add the private feed that holds the package (a local folder works as well) and reference `Flee`:
+
+```
+dotnet nuget add source C:\dev\nuget --name local
+dotnet add package Flee --version 2.6.0-*
+```
+
+The package targets netstandard2.0, netstandard2.1, net8.0 and net10.0, so it runs on .NET
+Framework 4.6.1+ and .NET Core 2.0+. It needs a runtime with a JIT: no NativeAOT, no iOS (see
+[doc/limitations.md](doc/limitations.md)).
 
 ## Example
 
@@ -46,10 +50,22 @@ IGenericExpression<double> e = context.CompileGeneric<double>("sqrt(a^2 + b^2)")
 double result = e.Evaluate();   // 5
 ```
 
+## Documentation
+
+| Document | Content |
+| --- | --- |
+| [Language reference](doc/language-reference.md) | Operators, literals, `if`, `cast`, `in`, type rules, culture |
+| [API guide](doc/api-guide.md) | Contexts, imports, variables, owners, options, errors, the calculation engine |
+| [Limitations](doc/limitations.md) | Platforms, language gaps, culture and threading |
+| [Migration from Flee 2.0.0](doc/migration-from-flee-2.0.md) | What changes when you upgrade |
+| [Architecture](doc/architecture.md) | From text to IL, for contributors |
+
+The examples in the language reference and the API guide run as tests, so they match the library.
+
 ## Building from source
 
-You need a .NET SDK that can build net6.0 (the .NET 10 SDK works) and the .NET 6 runtime to
-run the tests.
+You need the .NET 10 SDK and the .NET 8 runtime (the tests run on net8.0 and net10.0). The
+benchmarks also run on net6.0 and need the .NET 6 runtime for that.
 
 ```
 dotnet tool restore
@@ -57,7 +73,8 @@ dotnet build Flee.sln
 dotnet test Flee.sln
 ```
 
-Build output goes to `build/`. Pass `/p:SkipSbom=true` to skip the SBOM step.
+Build output goes to `build/`. Pass `/p:SkipSbom=true` to skip the SBOM step. [CLAUDE.md](CLAUDE.md)
+has the details for contributors.
 
 ## License
 

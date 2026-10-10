@@ -156,14 +156,14 @@ The code review turned up four structural items that would make extensions easie
 
 Documentation is written after the API settles, so it describes what ships. Upstream offers a short README and a wiki page of examples.
 
-- [ ] **README:** what the fork is, how it relates to Flee, status, installation and one worked example.
-- [ ] **Language reference:** operators and precedence, literal forms, `if`, `cast` and `in`, type promotion rules, case-insensitivity, the configurable decimal and argument separators. `Expression.grammar` covers 40 tokens and 29 productions; the rest is defined in code and has to be written down.
-- [ ] **API guide:** contexts, imports, variables, on-demand variables and functions, expression owners, options and the calculation engine.
+- [x] **README:** what the fork is, how it relates to Flee, status, installation and one worked example.
+- [x] **Language reference:** operators and precedence, literal forms, `if`, `cast` and `in`, type promotion rules, case-insensitivity, the configurable decimal and argument separators. `Expression.grammar` covers 40 tokens and 29 productions; the rest is defined in code and has to be written down.
+- [x] **API guide:** contexts, imports, variables, on-demand variables and functions, expression owners, options and the calculation engine.
 - [ ] **XML comments on every public type.** `Resources/DocComments.xml` holds about 1,200 lines of original API documentation with examples and is a good source.
-- [ ] **Architecture note:** the pipeline from parser to element tree to IL emission, for your future self.
-- [ ] **Limitations:** no NativeAOT or iOS because of runtime IL generation, and what is and is not thread-safe.
-- [ ] **Migration notes from Flee 2.0.0** and a changelog.
-- [ ] Compile the documentation examples as tests so they cannot go stale.
+- [x] **Architecture note:** the pipeline from parser to element tree to IL emission, for your future self.
+- [x] **Limitations:** no NativeAOT or iOS because of runtime IL generation, and what is and is not thread-safe.
+- [x] **Migration notes from Flee 2.0.0** and a changelog.
+- [x] Compile the documentation examples as tests so they cannot go stale.
 
 ## Phase 7: Performance optimization (stretch)
 
