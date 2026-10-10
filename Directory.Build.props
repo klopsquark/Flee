@@ -48,6 +48,16 @@
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <!-- GitVersion.MsBuild writes its result to obj/gitversion.json and reads it back. A
+             multi-targeting project runs it in every framework's build and in the outer build
+             (SBOM), in parallel, so one build could read the file while another rewrote it
+             ("The input does not contain any JSON tokens", R-059). One file per configuration and
+             framework keeps them apart. Set here because GitVersion's own props use the value. -->
+        <GitVersionOutputFile Condition="'$(GitVersionOutputFile)' == '' AND '$(TargetFramework)' != ''">$(MSBuildProjectDirectory)\obj\gitversion.$(Configuration).$(TargetFramework).json</GitVersionOutputFile>
+        <GitVersionOutputFile Condition="'$(GitVersionOutputFile)' == ''">$(MSBuildProjectDirectory)\obj\gitversion.$(Configuration).json</GitVersionOutputFile>
+    </PropertyGroup>
+
     <!-- Copy main assemblies to the runtime folder, but exclude experiments.
          Runs once per target framework; a project that builds several
          frameworks gets one subfolder per framework, so they don't overwrite

@@ -93,6 +93,7 @@ Entry template:
 | R-056 | Upstream wiki examples run as tests | test | Phase 6 |
 | R-057 | CI reports build errors as annotations | build | Phase 6 |
 | R-058 | Wiki: handbook pages, tested examples, publish script | docs | Phase 6 |
+| R-059 | GitVersion writes one result file per framework | build | Phase 6 |
 
 ## Entries
 
@@ -1147,3 +1148,21 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Discussed:** yes, 2026-10-10. Choice made without asking: the wiki is generated from the
   repository rather than edited on GitHub, so edits made on the website are overwritten by the
   next publish.
+
+### R-059: GitVersion writes one result file per framework
+
+- **Kind / phase:** build / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** `Directory.Build.props` sets `GitVersionOutputFile` to
+  `obj/gitversion.<Configuration>.<TargetFramework>.json`, and `obj/gitversion.<Configuration>.json`
+  for the outer build, instead of GitVersion's single `obj/gitversion.json`.
+- **Why:** the intermittent ubuntu Debug CI failure. With the annotations from R-057 the error
+  showed: `GetVersion` failed with "The input does not contain any JSON tokens" while reading
+  `gitversion.json`. Every framework's build of `Flee` and the outer build (for the SBOM) run
+  GitVersion in parallel, each rewriting and reading the same file, so one could read it while
+  another had just truncated it. It is set in `Directory.Build.props` because GitVersion's own props
+  build the tool's command line from the value.
+- **Behaviour:** none: the version is the same (checked in the assemblies and the SBOM).
+- **Verified:** a clean build writes the five files; every assembly and the SBOM carry the expected
+  GitVersion version; tests pass. CI shows whether the failure is gone; it never reproduced locally.
+- **Discussed:** not needed (build fix).
