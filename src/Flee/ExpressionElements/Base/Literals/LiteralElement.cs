@@ -100,8 +100,7 @@ namespace Flee.ExpressionElements.Base.Literals
                     ldcOpcode = OpCodes.Ldc_I4_M1;
                     break;
                 default:
-                    Debug.Assert(false, "value out of range");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: short constant out of range");
             }
 
             ilg.Emit(ldcOpcode);

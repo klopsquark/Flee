@@ -45,8 +45,7 @@ namespace Flee.ExpressionElements
                 case TypeCode.UInt64:
                     return typeof(UInt64);
                 default:
-                    Debug.Assert(false, "unknown left shift operand");
-                    return null;
+                    throw new InvalidOperationException("Flee internal error: unknown shift operand type");
             }
         }
 
@@ -83,8 +82,7 @@ namespace Flee.ExpressionElements
                     ilg.Emit(OpCodes.Ldc_I4_S, Convert.ToSByte(0x3f));
                     break;
                 default:
-                    Debug.Assert(false, "unknown left shift operand");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown shift operand type");
             }
 
             ilg.Emit(OpCodes.And);
@@ -126,8 +124,7 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 default:
-                    Debug.Assert(false, "unknown left shift operand");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown shift operand type");
             }
 
             ilg.Emit(op);

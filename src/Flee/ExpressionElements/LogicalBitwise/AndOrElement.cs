@@ -68,8 +68,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
                     ilg.Emit(OpCodes.Or);
                     break;
                 default:
-                    Debug.Fail("Unknown op type");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown and/or operation");
             }
         }
 

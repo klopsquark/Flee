@@ -483,8 +483,7 @@ namespace Flee.ExpressionElements
                     op = OpCodes.Conv_R4;
                     break;
                 default:
-                    Debug.Assert(false, "Unknown cast dest type");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown numeric cast destination type");
             }
 
             if (!op.Equals(OpCodes.Nop))

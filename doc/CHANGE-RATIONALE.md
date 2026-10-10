@@ -69,6 +69,7 @@ Entry template:
 | R-032 | Boolean & and \| replaced by && and \|\| | cleanup | Phase 4 |
 | R-033 | ArithmeticElement looks up its helper methods once | cleanup | Phase 4 |
 | R-034 | One type per file, file names match type names | cleanup | Phase 4 |
+| R-035 | Debug.Assert on impossible paths becomes an exception | fix | Phase 4 |
 
 ## Entries
 
@@ -660,4 +661,29 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `doc/known-failures.md`) refer to the old names.
 - **Verified:** build unchanged (106 warnings); tests green in Debug and Release on net8.0 and
   net10.0; public API identical to before (reflection listing).
+- **Discussed:** not needed (plan item).
+
+### R-035: Debug.Assert on impossible paths becomes an exception
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** 16 of the 39 `Debug.Assert`/`Debug.Fail` checks outside the parser now throw in all
+  builds: `switch` defaults for unknown operations or types (arithmetic, compare, and/or, shift,
+  real-literal type, numeric cast target, short constants), a compare element with no matching
+  emit path, and the three places where an implicit conversion that type checking promised fails
+  during emission. They throw `InvalidOperationException("Flee internal error: ...")`. A literal
+  field of an unsupported type throws `NotSupportedException` naming the type.
+- **Why:** Plan item. In a Release build these asserts vanish, and the code carried on with no IL
+  emitted or a null element, so a broken invariant surfaced later as `InvalidProgramException`, a
+  wrong result or a `NullReferenceException`. Now it fails where it happens, with a message.
+- **Kept as asserts (23), on purpose:** invariants that a later line would hit anyway (argument
+  counts in overload scoring, local index range, which `Convert` checks), development checks (IL
+  length bookkeeping, element names), and three that Release code relies on being reachable:
+  `ImplicitConverter`'s type index returns -1 for non-primitive value types and callers test for
+  it; `PropertyDictionary` returns the default for a property not set yet, which
+  `ExpressionContext` uses for its lazily created identifier parser; `MemberElement`'s
+  accessibility check returns false for member kinds it does not know.
+- **Behaviour:** none on any path the tests reach; only paths that were already broken now throw a
+  clear exception.
+- **Verified:** tests green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** not needed (plan item).

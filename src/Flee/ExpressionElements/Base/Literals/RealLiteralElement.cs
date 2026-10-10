@@ -83,8 +83,7 @@ namespace Flee.ExpressionElements.Base.Literals
                 case RealLiteralDataType.Decimal:
                     return DecimalLiteralElement.Parse(image, services);
                 default:
-                    Debug.Fail("Unknown value");
-                    return null;
+                    throw new InvalidOperationException("Flee internal error: unknown real literal data type");
             }
         }
 

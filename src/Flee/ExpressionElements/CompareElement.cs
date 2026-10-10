@@ -100,8 +100,7 @@ namespace Flee.ExpressionElements
                 case LogicalCompareOperation.LessThanOrEqual:
                     return "LessThanOrEqual";
                 default:
-                    Debug.Assert(false, "unknown compare type");
-                    return null;
+                    throw new InvalidOperationException("Flee internal error: unknown compare operation");
             }
         }
 
@@ -144,7 +143,7 @@ namespace Flee.ExpressionElements
             }
             else
             {
-                Debug.Fail("unknown operand types");
+                throw new InvalidOperationException("Flee internal error: unknown compare operand types");
             }
         }
 
@@ -226,8 +225,7 @@ namespace Flee.ExpressionElements
                     ilg.Emit(OpCodes.Ceq);
                     break;
                 default:
-                    Debug.Fail("Unknown op type");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown compare operation");
             }
         }
 

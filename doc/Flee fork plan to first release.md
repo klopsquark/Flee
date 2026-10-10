@@ -117,7 +117,7 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 - [x] Check the four `break; // TODO: might not be correct` markers against the intended loop behaviour: two in `InvocationList.cs`, one each in `CalculationEngine.cs` and `ExpressionImports.cs`. All correct (R-031).
 - [x] Review the roughly 29 places that combine booleans with `&` or `|`. Both sides are always evaluated there, which is wrong wherever the right side relies on the left. 71 found, none relies on the left; all converted to `&&`/`||` (R-032).
 - [x] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`. The only case (R-033).
-- [ ] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds.
+- [x] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds. 39 found; 16 now throw, 23 kept with reasons (R-035).
 - [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
 
 - [x] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`). JIT inlining of helpers; fixed (R-019).

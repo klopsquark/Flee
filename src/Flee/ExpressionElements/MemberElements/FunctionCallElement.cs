@@ -355,7 +355,10 @@ namespace Flee.ExpressionElements.MemberElements
                 ParameterInfo pi = parameters[i];
                 element.Emit(ilg, services);
                 bool success = ImplicitConverter.EmitImplicitConvert(element.ResultType, pi.ParameterType, ilg);
-                Debug.Assert(success, "conversion failed");
+                if (!success)
+                {
+                    throw new InvalidOperationException("Flee internal error: argument conversion failed");
+                }
             }
         }
 
@@ -377,7 +380,10 @@ namespace Flee.ExpressionElements.MemberElements
                 ParameterInfo pi = parameters[i];
                 element.Emit(ilg, services);
                 bool success = ImplicitConverter.EmitImplicitConvert(element.ResultType, pi.ParameterType, ilg);
-                Debug.Assert(success, "conversion failed");
+                if (!success)
+                {
+                    throw new InvalidOperationException("Flee internal error: argument conversion failed");
+                }
             }
         }
 

@@ -124,7 +124,10 @@ namespace Flee.ExpressionElements.Base
         {
             child.Emit(ilg, services);
             bool converted = ImplicitConverter.EmitImplicitConvert(child.ResultType, resultType, ilg);
-            Debug.Assert(converted, "convert failed");
+            if (!converted)
+            {
+                throw new InvalidOperationException("Flee internal error: implicit conversion failed");
+            }
         }
 
         protected bool AreBothChildrenOfType(Type target)

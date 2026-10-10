@@ -292,9 +292,7 @@ namespace Flee.ExpressionElements.MemberElements
                     elem = new StringLiteralElement((string)value);
                     break;
                 default:
-                    elem = null;
-                    Debug.Fail("Unsupported constant type");
-                    break;
+                    throw new NotSupportedException($"Constant of type {fi.FieldType} is not supported");
             }
 
             elem.Emit(ilg, services);

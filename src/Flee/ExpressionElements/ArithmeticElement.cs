@@ -93,8 +93,7 @@ namespace Flee.ExpressionElements
                 case BinaryArithmeticOperation.Power:
                     return "Exponent";
                 default:
-                    Debug.Assert(false, "unknown operator type");
-                    return null;
+                    throw new InvalidOperationException("Flee internal error: unknown operator type");
             }
         }
 
@@ -207,8 +206,7 @@ namespace Flee.ExpressionElements
                     this.EmitPower(ilg, emitOverflow, unsigned);
                     break;
                 default:
-                    Debug.Fail("Unknown op type");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: unknown arithmetic operation");
             }
         }
 
