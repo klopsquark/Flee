@@ -208,7 +208,17 @@ namespace Flee.CalcEngine.PublicTypes
 
             context.SetCalcEngine(this, atomName);
 
-            context.CompileDynamic(expression);
+            try
+            {
+                context.CompileDynamic(expression);
+            }
+            catch
+            {
+                // Do not leave the temporary head behind: the name must stay free for another
+                // attempt and the engine must not hold an atom without an expression (R-040).
+                this.Remove(atomName);
+                throw;
+            }
         }
 
         public bool Remove(string name)

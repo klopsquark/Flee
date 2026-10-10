@@ -74,6 +74,7 @@ Entry template:
 | R-037 | Unused variables and fields removed (library and tests) | cleanup | Phase 4 |
 | R-038 | Public API annotated for nullable reference types | api | Phase 4 |
 | R-039 | Unknown names in calculation-engine expressions are compile errors | fix | Phase 4 |
+| R-040 | A failed CalculationEngine.Add leaves nothing behind | fix | Phase 4 |
 
 ## Entries
 
@@ -771,3 +772,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   calculation-engine tests and the full suite green.
 - **Discussed:** not needed (bug fix). Callers catching `ArgumentNullException` here would need to
   catch `ExpressionCompileException` instead; worth a line in the migration notes.
+
+### R-040: A failed CalculationEngine.Add leaves nothing behind
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** 2303840 (pinning test), the commit that adds this entry
+- **What:** `CalculationEngine.Add` removes the atom it registered (the "temporary head") when
+  compiling the expression throws, then rethrows the original exception.
+- **Why:** `Add` registers the name before compiling, so that other atoms and circular references
+  can be resolved. When compiling failed, the name stayed: `Contains` returned true,
+  `GetExpression` returned null, `Recalculate` threw `NullReferenceException`, and adding the
+  name again failed with "already exists". The batch loader already cleared the whole engine on a
+  compile error, so it was only `Add` used directly that was affected.
+- **Behaviour:** after a failed `Add` the engine is as it was before the call. The exception the
+  caller sees is unchanged.
+- **Verified:** `FailedAddLeavesNoAtomBehind` failed before and passes now; circular-reference and
+  batch-load tests and the full suite green.
+- **Discussed:** not needed (bug fix).

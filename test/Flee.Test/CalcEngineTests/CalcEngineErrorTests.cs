@@ -25,8 +25,6 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "A failed Add leaves no trace, so the name can be added again")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: the temporary head stays, Contains is true and a second Add fails")]
         public void FailedAddLeavesNoAtomBehind()
         {
             var engine = new CalculationEngine();
