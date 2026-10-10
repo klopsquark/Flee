@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using Flee.CalcEngine.PublicTypes;
 using Flee.PublicTypes;
 using NUnit.Framework;
 
@@ -73,6 +74,26 @@ namespace Flee.Test.ExpressionTests
 
             Assert.IsTrue(original.Variables.ContainsKey("x"));
             Assert.AreEqual(2, original.CompileDynamic("x + 1").Evaluate());
+        }
+
+        [Test(Description = "RecreateParser also renews the parser that finds names for the calculation engines")]
+        [Category("KnownFailure")]
+        [Ignore("Known failure: RecreateParser keeps the old identifier parser (D-28)")]
+        public void RecreateParserRenewsIdentifierParser()
+        {
+            var context = new ExpressionContext();
+            var engine = new CalculationEngine();
+            engine.CreateBatchLoader().Add("a", "1.5", context);   // creates the identifier parser
+            ExpressionContext clone = context.Clone();
+
+            clone.ParserOptions.DecimalSeparator = ',';
+            clone.ParserOptions.FunctionArgumentSeparator = ';';
+            clone.ParserOptions.RecreateParser();
+
+            BatchLoader loader = engine.CreateBatchLoader();
+            loader.Add("a", "max(1,5; 2)", clone);
+            engine.BatchLoad(loader);
+            Assert.AreEqual(2.0, engine.GetResult<double>("a"));
         }
     }
 }
