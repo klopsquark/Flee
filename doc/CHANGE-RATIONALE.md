@@ -77,6 +77,7 @@ Entry template:
 | R-040 | A failed CalculationEngine.Add leaves nothing behind | fix | Phase 4 |
 | R-041 | Detached NamespaceImports can be compared | fix | Phase 4 |
 | R-042 | Keywords parse under the Turkish culture (upstream #105) | fix | Phase 4 |
+| R-043 | Overload resolution test records today's choices | test | Phase 4 |
 
 ## Entries
 
@@ -825,3 +826,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** the parser is not touched before the release; this fix is the exception the
   maintainer approved on 2026-10-10.
+
+### R-043: Overload resolution test records today's choices
+
+- **Kind / phase:** test / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** In the ported original test `TestOverloadResolution`, `valuetype3(100)` and
+  `ReferenceType4("abc")` now expect overload 2 instead of an ambiguity error, and the test is no
+  longer ignored.
+- **Why:** For `valuetype3(100)` (overloads for `double` and `decimal`) Flee picks `decimal` where
+  C# reports an ambiguity; the maintainer decided on 2026-10-10 to keep that for source
+  compatibility and document it (the alternative is `doc/deferred.md`, D-12). For
+  `ReferenceType4("abc")` only one overload applies, and C# picks the same one; the 2007
+  expectation was wrong. The original harness hid both because it swallowed exceptions.
+- **Behaviour:** none (test only).
+- **Verified:** the test passes; the suite has no skipped tests left (1,863 pass on net8.0 and
+  net10.0).
+- **Discussed:** decided by the maintainer on 2026-10-10.

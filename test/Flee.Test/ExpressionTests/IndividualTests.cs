@@ -640,18 +640,16 @@ namespace Flee.Test.ExpressionTests
             e.Result = e.Arguments[0];
         }
 
-        // Known failure. Under the original harness this test passed whatever the "-1" cases
-        // did (see DoTestOverloadResolution), so these two never showed:
-        // - valuetype3(100): ImplicitConverter.GetImplicitConvertScore
-        //   (src/Flee/InternalTypes/ImplicitConversions.cs:454) scores System.Decimal's
-        //   op_Implicit(Int32) as 1, ahead of the int -> double widening (11 - 6 = 5), so the
-        //   decimal overload wins instead of the call being ambiguous.
+        // Under the original harness this test passed whatever the "-1" (ambiguous) cases did
+        // (see DoTestOverloadResolution), so two of them never showed that Flee resolves them:
+        // - valuetype3(100): ImplicitConverter.GetImplicitConvertScore scores System.Decimal's
+        //   op_Implicit(Int32) ahead of the int -> double widening, so the decimal overload (2) wins
+        //   where C# reports an ambiguity. Kept for source compatibility, decided 2026-10-10; the
+        //   alternative is doc/deferred.md, D-12.
         // - ReferenceType4("abc"): System.String implements IComparable but not IFormattable,
-        //   so only one overload is applicable (FunctionCall.cs:118, CustomMethodInfo.IsMatch)
-        //   and it is chosen; C# picks the same overload.
+        //   so only overload 2 applies; C# picks the same one. The original expectation was wrong.
+        // Both now expect today's result (R-043).
         [Test(Description = "Test that we properly resolve method overloads")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure (overload-resolution): valuetype3(100) and ReferenceType4(\"abc\") resolve to overload 2 instead of being rejected as ambiguous (-1)")]
         public void TestOverloadResolution()
         {
             OverloadTestExpressionOwner owner = new OverloadTestExpressionOwner();
@@ -681,9 +679,9 @@ namespace Flee.Test.ExpressionTests
             this.DoTestOverloadResolution("ReferenceType2(null)", context, 2);
 
             // Test ambiguous match
-            this.DoTestOverloadResolution("valuetype3(100)", context, -1);
+            this.DoTestOverloadResolution("valuetype3(100)", context, 2); // C#: ambiguous; see above
             this.DoTestOverloadResolution("Value_ReferenceType4(100)", context, -1);
-            this.DoTestOverloadResolution("ReferenceType4(\"abc\")", context, -1);
+            this.DoTestOverloadResolution("ReferenceType4(\"abc\")", context, 2); // C# agrees; see above
             this.DoTestOverloadResolution("ReferenceType4(null)", context, -1);
 
             // Test access control
