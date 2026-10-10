@@ -15,8 +15,11 @@ namespace Flee.PublicTypes
     public class ExpressionParserOptions
     {
         private PropertyDictionary _properties;
-        private readonly ExpressionContext _owner;
-        private readonly CultureInfo _parseCulture;
+        private ExpressionContext _owner;
+        private CultureInfo _parseCulture;
+        // False in a copy until it changes the culture: every compile copies the options, so the
+        // culture is only copied when a copy actually writes to it (D-28).
+        private bool _ownsParseCulture = true;
 
         private NumberStyles NumberStyles = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.None;
         internal ExpressionParserOptions(ExpressionContext owner)
@@ -41,10 +44,15 @@ namespace Flee.PublicTypes
 
         #region "Methods - Internal"
 
-        internal ExpressionParserOptions Clone()
+        internal ExpressionParserOptions Clone(ExpressionContext owner)
         {
             ExpressionParserOptions copy = (ExpressionParserOptions)this.MemberwiseClone();
             copy._properties = _properties.Clone();
+            // The copy belongs to the new context, so recreating its parser leaves the original alone,
+            // and it copies the culture before changing it (D-28).
+            copy._owner = owner;
+            copy._ownsParseCulture = false;
+            _ownsParseCulture = false;
             return copy;
         }
 
@@ -111,6 +119,11 @@ namespace Flee.PublicTypes
             set
             {
                 _properties.SetValue("DecimalSeparator", value);
+                if (!_ownsParseCulture)
+                {
+                    _parseCulture = (CultureInfo)_parseCulture.Clone();
+                    _ownsParseCulture = true;
+                }
                 _parseCulture.NumberFormat.NumberDecimalSeparator = value.ToString();
             }
         }

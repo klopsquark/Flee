@@ -130,8 +130,8 @@ namespace Flee.PublicTypes
         {
             ExpressionContext context = (ExpressionContext)this.MemberwiseClone();
             context._properties = _properties.Clone();
-            context._properties.SetValue("Options", context.Options.Clone());
-            context._properties.SetValue("ParserOptions", context.ParserOptions.Clone());
+            context._properties.SetValue("Options", context.Options.Clone(context));
+            context._properties.SetValue("ParserOptions", context.ParserOptions.Clone(context));
             context._properties.SetValue("Imports", context.Imports.Clone());
             context.Imports.SetContext(context);
 
@@ -183,6 +183,9 @@ namespace Flee.PublicTypes
                 FleeExpressionAnalyzer analyzer = new FleeExpressionAnalyzer();
                 ExpressionParser parser = new ExpressionParser(TextReader.Null, analyzer, this);
                 _properties.SetValue("ExpressionParser", parser);
+                // The calculation engines' identifier parser is created again on next use, with
+                // the current options (D-28).
+                _properties.SetValue("IdentifierParser", null);
             }
         }
 

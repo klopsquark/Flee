@@ -36,7 +36,7 @@ namespace Flee.PublicTypes
         /// <param name="dest">The collection that receives the members found.</param>
         protected abstract void AddMembers(MemberTypes memberType, ICollection<MemberInfo> dest);
 
-        internal ImportBase Clone()
+        internal virtual ImportBase Clone()
         {
             return (ImportBase)this.MemberwiseClone();
         }

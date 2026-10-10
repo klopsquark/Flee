@@ -16,8 +16,6 @@ namespace Flee.Test.ExpressionTests
     public class ContextCloneTests
     {
         [Test(Description = "Parser options changed on a clone apply to the clone only")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: the clone shares its parse culture and recreates the original's parser (D-28)")]
         public void ParserOptionsOfCloneAreIndependent()
         {
             var original = new ExpressionContext();
@@ -33,8 +31,6 @@ namespace Flee.Test.ExpressionTests
         }
 
         [Test(Description = "ParseCulture set on a clone changes the clone's parser options only")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: the clone's options change the original's parser options (D-28)")]
         public void ParseCultureOfCloneIsIndependent()
         {
             var original = new ExpressionContext();
@@ -47,8 +43,6 @@ namespace Flee.Test.ExpressionTests
         }
 
         [Test(Description = "A type imported into a clone is not visible in the original")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: the clone shares the root import's list (D-28)")]
         public void ImportsOfCloneAreIndependent()
         {
             var original = new ExpressionContext();
@@ -62,8 +56,6 @@ namespace Flee.Test.ExpressionTests
         }
 
         [Test(Description = "Changing CaseSensitive on a clone leaves the original's variables alone")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: the clone's options still notify the original's variables (D-28)")]
         public void CaseSensitiveOnCloneKeepsOriginalVariables()
         {
             var original = new ExpressionContext();
@@ -77,11 +69,10 @@ namespace Flee.Test.ExpressionTests
         }
 
         [Test(Description = "RecreateParser also renews the parser that finds names for the calculation engines")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: RecreateParser keeps the old identifier parser (D-28)")]
         public void RecreateParserRenewsIdentifierParser()
         {
             var context = new ExpressionContext();
+            context.Imports.AddType(typeof(Math));
             var engine = new CalculationEngine();
             engine.CreateBatchLoader().Add("a", "1.5", context);   // creates the identifier parser
             ExpressionContext clone = context.Clone();

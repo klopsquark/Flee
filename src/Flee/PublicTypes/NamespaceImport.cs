@@ -10,7 +10,7 @@ namespace Flee.PublicTypes
     public sealed class NamespaceImport : ImportBase, ICollection<ImportBase>
     {
         private readonly string _namespace;
-        private readonly List<ImportBase> _imports;
+        private List<ImportBase> _imports;
         /// <summary>Creates a new namespace import with a given namespace name</summary>
         /// <param name="importNamespace">The name of the namespace to import</param>
         /// <exception cref="ArgumentNullException"><paramref name="importNamespace"/> is <see langword="null"/>.</exception>
@@ -40,6 +40,21 @@ namespace Flee.PublicTypes
 
         internal override void Validate()
         {
+        }
+
+        internal override ImportBase Clone()
+        {
+            // Copy the child imports too: a cloned context must not add to, or set the context
+            // of, the imports of the context it was cloned from (D-28).
+            NamespaceImport copy = (NamespaceImport)base.Clone();
+            copy._imports = new List<ImportBase>(_imports.Count);
+
+            foreach (ImportBase import in _imports)
+            {
+                copy._imports.Add(import.Clone());
+            }
+
+            return copy;
         }
 
         /// <summary>Adds the matching members of the imports in this namespace that are not containers themselves.</summary>

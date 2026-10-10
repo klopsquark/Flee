@@ -40,7 +40,7 @@ How to use it:
 | D-25 | Syntax errors in calculation-engine and batch expressions leak `ParserLogException` | Before the release, if approved | **Done** (R-051) |
 | D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | **Done** (R-052) |
 | D-27 | Evaluating a variable created by `DefineVariable` before it has a value | Before the release, if approved | **Done** (R-053) |
-| D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | Open |
+| D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | **Done** (R-054) |
 | D-29 | `SimpleCalcEngine` clears the variables before checking the new expression | Before the release, if approved | Open |
 | D-30 | Changing `Options.CaseSensitive` empties the variables | Phase 5 | Open |
 | D-31 | `ParseCulture`: LCID comparison and multi-character separators | Phase 5 | Open |
@@ -287,6 +287,7 @@ How to use it:
 - **Why it waits:** `Expression<T>` clones its context on every compile, so the fix touches the
   compile path; it needs tests for the clone semantics first.
 - **Pick up:** before the release if approved, otherwise Phase 5.
+- **Done:** R-054.
 
 ### D-29: `SimpleCalcEngine` clears the variables before checking the new expression
 

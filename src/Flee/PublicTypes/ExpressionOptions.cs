@@ -19,7 +19,7 @@ namespace Flee.PublicTypes
 
         private PropertyDictionary _properties;
         private Type? _ownerType;
-        private readonly ExpressionContext _owner;
+        private ExpressionContext _owner;
         internal event EventHandler? CaseSensitiveChanged;
 
         internal ExpressionOptions(ExpressionContext owner)
@@ -60,10 +60,14 @@ namespace Flee.PublicTypes
 
         #region "Methods - Internal"
 
-        internal ExpressionOptions Clone()
+        internal ExpressionOptions Clone(ExpressionContext owner)
         {
             ExpressionOptions clonedOptions = (ExpressionOptions)this.MemberwiseClone();
             clonedOptions._properties = _properties.Clone();
+            // The copy belongs to the new context: ParseCulture must set that context's parser
+            // options, and the original's variables must not hear about CaseSensitive changes (D-28).
+            clonedOptions._owner = owner;
+            clonedOptions.CaseSensitiveChanged = null;
             return clonedOptions;
         }
 

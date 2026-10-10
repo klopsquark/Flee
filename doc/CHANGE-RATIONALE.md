@@ -88,6 +88,7 @@ Entry template:
 | R-051 | Syntax errors in calculation-engine and batch expressions are compile errors | fix | Phase 6 |
 | R-052 | A batch with an unknown name reports a compile error | fix | Phase 6 |
 | R-053 | A defined variable without a value reads as its type's default | fix | Phase 6 |
+| R-054 | Cloned contexts no longer share options, parser and imports with the original | fix | Phase 6 |
 
 ## Entries
 
@@ -1039,3 +1040,30 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   after; full suite green on net8.0 and net10.0.
 - **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release). The default was chosen
   as the reasonable reading; an exception remains possible in Phase 5.
+
+### R-054: Cloned contexts no longer share options, parser and imports with the original
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** ad426fc and cd55425 (tests), the commit that adds this entry (fix)
+- **What:** `ExpressionOptions.Clone` and `ExpressionParserOptions.Clone` take the new context as
+  owner; the cloned options drop the original's `CaseSensitiveChanged` subscribers; the cloned
+  parser options copy the parse culture before they change it (copy on write, so a compile pays
+  nothing for it). `NamespaceImport` copies its child imports when cloned. `RecreateParser` also
+  drops the calculation engines' identifier parser, which is then created again with the current
+  options.
+- **Why:** D-28: on a clone from `ExpressionContext.Clone`, setting `ParseCulture` changed the
+  original's parser options, `RecreateParser` recreated the original's parser, a new decimal
+  separator changed the original's number parsing (`1.5` then failed with `FormatException`),
+  `AddType` showed up in the original, and changing `CaseSensitive` emptied the original's
+  variables. Every compile clones the context too, so compiling also reassigned the context of the
+  original's imports, which matters when several threads compile with one context. Found while
+  fixing it: `RecreateParser` kept the identifier parser built with the old separators, on clones
+  and plain contexts alike.
+- **Behaviour:** changes to a clone stay in the clone. Code that relied on a clone changing the
+  original was relying on the bug; `doc/api-guide.md` already recommended a clone per thread.
+- **Verified:** the five tests in `ContextCloneTests` failed before and pass now; full suite green
+  on net8.0 and net10.0 in Debug and Release. Compile and calculation-engine benchmarks before and
+  after on .NET 10 (`benchmarks/results/phase6-context-clone`): all within the 10 % threshold,
+  about 0.1 KB more allocated per compile (2.7 KB with all built-in types imported).
+- **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release). The identifier-parser
+  part was found on the way and belongs to the same symptom.
