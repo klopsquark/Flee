@@ -24,7 +24,7 @@ namespace Flee.ExpressionElements
 
             ExpressionOptions options = (ExpressionOptions)services.GetService(typeof(ExpressionOptions));
 
-            if (options.IsGeneric == false)
+            if (!options.IsGeneric)
             {
                 ImplicitConverter.EmitImplicitConvert(_resultType, typeof(object), ilg);
             }
@@ -34,7 +34,7 @@ namespace Flee.ExpressionElements
 
         private void Validate()
         {
-            if (ImplicitConverter.EmitImplicitConvert(_child.ResultType, _resultType, null) == false)
+            if (!ImplicitConverter.EmitImplicitConvert(_child.ResultType, _resultType, null))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.CannotConvertTypeToExpressionResult, CompileExceptionReason.TypeMismatch, _child.ResultType.Name, _resultType.Name);
             }

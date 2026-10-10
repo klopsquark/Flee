@@ -36,7 +36,7 @@ namespace Flee.CalcEngine.InternalTypes
         {
             Dictionary<T, object> value = null;
 
-            if (_dependentsMap.TryGetValue(tail, out value) == true)
+            if (_dependentsMap.TryGetValue(tail, out value))
             {
                 return value;
             }
@@ -62,7 +62,7 @@ namespace Flee.CalcEngine.InternalTypes
 
         private void CloneDependentsInternal(T tail, DependencyManager<T> target, IDictionary<T, object> seenNodes)
         {
-            if (seenNodes.ContainsKey(tail) == true)
+            if (seenNodes.ContainsKey(tail))
             {
                 // We've already added this node so just return
                 return;
@@ -106,7 +106,7 @@ namespace Flee.CalcEngine.InternalTypes
 
             foreach (Dictionary<T, object> innerDict in _dependentsMap.Values)
             {
-                if (innerDict.ContainsKey(old) == true)
+                if (innerDict.ContainsKey(old))
                 {
                     innerDict.Remove(old);
                     innerDict.Add(replaceWith, null);
@@ -116,7 +116,7 @@ namespace Flee.CalcEngine.InternalTypes
 
         public void AddTail(T tail)
         {
-            if (_dependentsMap.ContainsKey(tail) == false)
+            if (!_dependentsMap.ContainsKey(tail))
             {
                 _dependentsMap.Add(tail, (Dictionary<T, object>)this.CreateInnerDictionary());
             }
@@ -126,7 +126,7 @@ namespace Flee.CalcEngine.InternalTypes
         {
             IDictionary<T, object> innerDict = this.GetInnerDictionary(tail);
 
-            if (innerDict.ContainsKey(head) == false)
+            if (!innerDict.ContainsKey(head))
             {
                 innerDict.Add(head, head);
                 this.AddPrecedent(head);
@@ -141,7 +141,7 @@ namespace Flee.CalcEngine.InternalTypes
 
         private void RemoveHead(T head, IDictionary<T, object> dict)
         {
-            if (dict.Remove(head) == true)
+            if (dict.Remove(head))
             {
                 this.RemovePrecedent(head);
             }
@@ -195,7 +195,7 @@ namespace Flee.CalcEngine.InternalTypes
             foreach (T tail in _dependentsMap.Keys)
             {
                 Dictionary<T, object> innerDict = (Dictionary<T, object>)this.GetInnerDictionary(tail);
-                if (innerDict.ContainsKey(head) == true)
+                if (innerDict.ContainsKey(head))
                 {
                     dest.Add(tail);
                 }
@@ -266,7 +266,7 @@ namespace Flee.CalcEngine.InternalTypes
 
             foreach (T rootTail in rootTails)
             {
-                if (this.HasPrecedents(rootTail) == false)
+                if (!this.HasPrecedents(rootTail))
                 {
                     q.Enqueue(rootTail);
                 }
@@ -292,7 +292,7 @@ namespace Flee.CalcEngine.InternalTypes
                 {
                     this.RemoveDependency(n, m);
 
-                    if (this.HasPrecedents(m) == false)
+                    if (!this.HasPrecedents(m))
                     {
                         sources.Enqueue(m);
                     }

@@ -33,7 +33,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
             {
                 return typeof(bool);
             }
-            else if (Utility.IsIntegralType(childType) == true)
+            else if (Utility.IsIntegralType(childType))
             {
                 return childType;
             }

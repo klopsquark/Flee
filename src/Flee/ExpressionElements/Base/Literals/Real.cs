@@ -31,7 +31,7 @@ namespace Flee.ExpressionElements.Base.Literals
             ExpressionOptions options = (ExpressionOptions)services.GetService(typeof(ExpressionOptions));
 
             // Convert to a double if option is set
-            if (options.IntegersAsDoubles == true)
+            if (options.IntegersAsDoubles)
             {
                 return DoubleLiteralElement.Parse(image, services);
             }
@@ -90,7 +90,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
         private static DoubleLiteralElement CreateDouble(string image, IServiceProvider services)
         {
-            if (image.EndsWith("d", StringComparison.OrdinalIgnoreCase) == true)
+            if (image.EndsWith("d", StringComparison.OrdinalIgnoreCase))
             {
                 image = image.Remove(image.Length - 1);
                 return DoubleLiteralElement.Parse(image, services);
@@ -103,7 +103,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
         private static SingleLiteralElement CreateSingle(string image, IServiceProvider services)
         {
-            if (image.EndsWith("f", StringComparison.OrdinalIgnoreCase) == true)
+            if (image.EndsWith("f", StringComparison.OrdinalIgnoreCase))
             {
                 image = image.Remove(image.Length - 1);
                 return SingleLiteralElement.Parse(image, services);
@@ -116,7 +116,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
         private static DecimalLiteralElement CreateDecimal(string image, IServiceProvider services)
         {
-            if (image.EndsWith("m", StringComparison.OrdinalIgnoreCase) == true)
+            if (image.EndsWith("m", StringComparison.OrdinalIgnoreCase))
             {
                 image = image.Remove(image.Length - 1);
                 return DecimalLiteralElement.Parse(image, services);

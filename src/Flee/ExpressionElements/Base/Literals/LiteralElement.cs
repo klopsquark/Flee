@@ -53,7 +53,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
         protected static void EmitLoad(bool value, FleeILGenerator ilg)
         {
-            if (value == true)
+            if (value)
             {
                 ilg.Emit(OpCodes.Ldc_I4_1);
             }

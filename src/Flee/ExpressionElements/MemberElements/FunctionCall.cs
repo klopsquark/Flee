@@ -117,7 +117,7 @@ namespace Flee.ExpressionElements.MemberElements
 
             foreach (CustomMethodInfo cmi in arr)
             {
-                if (cmi.IsMatch(argTypes, Previous, Context) == true)
+                if (cmi.IsMatch(argTypes, Previous, Context))
                 {
                     customInfos.Add(cmi);
                 }
@@ -174,7 +174,7 @@ namespace Flee.ExpressionElements.MemberElements
 
             foreach (CustomMethodInfo cmi in infos)
             {
-                if (cmi.IsAccessible(this) == true)
+                if (cmi.IsAccessible(this))
                 {
                     accessible.Add(cmi);
                 }
@@ -195,7 +195,7 @@ namespace Flee.ExpressionElements.MemberElements
             // Find all matches with the same score as the best match
             foreach (CustomMethodInfo cmi in infos)
             {
-                if (((IEquatable<CustomMethodInfo>)cmi).Equals(first) == true)
+                if (((IEquatable<CustomMethodInfo>)cmi).Equals(first))
                 {
                     sameScores.Add(cmi);
                 }
@@ -240,7 +240,7 @@ namespace Flee.ExpressionElements.MemberElements
             bool isOwnerMember = Options.IsOwnerType(this.Method.ReflectedType);
 
             // Load the owner if required
-            if (Previous == null && isOwnerMember == true && this.IsStatic == false)
+            if (Previous == null && isOwnerMember && !this.IsStatic)
             {
                 this.EmitLoadOwner(ilg);
             }
@@ -329,9 +329,9 @@ namespace Flee.ExpressionElements.MemberElements
             ExpressionElement[] elements = _arguments.ToArray();
 
             // Emit either a regular or paramArray call
-            if (_targetMethodInfo.IsParamArray == false)
+            if (!_targetMethodInfo.IsParamArray)
             {
-                if (_targetMethodInfo.IsExtensionMethod == false)
+                if (!_targetMethodInfo.IsExtensionMethod)
                     this.EmitRegularFunctionInternal(parameters, elements, ilg, services);
                 else
                     this.EmitExtensionFunctionInternal(parameters, elements, ilg, services);

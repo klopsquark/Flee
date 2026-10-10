@@ -27,14 +27,14 @@ namespace Flee.ExpressionElements.MemberElements
             Type target = Previous.TargetType;
 
             // Yes, so setup for an array index
-            if (target.IsArray == true)
+            if (target.IsArray)
             {
                 this.SetupArrayIndexer();
                 return;
             }
 
             // Not an array, so try to find an indexer on the type
-            if (this.FindIndexer(target) == false)
+            if (!this.FindIndexer(target))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.TypeNotArrayAndHasNoIndexerOfType, CompileExceptionReason.TypeMismatch, target.Name, _indexerElements);
             }
@@ -48,7 +48,7 @@ namespace Flee.ExpressionElements.MemberElements
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.MultiArrayIndexNotSupported, CompileExceptionReason.TypeMismatch);
             }
-            else if (ImplicitConverter.EmitImplicitConvert(_indexerElement.ResultType, typeof(Int32), null) == false)
+            else if (!ImplicitConverter.EmitImplicitConvert(_indexerElement.ResultType, typeof(Int32), null))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.ArrayIndexersMustBeOfType, CompileExceptionReason.TypeMismatch, typeof(Int32).Name);
             }
@@ -82,7 +82,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             base.Emit(ilg, services);
 
-            if (this.IsArray == true)
+            if (this.IsArray)
             {
                 this.EmitArrayLoad(ilg, services);
             }
@@ -99,7 +99,7 @@ namespace Flee.ExpressionElements.MemberElements
 
             Type elementType = this.ResultType;
 
-            if (elementType.IsValueType == false)
+            if (!elementType.IsValueType)
             {
                 // Simple reference load
                 ilg.Emit(OpCodes.Ldelem_Ref);
@@ -112,7 +112,7 @@ namespace Flee.ExpressionElements.MemberElements
 
         private void EmitValueTypeArrayLoad(FleeILGenerator ilg, Type elementType)
         {
-            if (this.NextRequiresAddress == true)
+            if (this.NextRequiresAddress)
             {
                 ilg.Emit(OpCodes.Ldelema, elementType);
             }
@@ -132,7 +132,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             get
             {
-                if (this.IsArray == true)
+                if (this.IsArray)
                 {
                     return Previous.TargetType;
                 }
@@ -145,13 +145,13 @@ namespace Flee.ExpressionElements.MemberElements
 
         private bool IsArray => Previous.TargetType.IsArray;
 
-        protected override bool RequiresAddress => this.IsArray == false;
+        protected override bool RequiresAddress => !this.IsArray;
 
         public override System.Type ResultType
         {
             get
             {
-                if (this.IsArray == true)
+                if (this.IsArray)
                 {
                     return this.ArrayType.GetElementType();
                 }
@@ -166,7 +166,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             get
             {
-                if (this.IsArray == true)
+                if (this.IsArray)
                 {
                     return true;
                 }

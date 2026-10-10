@@ -51,7 +51,7 @@ namespace Flee.ExpressionElements
                     return binaryResultType;
                 }
             }
-            else if (this.IsEitherChildOfType(typeof(string)) == true & (_operation == BinaryArithmeticOperation.Add))
+            else if (this.IsEitherChildOfType(typeof(string)) & (_operation == BinaryArithmeticOperation.Add))
             {
                 // String concatenation
                 return typeof(string);
@@ -65,7 +65,7 @@ namespace Flee.ExpressionElements
 
         private Type GetPowerResultType(Type leftType, Type rightType, Type binaryResultType)
         {
-            if (this.IsOptimizablePower == true)
+            if (this.IsOptimizablePower)
             {
                 return leftType;
             }
@@ -113,7 +113,7 @@ namespace Flee.ExpressionElements
                 // Emit a call to an overloaded operator
                 this.EmitOverloadedOperatorCall(overloadedMethod, ilg, services);
             }
-            else if (this.IsEitherChildOfType(typeof(string)) == true)
+            else if (this.IsEitherChildOfType(typeof(string)))
             {
                 // One of our operands is a string so emit a concatenation
                 this.EmitStringConcat(ilg, services);
@@ -145,7 +145,7 @@ namespace Flee.ExpressionElements
 
             EmitChildWithConvert(LeftChild, this.ResultType, ilg, services);
 
-            if (this.IsOptimizablePower == false)
+            if (!this.IsOptimizablePower)
             {
                 EmitChildWithConvert(RightChild, this.ResultType, ilg, services);
             }
@@ -153,9 +153,9 @@ namespace Flee.ExpressionElements
             switch (op)
             {
                 case BinaryArithmeticOperation.Add:
-                    if (emitOverflow == true)
+                    if (emitOverflow)
                     {
-                        if (unsigned == true)
+                        if (unsigned)
                         {
                             ilg.Emit(OpCodes.Add_Ovf_Un);
                         }
@@ -170,9 +170,9 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case BinaryArithmeticOperation.Subtract:
-                    if (emitOverflow == true)
+                    if (emitOverflow)
                     {
-                        if (unsigned == true)
+                        if (unsigned)
                         {
                             ilg.Emit(OpCodes.Sub_Ovf_Un);
                         }
@@ -190,7 +190,7 @@ namespace Flee.ExpressionElements
                     this.EmitMultiply(ilg, emitOverflow, unsigned);
                     break;
                 case BinaryArithmeticOperation.Divide:
-                    if (unsigned == true)
+                    if (unsigned)
                     {
                         ilg.Emit(OpCodes.Div_Un);
                     }
@@ -200,7 +200,7 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case BinaryArithmeticOperation.Mod:
-                    if (unsigned == true)
+                    if (unsigned)
                     {
                         ilg.Emit(OpCodes.Rem_Un);
                     }
@@ -220,7 +220,7 @@ namespace Flee.ExpressionElements
 
         private void EmitPower(FleeILGenerator ilg, bool emitOverflow, bool unsigned)
         {
-            if (this.IsOptimizablePower == true)
+            if (this.IsOptimizablePower)
             {
                 this.EmitOptimizedPower(ilg, emitOverflow, unsigned);
             }
@@ -261,9 +261,9 @@ namespace Flee.ExpressionElements
 
         private void EmitMultiply(FleeILGenerator ilg, bool emitOverflow, bool unsigned)
         {
-            if (emitOverflow == true)
+            if (emitOverflow)
             {
-                if (unsigned == true)
+                if (unsigned)
                 {
                     ilg.Emit(OpCodes.Mul_Ovf_Un);
                 }
@@ -289,7 +289,7 @@ namespace Flee.ExpressionElements
             System.Reflection.MethodInfo concatMethodInfo = default(System.Reflection.MethodInfo);
 
             // Pick the most specific concat method
-            if (this.AreBothChildrenOfType(typeof(string)) == true)
+            if (this.AreBothChildrenOfType(typeof(string)))
             {
                 concatMethodInfo = _stringConcatMethodInfo;
                 argType = typeof(string);

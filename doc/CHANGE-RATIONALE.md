@@ -64,6 +64,7 @@ Entry template:
 | R-027 | Element names for three elements in the resources | fix | Phase 4 |
 | R-028 | Fields renamed to common C# naming conventions | cleanup | Phase 4 |
 | R-029 | Misplaced [Obsolete] attributes turned back into doc comments | cleanup | Phase 4 |
+| R-030 | Comparisons with true and false removed | cleanup | Phase 4 |
 
 ## Entries
 
@@ -573,4 +574,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   for now, following the rule not to touch the parser.
 - **Behaviour:** none; all twelve classes are internal.
 - **Verified:** solution warnings drop from 450 to 106; tests unchanged.
+- **Discussed:** not needed (plan item).
+
+### R-030: Comparisons with true and false removed
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** 260 comparisons of a `bool` expression with a literal in 39 files outside the parser
+  are simplified: `x == true` and `x != false` become `x`, `x == false` and `x != true` become
+  `!x`.
+- **Why:** Plan item; a VB conversion idiom. Done with a small Roslyn tool working on the syntax
+  tree, which only touches comparisons whose other side is a non-nullable `bool` (for `bool?`,
+  `x == true` means something different; there were none) and adds parentheses where `!` needs
+  them. Files in `src/Flee/Parsing` are left alone.
+- **Behaviour:** none.
+- **Verified:** tests green in Debug and Release on net8.0 and net10.0; build warnings unchanged
+  (106).
 - **Discussed:** not needed (plan item).

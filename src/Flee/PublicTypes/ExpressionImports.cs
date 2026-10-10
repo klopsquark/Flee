@@ -116,7 +116,7 @@ namespace Flee.PublicTypes
         {
             Type t = null;
 
-            if (_builtinTypeMap.TryGetValue(name, out t) == true)
+            if (_builtinTypeMap.TryGetValue(name, out t))
             {
                 return t;
             }
@@ -168,7 +168,7 @@ namespace Flee.PublicTypes
 
             _context.AssertTypeIsAccessible(mi.ReflectedType);
 
-            if (mi.IsStatic == false | mi.IsPublic == false)
+            if (!mi.IsStatic | !mi.IsPublic)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.OnlyPublicStaticMethodsCanBeImported);
                 throw new ArgumentException(msg);

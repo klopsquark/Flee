@@ -151,7 +151,7 @@ namespace Flee.PublicTypes
 
         protected override void AddMembers(MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            if (_useTypeNameAsNamespace == false)
+            if (!_useTypeNameAsNamespace)
             {
                 MemberInfo[] members = _type.FindMembers(memberType, _bindFlags, this.AlwaysMemberFilter, null);
                 ImportBase.AddMemberRange(members, dest);
@@ -160,7 +160,7 @@ namespace Flee.PublicTypes
 
         internal override bool IsMatch(string name)
         {
-            if (_useTypeNameAsNamespace == true)
+            if (_useTypeNameAsNamespace)
             {
                 return string.Equals(_type.Name, name, this.Context.Options.MemberStringComparison);
             }
@@ -172,7 +172,7 @@ namespace Flee.PublicTypes
 
         internal override Type FindType(string typeName)
         {
-            if (string.Equals(typeName, _type.Name, this.Context.Options.MemberStringComparison) == true)
+            if (string.Equals(typeName, _type.Name, this.Context.Options.MemberStringComparison))
             {
                 return _type;
             }
@@ -192,7 +192,7 @@ namespace Flee.PublicTypes
         #region "Methods - Public"
         public override IEnumerator<ImportBase> GetEnumerator()
         {
-            if (_useTypeNameAsNamespace == true)
+            if (_useTypeNameAsNamespace)
             {
                 List<ImportBase> coll = new List<ImportBase>();
                 coll.Add(new TypeImport(_type, false));
@@ -232,7 +232,7 @@ namespace Flee.PublicTypes
 
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            if (string.Equals(memberName, _method.Name, this.Context.Options.MemberStringComparison) == true && (memberType & MemberTypes.Method) != 0)
+            if (string.Equals(memberName, _method.Name, this.Context.Options.MemberStringComparison) && (memberType & MemberTypes.Method) != 0)
             {
                 dest.Add(_method);
             }
@@ -329,7 +329,7 @@ namespace Flee.PublicTypes
         {
             foreach (ImportBase import in _imports)
             {
-                if (import.IsMatch(name) == true)
+                if (import.IsMatch(name))
                 {
                     return import;
                 }
@@ -350,7 +350,7 @@ namespace Flee.PublicTypes
 
                 foreach (ImportBase import in _imports)
                 {
-                    if (import.IsContainer == false)
+                    if (!import.IsContainer)
                     {
                         found.Add(import);
                     }

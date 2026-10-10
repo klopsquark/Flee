@@ -61,7 +61,7 @@ namespace Flee.PublicTypes
         {
             Utility.AssertNotNull(variableType, "variableType");
 
-            if (_variables.ContainsKey(name) == true)
+            if (_variables.ContainsKey(name))
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.VariableWithNameAlreadyDefined, name);
                 throw new ArgumentException(msg);
@@ -76,7 +76,7 @@ namespace Flee.PublicTypes
             IVariable value = null;
             bool success = _variables.TryGetValue(name, out value);
 
-            if (success == true)
+            if (success)
             {
                 return value.VariableType;
             }
@@ -92,7 +92,7 @@ namespace Flee.PublicTypes
             IVariable value = null;
             bool success = _variables.TryGetValue(name, out value);
 
-            if (success == false & throwOnNotFound == true)
+            if (!success & throwOnNotFound)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.UndefinedVariable, name);
                 throw new ArgumentException(msg);
@@ -119,7 +119,7 @@ namespace Flee.PublicTypes
 
                 // Create a variable that wraps the expression
 
-                if (options.IsGeneric == false)
+                if (!options.IsGeneric)
                 {
                     variableType = typeof(DynamicExpressionVariable<>);
                 }
@@ -171,7 +171,7 @@ namespace Flee.PublicTypes
 
             Type valueType = value.GetType();
 
-            if (requiredType.IsAssignableFrom(valueType) == false)
+            if (!requiredType.IsAssignableFrom(valueType))
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.VariableValueNotAssignableToType, valueType.Name, requiredType.Name);
                 throw new ArgumentException(msg);
@@ -381,7 +381,7 @@ namespace Flee.PublicTypes
             {
                 IVariable v = null;
 
-                if (_variables.TryGetValue(name, out v) == true)
+                if (_variables.TryGetValue(name, out v))
                 {
                     v.ValueAsObject = value;
                 }

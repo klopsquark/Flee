@@ -160,7 +160,7 @@ namespace Flee.PublicTypes
         {
             get
             {
-                if (this.CaseSensitive == true)
+                if (this.CaseSensitive)
                 {
                     return System.StringComparer.Ordinal;
                 }
@@ -175,7 +175,7 @@ namespace Flee.PublicTypes
         {
             get
             {
-                if (this.CaseSensitive == true)
+                if (this.CaseSensitive)
                 {
                     return Type.FilterName;
                 }
@@ -190,7 +190,7 @@ namespace Flee.PublicTypes
         {
             get
             {
-                if (this.CaseSensitive == true)
+                if (this.CaseSensitive)
                 {
                     return System.StringComparison.Ordinal;
                 }

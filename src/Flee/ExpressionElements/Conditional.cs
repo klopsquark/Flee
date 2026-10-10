@@ -24,11 +24,11 @@ namespace Flee.ExpressionElements
             }
 
             // The result type is the type that is common to the true/false operands
-            if (ImplicitConverter.EmitImplicitConvert(_whenFalse.ResultType, _whenTrue.ResultType, null) == true)
+            if (ImplicitConverter.EmitImplicitConvert(_whenFalse.ResultType, _whenTrue.ResultType, null))
             {
                 _resultType = _whenTrue.ResultType;
             }
-            else if (ImplicitConverter.EmitImplicitConvert(_whenTrue.ResultType, _whenFalse.ResultType, null) == true)
+            else if (ImplicitConverter.EmitImplicitConvert(_whenTrue.ResultType, _whenFalse.ResultType, null))
             {
                 _resultType = _whenFalse.ResultType;
             }

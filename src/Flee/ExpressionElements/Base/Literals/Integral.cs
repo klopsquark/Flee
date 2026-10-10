@@ -23,7 +23,7 @@ namespace Flee.ExpressionElements.Base.Literals
         {
             StringComparison comparison = StringComparison.OrdinalIgnoreCase;
 
-            if (isHex == false)
+            if (!isHex)
             {
                 // Create a real element if required
                 LiteralElement realElement = RealLiteralElement.CreateFromInteger(image, services);
@@ -42,13 +42,13 @@ namespace Flee.ExpressionElements.Base.Literals
             LiteralElement constant = default(LiteralElement);
             System.Globalization.NumberStyles numStyles = NumberStyles.Integer;
 
-            if (isHex == true)
+            if (isHex)
             {
                 numStyles = NumberStyles.AllowHexSpecifier;
                 image = image.Remove(0, 2);
             }
 
-            if (hasSuffix == false)
+            if (!hasSuffix)
             {
                 // If the literal has no suffix, it has the first of these types in which its value can be represented: int, uint, long, ulong.
                 constant = Int32LiteralElement.TryCreate(image, isHex, negated);
@@ -74,7 +74,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
                 return new UInt64LiteralElement(image, numStyles);
             }
-            else if (hasUSuffix == true)
+            else if (hasUSuffix)
             {
                 image = image.Remove(image.Length - 1);
                 // If the literal is suffixed by U or u, it has the first of these types in which its value can be represented: uint, ulong.
@@ -90,7 +90,7 @@ namespace Flee.ExpressionElements.Base.Literals
                     return new UInt64LiteralElement(image, numStyles);
                 }
             }
-            else if (hasLSuffix == true)
+            else if (hasLSuffix)
             {
                 // If the literal is suffixed by L or l, it has the first of these types in which its value can be represented: long, ulong.
                 image = image.Remove(image.Length - 1);
@@ -109,7 +109,7 @@ namespace Flee.ExpressionElements.Base.Literals
             else
             {
                 // If the literal is suffixed by UL, Ul, uL, ul, LU, Lu, lU, or lu, it is of type ulong.
-                Debug.Assert(hasUlSuffix == true, "expecting ul suffix");
+                Debug.Assert(hasUlSuffix, "expecting ul suffix");
                 image = image.Remove(image.Length - 2);
                 return new UInt64LiteralElement(image, numStyles);
             }

@@ -12,7 +12,7 @@ namespace Flee.ExpressionElements.Literals
         private TimeSpan _value;
         public TimeSpanLiteralElement(string image)
         {
-            if (TimeSpan.TryParse(image, out _value) == false)
+            if (!TimeSpan.TryParse(image, out _value))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.CannotParseType, CompileExceptionReason.InvalidFormat, typeof(TimeSpan).Name);
             }

@@ -131,7 +131,7 @@ namespace Flee.InternalTypes
                 bool leftValid = ImplicitConverter.EmitImplicitConvert(_leftType, parameters[0].ParameterType, null);
                 bool rightValid = ImplicitConverter.EmitImplicitConvert(_rightType, parameters[1].ParameterType, null);
 
-                if (leftValid == true & rightValid == true)
+                if (leftValid & rightValid)
                 {
                     return mi;
                 }
@@ -191,11 +191,11 @@ namespace Flee.InternalTypes
             {
                 _score = 0.1F;
             }
-            else if (IsParamArray == true)
+            else if (IsParamArray)
             {
                 _score = this.ComputeScoreForParamArray(@params, argTypes);
             }
-            else if (IsExtensionMethod == true)
+            else if (IsExtensionMethod)
             {
                 _score = this.ComputeScoreExtensionMethodInternal(@params, argTypes);
             }
@@ -315,7 +315,7 @@ namespace Flee.InternalTypes
             // Is the last parameter a paramArray?
             ParameterInfo lastParam = parameters[parameters.Length - 1];
 
-            if (lastParam.IsDefined(typeof(ParamArrayAttribute), false) == false)
+            if (!lastParam.IsDefined(typeof(ParamArrayAttribute), false))
             {
                 //Extension method support
                 if (parameters.Length == argTypes.Length + 1)
@@ -338,11 +338,11 @@ namespace Flee.InternalTypes
             // At this point, we are dealing with a paramArray call
 
             // If the parameter and argument counts are equal and there is an implicit conversion from one to the other, we are a match.
-            if (parameters.Length == argTypes.Length && AreValidArgumentsForParameters(argTypes, parameters) == true)
+            if (parameters.Length == argTypes.Length && AreValidArgumentsForParameters(argTypes, parameters))
             {
                 return true;
             }
-            else if (this.IsParamArrayMatch(argTypes, parameters, lastParam) == true)
+            else if (this.IsParamArrayMatch(argTypes, parameters, lastParam))
             {
                 IsParamArray = true;
                 return true;
@@ -365,7 +365,7 @@ namespace Flee.InternalTypes
             System.Array.Copy(parameters, fixedParameters, fixedParameterCount);
 
             // If the fixed arguments don't match, we are not a match
-            if (AreValidArgumentsForParameters(fixedArgTypes, fixedParameters) == false)
+            if (!AreValidArgumentsForParameters(fixedArgTypes, fixedParameters))
             {
                 return false;
             }
@@ -380,7 +380,7 @@ namespace Flee.InternalTypes
             // Check each argument
             foreach (Type argType in paramArrayArgTypes)
             {
-                if (ImplicitConverter.EmitImplicitConvert(argType, ParamArrayElementType, null) == false)
+                if (!ImplicitConverter.EmitImplicitConvert(argType, ParamArrayElementType, null))
                 {
                     return false;
                 }
@@ -399,14 +399,14 @@ namespace Flee.InternalTypes
 
             if (previous != null)
             {
-                if (ImplicitConverter.EmitImplicitConvert(previous.ResultType, parameters[0].ParameterType, null) == false)
+                if (!ImplicitConverter.EmitImplicitConvert(previous.ResultType, parameters[0].ParameterType, null))
                 {
                     return false;
                 }
             }
             else if (context.ExpressionOwner != null)
             {
-                if (ImplicitConverter.EmitImplicitConvert(context.ExpressionOwner.GetType(), parameters[0].ParameterType, null) == false)
+                if (!ImplicitConverter.EmitImplicitConvert(context.ExpressionOwner.GetType(), parameters[0].ParameterType, null))
                     return false;
             }
             else
@@ -415,7 +415,7 @@ namespace Flee.InternalTypes
             //Match if every given argument is implicitly convertible to the method's corresponding parameter
             for (int i = 0; i <= argTypes.Length - 1; i++)
             {
-                if (ImplicitConverter.EmitImplicitConvert(argTypes[i], parameters[i + 1].ParameterType, null) == false)
+                if (!ImplicitConverter.EmitImplicitConvert(argTypes[i], parameters[i + 1].ParameterType, null))
                 {
                     return false;
                 }
@@ -429,7 +429,7 @@ namespace Flee.InternalTypes
             // Match if every given argument is implicitly convertible to the method's corresponding parameter
             for (int i = 0; i <= argTypes.Length - 1; i++)
             {
-                if (ImplicitConverter.EmitImplicitConvert(argTypes[i], parameters[i].ParameterType, null) == false)
+                if (!ImplicitConverter.EmitImplicitConvert(argTypes[i], parameters[i].ParameterType, null))
                 {
                     return false;
                 }
@@ -540,7 +540,7 @@ namespace Flee.InternalTypes
         public T GetValue<T>(string name)
         {
             object value = default(T);
-            if (_properties.TryGetValue(name, out value) == false)
+            if (!_properties.TryGetValue(name, out value))
             {
                 Debug.Fail($"Unknown property '{name}'");
             }

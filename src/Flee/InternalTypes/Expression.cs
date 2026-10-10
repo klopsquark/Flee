@@ -28,7 +28,7 @@ namespace Flee.InternalTypes
 
             _context = context;
 
-            if (context.NoClone == false)
+            if (!context.NoClone)
             {
                 _context = context.CloneInternal(false);
             }
@@ -123,7 +123,7 @@ namespace Flee.InternalTypes
         private void ValidateOwner(object owner)
         {
             Utility.AssertNotNull(owner, "owner");
-            if (_options.OwnerType.IsAssignableFrom(owner.GetType()) == false)
+            if (!_options.OwnerType.IsAssignableFrom(owner.GetType()))
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.NewOwnerTypeNotAssignableToCurrentOwner);
                 throw new ArgumentException(msg);

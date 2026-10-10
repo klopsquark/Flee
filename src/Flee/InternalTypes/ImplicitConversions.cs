@@ -137,11 +137,11 @@ namespace Flee.InternalTypes
             {
                 return true;
             }
-            else if (EmitOverloadedImplicitConvert(sourceType, destType, ilg) == true)
+            else if (EmitOverloadedImplicitConvert(sourceType, destType, ilg))
             {
                 return true;
             }
-            else if (ImplicitConvertToReferenceType(sourceType, destType, ilg) == true)
+            else if (ImplicitConvertToReferenceType(sourceType, destType, ilg))
             {
                 return true;
             }
@@ -172,7 +172,7 @@ namespace Flee.InternalTypes
 
         private static bool ImplicitConvertToReferenceType(Type sourceType, Type destType, FleeILGenerator ilg)
         {
-            if (destType.IsValueType == true)
+            if (destType.IsValueType)
             {
                 return false;
             }
@@ -183,12 +183,12 @@ namespace Flee.InternalTypes
                 return true;
             }
 
-            if (destType.IsAssignableFrom(sourceType) == false)
+            if (!destType.IsAssignableFrom(sourceType))
             {
                 return false;
             }
 
-            if (sourceType.IsValueType == true)
+            if (sourceType.IsValueType)
             {
                 if ((ilg != null))
                 {
@@ -202,14 +202,14 @@ namespace Flee.InternalTypes
         private static bool ImplicitConvertToValueType(Type sourceType, Type destType, FleeILGenerator ilg)
         {
             // We only handle value types
-            if (sourceType.IsValueType == false & destType.IsValueType == false)
+            if (!sourceType.IsValueType & !destType.IsValueType)
             {
                 return false;
             }
 
             // No implicit conversion to enum.  Have to do this check here since calling GetTypeCode on an enum will return the typecode
             // of the underlying type which screws us up.
-            if (sourceType.IsEnum == true | destType.IsEnum == true)
+            if (sourceType.IsEnum | destType.IsEnum)
             {
                 return false;
             }
@@ -457,9 +457,9 @@ namespace Flee.InternalTypes
                 return 1;
             }
 
-            if (sourceType.IsValueType == true)
+            if (sourceType.IsValueType)
             {
-                if (destType.IsValueType == true)
+                if (destType.IsValueType)
                 {
                     // Value type -> value type
                     int sourceScore = GetValueTypeImplicitConvertScore(sourceType);
@@ -475,7 +475,7 @@ namespace Flee.InternalTypes
             }
             else
             {
-                if (destType.IsValueType == true)
+                if (destType.IsValueType)
                 {
                     // Reference type -> value type
                     // Reference types can never be implicitly converted to value types
@@ -532,7 +532,7 @@ namespace Flee.InternalTypes
 
         private static int GetReferenceTypeImplicitConvertScore(Type sourceType, Type destType)
         {
-            if (destType.IsInterface == true)
+            if (destType.IsInterface)
             {
                 return 100;
             }

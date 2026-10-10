@@ -67,7 +67,7 @@ namespace Flee.ExpressionElements
             MethodInfo mi = this.GetCollectionContainsMethod();
             ParameterInfo p1 = mi.GetParameters()[0];
 
-            if (ImplicitConverter.EmitImplicitConvert(_operand.ResultType, p1.ParameterType, null) == false)
+            if (!ImplicitConverter.EmitImplicitConvert(_operand.ResultType, p1.ParameterType, null))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.OperandNotConvertibleToCollectionType, CompileExceptionReason.TypeMismatch, _operand.ResultType.Name, p1.ParameterType.Name);
             }
@@ -82,7 +82,7 @@ namespace Flee.ExpressionElements
 
             foreach (Type interfaceType in interfaces)
             {
-                if (interfaceType.IsGenericType == false)
+                if (!interfaceType.IsGenericType)
                 {
                     continue;
                 }
@@ -97,11 +97,11 @@ namespace Flee.ExpressionElements
 
             // Try to see if it is a regular IList or IDictionary. These are the non-generic
             // interfaces: the open generic types IList<> and IDictionary<,> never match here (R-022).
-            if (typeof(System.Collections.IList).IsAssignableFrom(collType) == true)
+            if (typeof(System.Collections.IList).IsAssignableFrom(collType))
             {
                 return typeof(System.Collections.IList);
             }
-            else if (typeof(System.Collections.IDictionary).IsAssignableFrom(collType) == true)
+            else if (typeof(System.Collections.IDictionary).IsAssignableFrom(collType))
             {
                 return typeof(System.Collections.IDictionary);
             }
@@ -143,7 +143,7 @@ namespace Flee.ExpressionElements
         {
             string methodName = "Contains";
 
-            if (_targetCollectionType.IsGenericType == true && object.ReferenceEquals(_targetCollectionType.GetGenericTypeDefinition(), typeof(IDictionary<,>)))
+            if (_targetCollectionType.IsGenericType && object.ReferenceEquals(_targetCollectionType.GetGenericTypeDefinition(), typeof(IDictionary<,>)))
             {
                 methodName = "ContainsKey";
             }

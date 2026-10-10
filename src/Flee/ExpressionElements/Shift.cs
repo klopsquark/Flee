@@ -17,13 +17,13 @@ namespace Flee.ExpressionElements
         protected override System.Type GetResultType(System.Type leftType, System.Type rightType)
         {
             // Right argument (shift count) must be convertible to int32
-            if (ImplicitConverter.EmitImplicitNumericConvert(rightType, typeof(Int32), null) == false)
+            if (!ImplicitConverter.EmitImplicitNumericConvert(rightType, typeof(Int32), null))
             {
                 return null;
             }
 
             // Left argument must be an integer type
-            if (Utility.IsIntegralType(leftType) == false)
+            if (!Utility.IsIntegralType(leftType))
             {
                 return null;
             }

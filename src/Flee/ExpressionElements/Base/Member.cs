@@ -58,11 +58,11 @@ namespace Flee.ExpressionElements.Base
                 return;
             }
 
-            if (this.IsStatic == true && this.SupportsStatic == false && IsExtensionMethod == false)
+            if (this.IsStatic && !this.SupportsStatic && !IsExtensionMethod)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.StaticMemberCannotBeAccessedWithInstanceReference, CompileExceptionReason.TypeMismatch, MemberName);
             }
-            else if (this.IsStatic == false && this.SupportsInstance == false)
+            else if (!this.IsStatic && !this.SupportsInstance)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.ReferenceToNonSharedMemberRequiresObjectReference, CompileExceptionReason.TypeMismatch, MemberName);
             }
@@ -95,7 +95,7 @@ namespace Flee.ExpressionElements.Base
         {
             // The type the method is called on, as in the original VB code; mi.GetType() was the
             // MethodInfo's own type and never a value type (R-024).
-            if (mi.ReflectedType.IsValueType == false)
+            if (!mi.ReflectedType.IsValueType)
             {
                 EmitReferenceTypeMethodCall(mi, ilg);
             }
@@ -123,7 +123,7 @@ namespace Flee.ExpressionElements.Base
         /// <param name="ilg"></param>
         private static void EmitValueTypeMethodCall(MethodInfo mi, FleeILGenerator ilg)
         {
-            if (mi.IsStatic == true)
+            if (mi.IsStatic)
             {
                 ilg.Emit(OpCodes.Call, mi);
             }
@@ -131,7 +131,7 @@ namespace Flee.ExpressionElements.Base
             {
                 // Method is not defined on the value type
 
-                if (IsGetTypeMethod(mi) == true)
+                if (IsGetTypeMethod(mi))
                 {
                     // Special GetType method which requires a box
                     ilg.Emit(OpCodes.Box, mi.ReflectedType);
@@ -153,7 +153,7 @@ namespace Flee.ExpressionElements.Base
 
         private static void EmitReferenceTypeMethodCall(MethodInfo mi, FleeILGenerator ilg)
         {
-            if (mi.IsStatic == true)
+            if (mi.IsStatic)
             {
                 ilg.Emit(OpCodes.Call, mi);
             }
@@ -176,7 +176,7 @@ namespace Flee.ExpressionElements.Base
 
             Type ownerType = Options.OwnerType;
 
-            if (ownerType.IsValueType == false)
+            if (!ownerType.IsValueType)
             {
                 return;
             }
@@ -185,7 +185,7 @@ namespace Flee.ExpressionElements.Base
             ilg.Emit(OpCodes.Ldobj, ownerType);
 
             // Emit usual stuff for value types but use the owner type as the target
-            if (this.RequiresAddress == true)
+            if (this.RequiresAddress)
             {
                 EmitValueTypeLoadAddress(ilg, ownerType);
             }
@@ -231,7 +231,7 @@ namespace Flee.ExpressionElements.Base
             // Keep all members that are accessible
             foreach (MemberInfo mi in members)
             {
-                if (this.IsMemberAccessible(mi) == true)
+                if (this.IsMemberAccessible(mi))
                 {
                     accessible.Add(mi);
                 }
@@ -245,7 +245,7 @@ namespace Flee.ExpressionElements.Base
             bool accessAllowed = false;
 
             // Get the allowed access defined in the options
-            if (IsMemberPublic(member) == true)
+            if (IsMemberPublic(member))
             {
                 accessAllowed = (options.OwnerMemberAccess & BindingFlags.Public) != 0;
             }
@@ -271,7 +271,7 @@ namespace Flee.ExpressionElements.Base
 
         public bool IsMemberAccessible(MemberInfo member)
         {
-            if (Options.IsOwnerType(member.ReflectedType) == true)
+            if (Options.IsOwnerType(member.ReflectedType))
             {
                 return IsOwnerMemberAccessible(member, Options);
             }

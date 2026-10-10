@@ -20,7 +20,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             base.Emit(ilg, services);
             _element.Emit(ilg, services);
-            if (_element.ResultType.IsValueType == true)
+            if (_element.ResultType.IsValueType)
             {
                 EmitValueTypeLoadAddress(ilg, this.ResultType);
             }

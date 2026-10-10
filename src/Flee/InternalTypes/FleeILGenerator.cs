@@ -27,7 +27,7 @@ namespace Flee.InternalTypes
         {
             LocalBuilder local = null;
 
-            if (_localBuilderTemp.TryGetValue(localType, out local) == false)
+            if (!_localBuilderTemp.TryGetValue(localType, out local))
             {
                 local = _ilGenerator.DeclareLocal(localType);
                 _localBuilderTemp.Add(localType, local);
@@ -151,7 +151,7 @@ namespace Flee.InternalTypes
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Br_S, arg);
             }
-            else if (_bm.IsLongBranch(this) == false)
+            else if (!_bm.IsLongBranch(this))
             {
                 Emit(OpCodes.Br_S, arg);
             }
@@ -168,7 +168,7 @@ namespace Flee.InternalTypes
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Brfalse_S, arg);
             }
-            else if (_bm.IsLongBranch(this) == false)
+            else if (!_bm.IsLongBranch(this))
             {
                 Emit(OpCodes.Brfalse_S, arg);
             }
@@ -185,7 +185,7 @@ namespace Flee.InternalTypes
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Brtrue_S, arg);
             }
-            else if (_bm.IsLongBranch(this) == false)
+            else if (!_bm.IsLongBranch(this))
             {
                 Emit(OpCodes.Brtrue_S, arg);
             }

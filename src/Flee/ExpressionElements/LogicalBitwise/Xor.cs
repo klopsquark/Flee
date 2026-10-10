@@ -15,7 +15,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
             {
                 return bitwiseType;
             }
-            else if (this.AreBothChildrenOfType(typeof(bool)) == true)
+            else if (this.AreBothChildrenOfType(typeof(bool)))
             {
                 return typeof(bool);
             }

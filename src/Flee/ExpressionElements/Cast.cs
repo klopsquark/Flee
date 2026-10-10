@@ -23,12 +23,12 @@ namespace Flee.ExpressionElements
                 base.ThrowCompileException(CompileErrorResourceKeys.CouldNotResolveType, CompileExceptionReason.UndefinedName, GetDestTypeString(destTypeParts, isArray));
             }
 
-            if (isArray == true)
+            if (isArray)
             {
                 _destType = _destType.MakeArrayType();
             }
 
-            if (this.IsValidCast(_castExpression.ResultType, _destType) == false)
+            if (!this.IsValidCast(_castExpression.ResultType, _destType))
             {
                 this.ThrowInvalidCastException();
             }
@@ -38,7 +38,7 @@ namespace Flee.ExpressionElements
         {
             string s = string.Join(".", parts);
 
-            if (isArray == true)
+            if (isArray)
             {
                 s = s + "[]";
             }
@@ -87,12 +87,12 @@ namespace Flee.ExpressionElements
                 // Identity cast always succeeds
                 return true;
             }
-            else if (destType.IsAssignableFrom(sourceType) == true)
+            else if (destType.IsAssignableFrom(sourceType))
             {
                 // Cast is already implicitly valid
                 return true;
             }
-            else if (ImplicitConverter.EmitImplicitConvert(sourceType, destType, null) == true)
+            else if (ImplicitConverter.EmitImplicitConvert(sourceType, destType, null))
             {
                 // Cast is already implicitly valid
                 return true;
@@ -102,7 +102,7 @@ namespace Flee.ExpressionElements
                 // Explicit cast of numeric types always succeeds
                 return true;
             }
-            else if (sourceType.IsEnum == true | destType.IsEnum == true)
+            else if (sourceType.IsEnum | destType.IsEnum)
             {
                 return this.IsValidExplicitEnumCast(sourceType, destType);
             }
@@ -112,7 +112,7 @@ namespace Flee.ExpressionElements
                 return true;
             }
 
-            if (sourceType.IsValueType == true)
+            if (sourceType.IsValueType)
             {
                 // If we get here then the cast always fails since we are either casting one value type to another
                 // or a value type to an invalid reference type
@@ -120,13 +120,13 @@ namespace Flee.ExpressionElements
             }
             else
             {
-                if (destType.IsValueType == true)
+                if (destType.IsValueType)
                 {
                     // Reference type to value type
                     // Can only succeed if the reference type is a base of the value type or
                     // it is one of the interfaces the value type implements
                     Type[] interfaces = destType.GetInterfaces();
-                    return IsBaseType(destType, sourceType) == true | System.Array.IndexOf(interfaces, sourceType) != -1;
+                    return IsBaseType(destType, sourceType) | System.Array.IndexOf(interfaces, sourceType) != -1;
                 }
                 else
                 {
@@ -172,14 +172,14 @@ namespace Flee.ExpressionElements
 
         private bool IsValidExplicitReferenceCast(Type sourceType, Type destType)
         {
-            Debug.Assert(sourceType.IsValueType == false & destType.IsValueType == false, "expecting reference types");
+            Debug.Assert(!sourceType.IsValueType & !destType.IsValueType, "expecting reference types");
 
             if (object.ReferenceEquals(sourceType, typeof(object)))
             {
                 // From object to any other reference-type
                 return true;
             }
-            else if (sourceType.IsArray == true & destType.IsArray == true)
+            else if (sourceType.IsArray & destType.IsArray)
             {
                 // From an array-type S with an element type SE to an array-type T with an element type TE,
                 // provided all of the following are true:
@@ -195,7 +195,7 @@ namespace Flee.ExpressionElements
                     Type TE = destType.GetElementType();
 
                     // Both SE and TE are reference-types
-                    if (SE.IsValueType == true | TE.IsValueType == true)
+                    if (SE.IsValueType | TE.IsValueType)
                     {
                         return false;
                     }
@@ -206,25 +206,25 @@ namespace Flee.ExpressionElements
                     }
                 }
             }
-            else if (sourceType.IsClass == true & destType.IsClass == true)
+            else if (sourceType.IsClass & destType.IsClass)
             {
                 // From any class-type S to any class-type T, provided S is a base class of T
                 return IsBaseType(destType, sourceType);
             }
-            else if (sourceType.IsClass == true & destType.IsInterface == true)
+            else if (sourceType.IsClass & destType.IsInterface)
             {
                 // From any class-type S to any interface-type T, provided S is not sealed and provided S does not implement T
-                return sourceType.IsSealed == false & ImplementsInterface(sourceType, destType) == false;
+                return !sourceType.IsSealed & !ImplementsInterface(sourceType, destType);
             }
-            else if (sourceType.IsInterface == true & destType.IsClass == true)
+            else if (sourceType.IsInterface & destType.IsClass)
             {
                 // From any interface-type S to any class-type T, provided T is not sealed or provided T implements S.
-                return destType.IsSealed == false | ImplementsInterface(destType, sourceType) == true;
+                return !destType.IsSealed | ImplementsInterface(destType, sourceType);
             }
-            else if (sourceType.IsInterface == true & destType.IsInterface == true)
+            else if (sourceType.IsInterface & destType.IsInterface)
             {
                 // From any interface-type S to any interface-type T, provided S is not derived from T
-                return ImplementsInterface(sourceType, destType) == false;
+                return !ImplementsInterface(sourceType, destType);
             }
             else
             {
@@ -261,12 +261,12 @@ namespace Flee.ExpressionElements
 
         private static bool IsCastableNumericType(Type t)
         {
-            return t.IsPrimitive == true & (!object.ReferenceEquals(t, typeof(bool)));
+            return t.IsPrimitive & (!object.ReferenceEquals(t, typeof(bool)));
         }
 
         private static Type GetUnderlyingEnumType(Type t)
         {
-            if (t.IsEnum == true)
+            if (t.IsEnum)
             {
                 return System.Enum.GetUnderlyingType(t);
             }
@@ -299,11 +299,11 @@ namespace Flee.ExpressionElements
             {
                 ilg.Emit(OpCodes.Call, explicitOperator);
             }
-            else if (sourceType.IsEnum == true | destType.IsEnum == true)
+            else if (sourceType.IsEnum | destType.IsEnum)
             {
                 this.EmitEnumCast(ilg, sourceType, destType, services);
             }
-            else if (ImplicitConverter.EmitImplicitConvert(sourceType, destType, ilg) == true)
+            else if (ImplicitConverter.EmitImplicitConvert(sourceType, destType, ilg))
             {
                 // Implicit numeric cast; do nothing
                 return;
@@ -313,14 +313,14 @@ namespace Flee.ExpressionElements
                 // Explicit numeric cast
                 EmitExplicitNumericCast(ilg, sourceType, destType, services);
             }
-            else if (sourceType.IsValueType == true)
+            else if (sourceType.IsValueType)
             {
-                Debug.Assert(destType.IsValueType == false, "expecting reference type");
+                Debug.Assert(!destType.IsValueType, "expecting reference type");
                 ilg.Emit(OpCodes.Box, sourceType);
             }
             else
             {
-                if (destType.IsValueType == true)
+                if (destType.IsValueType)
                 {
                     // Reference type to value type
                     ilg.Emit(OpCodes.Unbox_Any, destType);
@@ -328,7 +328,7 @@ namespace Flee.ExpressionElements
                 else
                 {
                     // Reference type to reference type
-                    if (destType.IsAssignableFrom(sourceType) == false)
+                    if (!destType.IsAssignableFrom(sourceType))
                     {
                         // Only emit cast if it is an explicit cast
                         ilg.Emit(OpCodes.Castclass, destType);
@@ -339,11 +339,11 @@ namespace Flee.ExpressionElements
 
         private void EmitEnumCast(FleeILGenerator ilg, Type sourceType, Type destType, IServiceProvider services)
         {
-            if (destType.IsValueType == false)
+            if (!destType.IsValueType)
             {
                 ilg.Emit(OpCodes.Box, sourceType);
             }
-            else if (sourceType.IsValueType == false)
+            else if (!sourceType.IsValueType)
             {
                 ilg.Emit(OpCodes.Unbox_Any, destType);
             }
@@ -367,11 +367,11 @@ namespace Flee.ExpressionElements
             switch (desttc)
             {
                 case TypeCode.SByte:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_I1_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_I1;
                     }
@@ -381,11 +381,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.Byte:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_U1_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_U1;
                     }
@@ -395,11 +395,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.Int16:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_I2_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_I2;
                     }
@@ -409,11 +409,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.UInt16:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_U2_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_U2;
                     }
@@ -423,11 +423,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.Int32:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_I4_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_I4;
                     }
@@ -438,11 +438,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.UInt32:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_U4_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_U4;
                     }
@@ -452,11 +452,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.Int64:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_I8_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_I8;
                     }
@@ -466,11 +466,11 @@ namespace Flee.ExpressionElements
                     }
                     break;
                 case TypeCode.UInt64:
-                    if (unsigned == true & @checked == true)
+                    if (unsigned & @checked)
                     {
                         op = OpCodes.Conv_Ovf_U8_Un;
                     }
-                    else if (@checked == true)
+                    else if (@checked)
                     {
                         op = OpCodes.Conv_Ovf_U8;
                     }
@@ -487,7 +487,7 @@ namespace Flee.ExpressionElements
                     break;
             }
 
-            if (op.Equals(OpCodes.Nop) == false)
+            if (!op.Equals(OpCodes.Nop))
             {
                 ilg.Emit(op);
             }

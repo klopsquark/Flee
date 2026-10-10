@@ -211,7 +211,7 @@ namespace Flee.InternalTypes
 
         public static Type GetBitwiseOpType(Type leftType, Type rightType)
         {
-            if (IsIntegralType(leftType) == false || IsIntegralType(rightType) == false)
+            if (!IsIntegralType(leftType) || !IsIntegralType(rightType))
             {
                 return null;
             }
@@ -278,9 +278,9 @@ namespace Flee.InternalTypes
             IDictionary data = (IDictionary)value;
             MethodInfo method = (MethodInfo)member;
 
-            bool nameMatch = method.IsSpecialName == true && method.Name.Equals((string)data["Name"], StringComparison.OrdinalIgnoreCase);
+            bool nameMatch = method.IsSpecialName && method.Name.Equals((string)data["Name"], StringComparison.OrdinalIgnoreCase);
 
-            if (nameMatch == false)
+            if (!nameMatch)
             {
                 return false;
             }
@@ -292,7 +292,7 @@ namespace Flee.InternalTypes
             {
                 bool returnTypeMatch = object.ReferenceEquals(destType, method.ReturnType);
 
-                if (returnTypeMatch == false)
+                if (!returnTypeMatch)
                 {
                     return false;
                 }
@@ -311,7 +311,7 @@ namespace Flee.InternalTypes
             do
             {
                 mi = sourceType.GetMethod(name, BindingFlags.Public | BindingFlags.Static, binder, CallingConventions.Any, argumentTypes, null);
-                if (mi != null && mi.IsSpecialName == true)
+                if (mi != null && mi.IsSpecialName)
                 {
                     return mi;
                 }

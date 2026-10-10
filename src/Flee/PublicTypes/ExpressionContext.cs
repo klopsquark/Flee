@@ -56,7 +56,7 @@ namespace Flee.PublicTypes
         {
             bool isPublic = t.IsPublic;
 
-            if (t.IsNested == true)
+            if (t.IsNested)
             {
                 isPublic = t.IsNestedPublic;
             }
@@ -66,7 +66,7 @@ namespace Flee.PublicTypes
             // Public types are always accessible.  Otherwise they have to be in the same module as the owner
             bool isAccessible = isPublic | isSameModuleAsOwner;
 
-            if (isAccessible == false)
+            if (!isAccessible)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.TypeNotAccessibleToExpression, t.Name);
                 throw new ArgumentException(msg);
@@ -93,7 +93,7 @@ namespace Flee.PublicTypes
             context._properties.SetValue("Imports", context.Imports.Clone());
             context.Imports.SetContext(context);
 
-            if (cloneVariables == true)
+            if (cloneVariables)
             {
                 context._variables = new VariableCollection(context);
                 this.Variables.Copy(context._variables);
@@ -104,7 +104,7 @@ namespace Flee.PublicTypes
 
         internal void AssertTypeIsAccessible(Type t)
         {
-            if (t.IsNested == true)
+            if (t.IsNested)
             {
                 AssertNestedTypeIsAccessible(t);
             }
