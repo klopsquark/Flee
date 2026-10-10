@@ -274,7 +274,7 @@ namespace Flee.PublicTypes
         /// <param name="variableType">The type of the new variable</param>
         /// <remarks>
         /// Use this method when you want to add a variable with a type that is different than what would be inferred from defining it using the indexer.
-        /// The new variable has no value: set one with the indexer before evaluating an expression that reads it.
+        /// The new variable starts with the default value of its type (null for reference types), as if it had been set to null with the indexer.
         /// </remarks>
         /// <exception cref="ArgumentException">
         /// A variable with the given name is already defined -or- <paramref name="variableType"/> is not accessible to the context's expressions.

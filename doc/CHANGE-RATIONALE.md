@@ -87,6 +87,7 @@ Entry template:
 | R-050 | Two malformed doc comments in the parser fixed | docs | Phase 6 |
 | R-051 | Syntax errors in calculation-engine and batch expressions are compile errors | fix | Phase 6 |
 | R-052 | A batch with an unknown name reports a compile error | fix | Phase 6 |
+| R-053 | A defined variable without a value reads as its type's default | fix | Phase 6 |
 
 ## Entries
 
@@ -1018,3 +1019,23 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `BatchCanCallImportedFunctions` (imported functions are not taken for unknown atoms) passes before
   and after; full suite green on net8.0 and net10.0.
 - **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release).
+
+### R-053: A defined variable without a value reads as its type's default
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** ad426fc (test), the commit that adds this entry (fix)
+- **What:** `GenericVariable<T>.Value` starts as `default(T)` instead of null.
+- **Why:** D-27: `VariableCollection.DefineVariable` creates the variable without setting a value.
+  For a value type, an expression that read it before the indexer set one unboxed null and threw
+  `NullReferenceException`.
+- **Choice:** the type's default rather than a clear exception, because setting a variable to null
+  through the indexer already stores the default, and the API guide already described
+  `DefineVariable` that way. The XML comment on `DefineVariable` says so now.
+- **Behaviour:** reading such a variable gives 0, `DateTime.MinValue` and so on instead of throwing;
+  reference types read as null, as before.
+- **Verified:** `ValueTypeVariableWithoutValueReadsAsDefault` and
+  `DateTimeVariableWithoutValueReadsAsDefault` failed before and pass now;
+  `ReferenceTypeVariableWithoutValueReadsAsNull` and `IndexerSetToNullStoresDefault` pass before and
+  after; full suite green on net8.0 and net10.0.
+- **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release). The default was chosen
+  as the reasonable reading; an exception remains possible in Phase 5.

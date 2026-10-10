@@ -15,8 +15,6 @@ namespace Flee.Test.ExpressionTests
     public class DefineVariableTests
     {
         [Test]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: NullReferenceException, the variable holds null (D-27)")]
         public void ValueTypeVariableWithoutValueReadsAsDefault()
         {
             var context = new ExpressionContext();
@@ -27,8 +25,6 @@ namespace Flee.Test.ExpressionTests
         }
 
         [Test]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: NullReferenceException, the variable holds null (D-27)")]
         public void DateTimeVariableWithoutValueReadsAsDefault()
         {
             var context = new ExpressionContext();
