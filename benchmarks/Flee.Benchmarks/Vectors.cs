@@ -132,7 +132,7 @@ namespace Flee.Benchmarks
                 c.Variables.ResolveVariableType += (s, e) => e.VariableType = typeof(int);
                 c.Variables.ResolveVariableValue += (s, e) => e.VariableValue = 3;
                 c.Variables.ResolveFunction += (s, e) => e.ReturnType = typeof(int);
-                c.Variables.InvokeFunction += (s, e) => e.Result = 2 * (int)e.Arguments[0];
+                c.Variables.InvokeFunction += (s, e) => e.Result = 2 * (int)e.Arguments[0]!;
                 return c;
             });
 

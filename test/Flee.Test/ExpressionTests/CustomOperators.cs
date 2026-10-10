@@ -38,7 +38,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m2", m2);
             IDynamicExpression e1 = context.CompileDynamic("m1 + m2");
 
-            Base added = (Base) e1.Evaluate();
+            Base added = (Base)e1.Evaluate()!;
             Assert.AreEqual(7, added.Value);
         }
 
@@ -53,7 +53,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m2", m2);
             IDynamicExpression e1 = context.CompileDynamic("m1 + m2");
 
-            Base added = (Base)e1.Evaluate();
+            Base added = (Base)e1.Evaluate()!;
             Assert.AreEqual(7, added.Value);
         }
 
@@ -68,7 +68,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m2", m2);
             IDynamicExpression e1 = context.CompileDynamic("m1 + m2");
 
-            Base added = (Base)e1.Evaluate();
+            Base added = (Base)e1.Evaluate()!;
             Assert.AreEqual(7, added.Value);
         }
 
@@ -83,7 +83,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m2", m2);
             IDynamicExpression e1 = context.CompileDynamic("m1 + m2");
 
-            Base added = (Base)e1.Evaluate();
+            Base added = (Base)e1.Evaluate()!;
             Assert.AreEqual(7, added.Value);
         }
 
@@ -98,7 +98,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m2", m2);
             IDynamicExpression e1 = context.CompileDynamic("m1 + m2");
 
-            Base added = (Base)e1.Evaluate();
+            Base added = (Base)e1.Evaluate()!;
             Assert.AreEqual(7, added.Value);
         }
 
@@ -125,7 +125,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m1", m1);
             IDynamicExpression e1 = context.CompileDynamic("-m1");
 
-            Base negated = (Base)e1.Evaluate();
+            Base negated = (Base)e1.Evaluate()!;
             Assert.AreEqual(-2, negated.Value);
         }
 
@@ -138,7 +138,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m1", m1);
             IDynamicExpression e1 = context.CompileDynamic("-m1");
 
-            Base negated = (Base)e1.Evaluate();
+            Base negated = (Base)e1.Evaluate()!;
             Assert.AreEqual(-2, negated.Value);
         }
 
@@ -151,7 +151,7 @@ namespace Flee.Test.ExpressionTests
             context.Variables.Add("m1", m1);
             IDynamicExpression e1 = context.CompileDynamic("-m1 + m1");
 
-            Base negated = (Base)e1.Evaluate();
+            Base negated = (Base)e1.Evaluate()!;
             Assert.AreEqual(0, negated.Value);
         }
     }

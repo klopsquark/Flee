@@ -41,7 +41,7 @@ namespace ExpressionBuildingTest
 
             IDynamicExpression e = context.CompileDynamic("if(1<2, 3, 4)");
 
-            Assert.IsTrue((int)e.Evaluate() == resultWhenTrue);
+            Assert.IsTrue((int)e.Evaluate()! == resultWhenTrue);
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace ExpressionBuildingTest
 
             IDynamicExpression e = context.CompileDynamic("if(1>2; 3; 4)");
 
-            Assert.IsTrue((int)e.Evaluate() == resultWhenFalse);
+            Assert.IsTrue((int)e.Evaluate()! == resultWhenFalse);
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace ExpressionBuildingTest
             context.Variables.Add("a", "stringObject");
             IDynamicExpression e1 = context.CompileDynamic("a = null");
 
-            Assert.IsFalse((bool)e1.Evaluate());
+            Assert.IsFalse((bool)e1.Evaluate()!);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace ExpressionBuildingTest
             context.Variables.Add("a", "stringObject");
             IDynamicExpression e1 = context.CompileDynamic("null = null");
 
-            Assert.IsTrue((bool)e1.Evaluate());
+            Assert.IsTrue((bool)e1.Evaluate()!);
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace ExpressionBuildingTest
             ExpressionContext context = new ExpressionContext();
             IDynamicExpression e1 = context.CompileDynamic("2432696330L = 2432696330L AND 2432696330L > 0 AND 2432696330L < 2432696331L");
 
-            Assert.IsTrue((bool)e1.Evaluate());
+            Assert.IsTrue((bool)e1.Evaluate()!);
             e1 = context.CompileDynamic("2432696330L / 2");
 
             Assert.AreEqual(1216348165L, e1.Evaluate());

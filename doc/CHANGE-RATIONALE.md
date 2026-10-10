@@ -72,6 +72,7 @@ Entry template:
 | R-035 | Debug.Assert on impossible paths becomes an exception | fix | Phase 4 |
 | R-036 | Operator binders: BindToMethod returns null as designed | fix | Phase 4 |
 | R-037 | Unused variables and fields removed (library and tests) | cleanup | Phase 4 |
+| R-038 | Public API annotated for nullable reference types | api | Phase 4 |
 
 ## Entries
 
@@ -717,3 +718,35 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none.
 - **Verified:** solution warnings 106 -> 74 (together with R-036); tests green.
 - **Discussed:** not needed.
+
+### R-038: Public API annotated for nullable reference types
+
+- **Kind / phase:** api / Phase 4
+- **Commits:** eb4a789 (`PublicTypes`, 21 files), 07d5d25 (`CalcEngine/PublicTypes`, 5 files),
+  and the commit that adds this entry (test and benchmark call sites)
+- **What:** The 26 files of the public API start with `#nullable enable` and are annotated to match
+  what the code does: parameters the code rejects when null are non-nullable, values that can be
+  null are marked `?` (for example `IDynamicExpression.Evaluate()` returns `object?`,
+  `ExpressionOptions.ResultType` is `Type?`, `CalculationEngine.GetExpression` returns
+  `IExpression?`, event-args results that start unset are nullable, and `VariableCollection`
+  implements `IDictionary<string, object?>` because variables can hold null). `!` is used only where
+  an invariant guarantees a value, each with a comment. Tests and benchmarks that cast
+  `Evaluate()` results get `!` or nullable return types.
+- **Why:** Decision R-017: files opt in once annotated, public API first, so that callers with
+  nullable enabled see where null is allowed.
+- **Behaviour:** none at run time; only nullability metadata is added. Method signatures are
+  unchanged (reflection listing identical to upstream except `EmitToAssembly`'s `[Obsolete]`).
+  Callers who enable nullable may see new warnings where they ignore a possible null, as intended.
+  Debatable choices: `ResultType`'s setter shows as nullable although it rejects null
+  (netstandard2.0 has no `[DisallowNull]`), `VariableCollection.Add` takes `object?` because the
+  interface requires it, and `GetVariableValueInternal<T>` stays `T` while its two neighbours return
+  `T?`.
+- **Verified:** zero nullable warnings in the annotated files on all four targets; solution warnings
+  back to 74; tests green in Debug and Release on net8.0 and net10.0. A before/after nullability
+  listing of every public member was produced with `NullabilityInfoContext` (scratch tool, not in
+  the repository).
+- **Found on the way, not fixed here:** a name that is not an atom in a calculation-engine
+  expression gives `ArgumentNullException` instead of a compile error; a failed
+  `CalculationEngine.Add` leaves its name behind; `NamespaceImport.Equals` on an import not yet
+  attached throws `NullReferenceException`. These are Phase 4 bug candidates.
+- **Discussed:** decided by the maintainer on 2026-10-09 (R-017).

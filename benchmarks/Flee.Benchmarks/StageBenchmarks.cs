@@ -35,13 +35,13 @@ namespace Flee.Benchmarks
         /// without IL emission.
         /// </summary>
         [Benchmark]
-        public object Parse()
+        public object? Parse()
         {
             ExpressionContext context = _context.CloneInternal(false);
             ExpressionOptions options = context.Options;
             options.IsGeneric = false;
             options.SetOwnerType(context.ExpressionOwner.GetType());
-            context.Imports.ImportOwner(options.OwnerType);
+            context.Imports.ImportOwner(options.OwnerType!);
 
             var services = new ServiceContainer();
             services.AddService(typeof(ExpressionOptions), options);
@@ -56,7 +56,7 @@ namespace Flee.Benchmarks
         public IDynamicExpression Compile() => _context.CompileDynamic(Vector.Expression);
 
         [Benchmark]
-        public object Evaluate() => _compiled.Evaluate();
+        public object? Evaluate() => _compiled.Evaluate();
 
         /// <summary>
         /// Compile plus the first evaluation, which is when the runtime JIT-compiles the generated
@@ -64,6 +64,6 @@ namespace Flee.Benchmarks
         /// Phase 4 after .NET 10 turned out to make that first call much slower (R-019).
         /// </summary>
         [Benchmark]
-        public object CompileAndEvaluate() => _context.CompileDynamic(Vector.Expression).Evaluate();
+        public object? CompileAndEvaluate() => _context.CompileDynamic(Vector.Expression).Evaluate();
     }
 }

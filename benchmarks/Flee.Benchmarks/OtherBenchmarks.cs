@@ -71,7 +71,7 @@ namespace Flee.Benchmarks
         }
 
         [Benchmark]
-        public object SetVariablesAndEvaluate()
+        public object? SetVariablesAndEvaluate()
         {
             _variables["a"] = 200;
             _variables["b"] = 300;
