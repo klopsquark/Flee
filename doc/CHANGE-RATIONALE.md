@@ -65,6 +65,7 @@ Entry template:
 | R-028 | Fields renamed to common C# naming conventions | cleanup | Phase 4 |
 | R-029 | Misplaced [Obsolete] attributes turned back into doc comments | cleanup | Phase 4 |
 | R-030 | Comparisons with true and false removed | cleanup | Phase 4 |
+| R-031 | Converter TODO markers on loop exits checked and removed | cleanup | Phase 4 |
 
 ## Entries
 
@@ -590,4 +591,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none.
 - **Verified:** tests green in Debug and Release on net8.0 and net10.0; build warnings unchanged
   (106).
+- **Discussed:** not needed (plan item).
+
+### R-031: Converter TODO markers on loop exits checked and removed
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** The four comments `// TODO: might not be correct. Was : Exit For` (or `Exit While`)
+  after `break;` in `CalculationEngine.EmitLoad`, `InvocationListElement.ResolveNamespaces` (two)
+  and `ExpressionImports.FindType` are removed.
+- **Why:** Plan item. The converter flagged every VB `Exit For` / `Exit While` because C#'s `break`
+  leaves the innermost loop or `switch`, while VB's exits the named loop kind. In all four places
+  the `break` sits directly in the loop the VB code exited, with no inner loop or `switch` in
+  between, so it does exactly what the VB code did.
+- **Behaviour:** none (comments only).
+- **Verified:** by reading each loop; build and tests unchanged.
 - **Discussed:** not needed (plan item).

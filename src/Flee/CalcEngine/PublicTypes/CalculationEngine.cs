@@ -174,7 +174,7 @@ namespace Flee.CalcEngine.PublicTypes
                 if (method.IsGenericMethod)
                 {
                     mi = method;
-                    break; // TODO: might not be correct. Was : Exit For
+                    break;
                 }
             }
 

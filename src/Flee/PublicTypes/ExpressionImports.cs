@@ -105,7 +105,7 @@ namespace Flee.PublicTypes
                 currentImport = currentImport.FindImport(ns);
                 if (currentImport == null)
                 {
-                    break; // TODO: might not be correct. Was : Exit For
+                    break;
                 }
             }
 

@@ -63,14 +63,14 @@ namespace Flee.ExpressionElements.MemberElements
 
                 if (name == null)
                 {
-                    break; // TODO: might not be correct. Was : Exit While
+                    break;
                 }
 
                 ImportBase import = currentImport.FindImport(name);
 
                 if (import == null)
                 {
-                    break; // TODO: might not be correct. Was : Exit While
+                    break;
                 }
 
                 currentImport = import;
