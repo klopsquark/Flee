@@ -5,10 +5,16 @@ using Flee.Resources;
 
 namespace Flee.PublicTypes
 {
+    /// <summary>Represents an imported namespace</summary>
+    /// <remarks>This class acts as a container for other imports.  Use it when you want to logically group expression imports.</remarks>
     public sealed class NamespaceImport : ImportBase, ICollection<ImportBase>
     {
         private readonly string _namespace;
         private readonly List<ImportBase> _imports;
+        /// <summary>Creates a new namespace import with a given namespace name</summary>
+        /// <param name="importNamespace">The name of the namespace to import</param>
+        /// <exception cref="ArgumentNullException"><paramref name="importNamespace"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="importNamespace"/> is the empty string.</exception>
         public NamespaceImport(string importNamespace)
         {
             Utility.AssertNotNull(importNamespace, "importNamespace");
@@ -36,6 +42,10 @@ namespace Flee.PublicTypes
         {
         }
 
+        /// <summary>Adds the matching members of the imports in this namespace that are not containers themselves.</summary>
+        /// <param name="memberName">The name of the members to find.</param>
+        /// <param name="memberType">The kinds of members to find.</param>
+        /// <param name="dest">The collection that receives the members found.</param>
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
             foreach (ImportBase import in this.NonContainerImports)
@@ -44,6 +54,9 @@ namespace Flee.PublicTypes
             }
         }
 
+        /// <summary>Adds nothing: a namespace does not list its members.</summary>
+        /// <param name="memberType">Ignored.</param>
+        /// <param name="dest">Left unchanged.</param>
         protected override void AddMembers(MemberTypes memberType, ICollection<MemberInfo> dest)
         {
         }
@@ -99,6 +112,12 @@ namespace Flee.PublicTypes
             }
         }
 
+        /// <summary>Determines whether another import is a namespace import with the same name.</summary>
+        /// <param name="import">The import to compare with.</param>
+        /// <returns>
+        /// True if <paramref name="import"/> is a namespace import with the same name; False otherwise.  Names are compared as the
+        /// context's <see cref="ExpressionOptions.CaseSensitive"/> option says, or ignoring case while the import belongs to no context.
+        /// </returns>
         protected override bool EqualsInternal(ImportBase? import)
         {
             NamespaceImport? otherSameType = import as NamespaceImport;
@@ -108,11 +127,24 @@ namespace Flee.PublicTypes
             return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, comparison);
         }
 
+        /// <summary>Determines if this import can contain other imports</summary>
+        /// <value>Always <see langword="true"/>.</value>
         public override bool IsContainer => true;
 
+        /// <summary>Gets the name of the import</summary>
+        /// <value>The name of the namespace</value>
         public override string Name => _namespace;
 
         #region "ICollection implementation"
+        /// <summary>Adds an import to this namespace.</summary>
+        /// <param name="item">The import to add.</param>
+        /// <remarks>
+        /// If this namespace already belongs to a context, the added import is checked against that context at once.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="item"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">
+        /// The imported type, or the type that declares the imported method, is not accessible to the context's expressions.
+        /// </exception>
         public void Add(ImportBase item)
         {
             Utility.AssertNotNull(item, "item");
@@ -125,33 +157,49 @@ namespace Flee.PublicTypes
             _imports.Add(item);
         }
 
+        /// <summary>Removes all imports from this namespace.</summary>
         public void Clear()
         {
             _imports.Clear();
         }
 
+        /// <summary>Determines whether this namespace contains an import.</summary>
+        /// <param name="item">The import to look for.</param>
+        /// <returns>True if an equal import (see <see cref="ImportBase.Equals(ImportBase)"/>) is in this namespace; False otherwise.</returns>
         public bool Contains(ImportBase item)
         {
             return _imports.Contains(item);
         }
 
+        /// <summary>Copies the imports of this namespace to an array.</summary>
+        /// <param name="array">The array that receives the imports.</param>
+        /// <param name="arrayIndex">The index in <paramref name="array"/> at which copying starts.</param>
         public void CopyTo(ImportBase[] array, int arrayIndex)
         {
             _imports.CopyTo(array, arrayIndex);
         }
 
+        /// <summary>Removes an import from this namespace.</summary>
+        /// <param name="item">The import to remove.</param>
+        /// <returns>True if an equal import was found and removed; False otherwise.</returns>
         public bool Remove(ImportBase item)
         {
             return _imports.Remove(item);
         }
 
+        /// <summary>Returns an enumerator over the imports in this namespace.</summary>
+        /// <returns>An enumerator over the imports in this namespace.</returns>
         public override System.Collections.Generic.IEnumerator<ImportBase> GetEnumerator()
         {
             return _imports.GetEnumerator();
         }
 
+        /// <summary>Gets the number of imports in this namespace.</summary>
+        /// <value>The number of imports.</value>
         public int Count => _imports.Count;
 
+        /// <summary>Gets a value indicating whether the namespace is read-only.</summary>
+        /// <value>Always <see langword="false"/>.</value>
         public bool IsReadOnly => false;
 
         #endregion

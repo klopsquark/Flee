@@ -60,7 +60,7 @@ namespace Flee.InternalTypes
         /// brach from the exact address, so if label doesn't match we have
         /// bigger problems.
         /// </summary>
-        /// <param name="other"></param>
+        /// <param name="start">The start location to compare with.</param>
         /// <returns></returns>
         public bool Equals(ILLocation start)
         {

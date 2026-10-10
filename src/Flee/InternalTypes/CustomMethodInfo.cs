@@ -147,6 +147,8 @@ namespace Flee.InternalTypes
         /// Is the given MethodInfo usable as an overload?
         /// </summary>
         /// <param name="argTypes"></param>
+        /// <param name="previous">The element the method is called on; used to match extension methods.</param>
+        /// <param name="context">The expression's context; used to match extension methods.</param>
         /// <returns></returns>
         public bool IsMatch(Type[] argTypes, MemberElement previous, ExpressionContext context)
         {

@@ -7,20 +7,50 @@ using System.Reflection;
 namespace Flee.PublicTypes
 {
     /// <summary>
-    ///
+    /// Manages the variables available to an expression
     /// </summary>
+    /// <remarks>
+    /// Use this class to manage the variables that an expression can use.  Variable names are matched as
+    /// <see cref="ExpressionOptions.CaseSensitive"/> says.
+    /// </remarks>
     public sealed class VariableCollection : IDictionary<string, object?>
     {
         // Set by CreateDictionary, which the constructor calls.
         private IDictionary<string, IVariable> _variables = null!;
         private readonly ExpressionContext _context;
 
+        /// <summary>
+        /// Occurs when an expression needs the type of a variable.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised when an expression references a variable that doesn't exist in its variable collection.  You can handle this event to provide on-demand variables.
+        /// It is raised while the expression is compiled.
+        /// </remarks>
         public event EventHandler<ResolveVariableTypeEventArgs>? ResolveVariableType;
 
+        /// <summary>
+        /// Occurs when an expression needs the value of a variable.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised when an expression references a variable that doesn't exist in its variable collection.  You can handle this event to provide on-demand variables.
+        /// It is raised each time the expression is evaluated.
+        /// </remarks>
         public event EventHandler<ResolveVariableValueEventArgs>? ResolveVariableValue;
 
+        /// <summary>
+        /// Occurs when an expression needs the return type of a function.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised when an expression references a function that doesn't exist on the expression owner or imports.  By handling this event and providing a value for the <see cref="ResolveFunctionEventArgs.ReturnType"/> property, you can implement an on-demand function.
+        /// </remarks>
         public event EventHandler<ResolveFunctionEventArgs>? ResolveFunction;
 
+        /// <summary>
+        /// Occurs when an expression needs the return value of a function.
+        /// </summary>
+        /// <remarks>
+        /// This event is raised when an expression needs the return value of an on-demand function.  By handling this event and providing a value for the <see cref="InvokeFunctionEventArgs.Result"/> property, you can invoke your on-demand function.
+        /// </remarks>
         public event EventHandler<InvokeFunctionEventArgs>? InvokeFunction;
 
         internal VariableCollection(ExpressionContext context)
@@ -223,6 +253,13 @@ namespace Flee.PublicTypes
 
         #region "Methods - Public"
 
+        /// <summary>
+        /// Gets the type of a variable.
+        /// </summary>
+        /// <param name="name">The name of the variable</param>
+        /// <returns>The type of the variable's value</returns>
+        /// <remarks>Use this method to get the type of the value of a variable.</remarks>
+        /// <exception cref="ArgumentException">No variable with the given name is defined.</exception>
         public Type GetVariableType(string name)
         {
             // With throwOnNotFound set, GetVariable throws instead of returning null.
@@ -230,6 +267,19 @@ namespace Flee.PublicTypes
             return v.VariableType;
         }
 
+        /// <summary>
+        /// Defines a variable with a specific type.
+        /// </summary>
+        /// <param name="name">The name of the variable</param>
+        /// <param name="variableType">The type of the new variable</param>
+        /// <remarks>
+        /// Use this method when you want to add a variable with a type that is different than what would be inferred from defining it using the indexer.
+        /// The new variable has no value: set one with the indexer before evaluating an expression that reads it.
+        /// </remarks>
+        /// <exception cref="ArgumentException">
+        /// A variable with the given name is already defined -or- <paramref name="variableType"/> is not accessible to the context's expressions.
+        /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="variableType"/> is <see langword="null"/>.</exception>
         public void DefineVariable(string name, Type variableType)
         {
             this.DefineVariableInternal(name, variableType, null);
@@ -237,6 +287,14 @@ namespace Flee.PublicTypes
 
         // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
         // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        /// <summary>Gets the value of a variable</summary>
+        /// <typeparam name="T">The type of the variable's value</typeparam>
+        /// <param name="name">The name of the variable</param>
+        /// <returns>The variable's value</returns>
+        /// <remarks>
+        /// This method is used by the expression to retrieve the values of variables during evaluation.  It must be public so that all expressions
+        /// can access it.  It is meant for internal use and you shouldn't depend on any of its functionality.
+        /// </remarks>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetVariableValueInternal<T>(string name)
         {
@@ -261,6 +319,15 @@ namespace Flee.PublicTypes
 
         // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
         // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        /// <summary>Gets the result of a virtual property</summary>
+        /// <typeparam name="T">The type of the result's value</typeparam>
+        /// <param name="name">The name of the property</param>
+        /// <param name="component">The object whose property value to get</param>
+        /// <returns>The property's value</returns>
+        /// <remarks>
+        /// This method is used by the expression to retrieve the values of virtual properties during evaluation.  It must be public so that all expressions
+        /// can access it.  It is meant for internal use and you shouldn't depend on any of its functionality.
+        /// </remarks>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T? GetVirtualPropertyValueInternal<T>(string name, object component)
         {
@@ -275,6 +342,15 @@ namespace Flee.PublicTypes
 
         // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
         // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        /// <summary>Gets the result of an on-demand function</summary>
+        /// <typeparam name="T">The type of the result's value</typeparam>
+        /// <param name="name">The name of the function</param>
+        /// <param name="arguments">The values of the function's arguments</param>
+        /// <returns>The function's result</returns>
+        /// <remarks>
+        /// This method is used by the expression to retrieve the values of on-demand functions during evaluation.  It must be public so that all expressions
+        /// can access it.  It is meant for internal use and you shouldn't depend on any of its functionality.
+        /// </remarks>
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T? GetFunctionResultInternal<T>(string name, object?[] arguments)
         {
@@ -304,6 +380,8 @@ namespace Flee.PublicTypes
             Add1(item);
         }
 
+        /// <summary>Removes all variables from the collection.</summary>
+        /// <remarks>Use this method to remove all variables from the collection</remarks>
         public void Clear()
         {
             _variables.Clear();
@@ -336,6 +414,18 @@ namespace Flee.PublicTypes
             return Remove1(item);
         }
 
+        /// <summary>Adds a variable to the collection.</summary>
+        /// <param name="name">The name of the variable</param>
+        /// <param name="value">The value of the variable</param>
+        /// <remarks>
+        /// Use this method to add a variable to the collection.  The variable's type is the type of <paramref name="value"/>.
+        /// If the value is an expression (<see cref="IExpression"/>), the variable's type is the expression's result type, and an
+        /// expression that reads the variable evaluates that expression.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="value"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">
+        /// A variable with the given name is already defined -or- the type of <paramref name="value"/> is not accessible to the context's expressions.
+        /// </exception>
         public void Add(string name, object? value)
         {
             Utility.AssertNotNull(value, "value");
@@ -344,16 +434,29 @@ namespace Flee.PublicTypes
             this[name] = value;
         }
 
+        /// <summary>Determines if the collection contains a variable.</summary>
+        /// <param name="name">The name of the variable</param>
+        /// <returns>True if the collection has a variable with the given name; False otherwise</returns>
+        /// <remarks>Use this method to determine if the collection contains a variable</remarks>
         public bool ContainsKey(string name)
         {
             return _variables.ContainsKey(name);
         }
 
+        /// <summary>Removes a variable from the collection.</summary>
+        /// <param name="name">The name of the variable</param>
+        /// <returns>True if the variable was found and removed; False otherwise</returns>
+        /// <remarks>Use this method to remove a variable from the collection</remarks>
         public bool Remove(string name)
         {
             return _variables.Remove(name);
         }
 
+        /// <summary>Gets the value of a variable in the collection.</summary>
+        /// <param name="key">The name of the variable</param>
+        /// <param name="value">The location to store the value of the variable</param>
+        /// <returns>True if the collection contains a variable with the given name; False otherwise</returns>
+        /// <remarks>Use this method to get the value of a variable in the collection</remarks>
         public bool TryGetValue(string key, out object? value)
         {
             IVariable? v = this.GetVariable(key, false);
@@ -361,6 +464,8 @@ namespace Flee.PublicTypes
             return v != null;
         }
 
+        /// <summary>Returns an enumerator over the names and values of all variables.</summary>
+        /// <returns>An enumerator over a snapshot of the variables taken when this method is called.</returns>
         public System.Collections.Generic.IEnumerator<System.Collections.Generic.KeyValuePair<string, object?>> GetEnumerator()
         {
             Dictionary<string, object?> dict = this.GetNameValueDictionary();
@@ -377,10 +482,29 @@ namespace Flee.PublicTypes
             return GetEnumerator1();
         }
 
+        /// <summary>Gets the number of variables defined in the collection.</summary>
+        /// <value>The number of variables in the collection</value>
+        /// <remarks>Use this property to get a count of the number of variables in the collection</remarks>
         public int Count => _variables.Count;
 
+        /// <summary>Gets a value indicating whether the collection is read-only.</summary>
+        /// <value>Always <see langword="false"/>.</value>
         public bool IsReadOnly => false;
 
+        /// <summary>Gets or sets the value of a variable.</summary>
+        /// <param name="name">The name of the variable</param>
+        /// <value>The value of the variable</value>
+        /// <remarks>
+        /// Use this property to get or set the value of a variable.  If a variable with the given name does not exist, a new variable will be defined
+        /// (see <see cref="Add(string, object)"/>).  Otherwise, the value of the existing variable will be overwritten.
+        /// <para>
+        /// The new value of an existing variable is not checked against the variable's type: the variable keeps its type, and an
+        /// expression that reads it fails when it is evaluated, for example with an <see cref="InvalidCastException"/>.  Setting an
+        /// existing variable that holds a plain value to <see langword="null"/> stores the default value of its type.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="ArgumentException">Getting a variable that is not defined.</exception>
+        /// <exception cref="ArgumentNullException">Defining a new variable with a <see langword="null"/> value.</exception>
         public object? this[string name]
         {
             get
@@ -404,8 +528,14 @@ namespace Flee.PublicTypes
             }
         }
 
+        /// <summary>Gets a collection with the names of all variables.</summary>
+        /// <value>A collection with all the names</value>
+        /// <remarks>Use this property to access all the variable names in the collection</remarks>
         public System.Collections.Generic.ICollection<string> Keys => _variables.Keys;
 
+        /// <summary>Gets a collection with the values of all variables.</summary>
+        /// <value>A collection with all the values, taken when the property is read</value>
+        /// <remarks>Use this property to access all the variable values in the collection</remarks>
         public System.Collections.Generic.ICollection<object?> Values
         {
             get
