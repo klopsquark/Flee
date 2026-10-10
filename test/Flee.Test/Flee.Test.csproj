@@ -22,6 +22,8 @@
     <ItemGroup>
       <!-- The script tests read these from the output folder. -->
       <None Update="TestScripts\**" CopyToOutputDirectory="PreserveNewest" />
+      <!-- Documentation whose examples are run as tests (DocumentationTests). -->
+      <None Include="..\..\doc\language-reference.md" Link="Docs\language-reference.md" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

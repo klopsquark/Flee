@@ -80,6 +80,7 @@ Entry template:
 | R-043 | Overload resolution test records today's choices | test | Phase 4 |
 | R-044 | Warnings are errors | build | Phase 4 |
 | R-045 | cast(x, char) converts properly (and no longer throws after R-035) | fix | Phase 4 |
+| R-046 | Documentation examples run as tests | test | Phase 6 |
 
 ## Entries
 
@@ -695,6 +696,8 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   returns false for member kinds it does not know.
 - **Behaviour:** none on any path the tests reach; only paths that were already broken now throw a
   clear exception.
+  **Correction (R-045):** one of the 16, the default branch of the explicit numeric cast, was
+  reachable for `cast(x, char)`; R-045 restores and fixes it.
 - **Verified:** tests green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** not needed (plan item).
 
@@ -887,3 +890,17 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   probed with unusual operand types (shifts on `char` and `double`, `and` on mixed types, negating
   unsigned values): type checking rejects them before the throwing branch is reached.
 - **Discussed:** not needed (bug fix, and a regression of this branch).
+
+### R-046: Documentation examples run as tests
+
+- **Kind / phase:** test / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** `DocumentationTests/LanguageReferenceTests` reads `doc/language-reference.md` (linked
+  into the test output) and runs every row of its "Expression | Result | Type" tables in the
+  context the document describes, comparing value, type, compile-error reason or exception.
+- **Why:** Plan, Phase 6: documentation examples are compiled as tests so they cannot go stale.
+  Writing the reference this way also found the `cast(x, char)` regression (R-045).
+- **Behaviour:** none (test only).
+- **Verified:** all 124 examples pass on net8.0 and net10.0; changing one documented result makes
+  the test fail.
+- **Discussed:** not needed (plan item).
