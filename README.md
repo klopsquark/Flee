@@ -58,9 +58,11 @@ double result = e.Evaluate();   // 5
 | [API guide](doc/api-guide.md) | Contexts, imports, variables, owners, options, errors, the calculation engine |
 | [Limitations](doc/limitations.md) | Platforms, language gaps, culture and threading |
 | [Migration from Flee 2.0.0](doc/migration-from-flee-2.0.md) | What changes when you upgrade |
-| [Architecture](doc/architecture.md) | From text to IL, for contributors |
+| [Internals](doc/architecture.md) | From text to IL: parser, elements, IL, names, calculation engine, threads |
 
 The examples in the language reference and the API guide run as tests, so they match the library.
+The same documents, with a getting-started page, examples, the project status and a development
+guide, form the [wiki](https://github.com/klopsquark/Flee/wiki).
 
 ## Building from source
 

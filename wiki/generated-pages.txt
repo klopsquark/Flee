@@ -1,0 +1,11 @@
+# Wiki pages generated from repository documents by tools/Publish-Wiki.ps1.
+# Format: <path in the repository> = <wiki page name>
+doc/language-reference.md = Language-Reference
+doc/api-guide.md = API-Guide
+doc/architecture.md = Internals
+doc/limitations.md = Limitations
+doc/migration-from-flee-2.0.md = Migration-Guide
+CHANGELOG.md = Changelog
+doc/deferred.md = Deferred-Work
+doc/upstream-issues.md = Upstream-Issues
+doc/upstream-wiki.md = Upstream-Wiki

@@ -92,6 +92,7 @@ Entry template:
 | R-055 | A failed SimpleCalcEngine add keeps the context's variables | fix | Phase 6 |
 | R-056 | Upstream wiki examples run as tests | test | Phase 6 |
 | R-057 | CI reports build errors as annotations | build | Phase 6 |
+| R-058 | Wiki: handbook pages, tested examples, publish script | docs | Phase 6 |
 
 ## Entries
 
@@ -1119,3 +1120,30 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the logger syntax builds locally and leaves an empty log on success; the failure
   path is checked by the next failing run.
 - **Discussed:** not needed (diagnostics only).
+
+### R-058: Wiki: handbook pages, tested examples, publish script
+
+- **Kind / phase:** docs / Phase 6
+- **Commits:** the commit that adds this entry; the internals page before it
+- **What:** a GitHub wiki for the fork. `wiki/` holds the pages that exist only there: Home,
+  Getting Started, Examples, Project Status, Development, sidebar and footer.
+  `wiki/generated-pages.txt` maps nine repository documents to further pages (language reference,
+  API guide, internals, limitations, migration guide, changelog, deferred work, upstream issues,
+  upstream wiki). `tools/Publish-Wiki.ps1` builds all 16 pages into `build/wiki`, drops the
+  leading title, rewrites links between documents into wiki links and other links to GitHub, and
+  with `-Push` commits them to the wiki repository. `doc/architecture.md` grew into the internals
+  description it is published as. The API guide now shows the `Order` owner class its example uses.
+- **Why:** the maintainer asked for a conclusive handbook for users and developers, covering the
+  upstream wiki's content, the fork's documentation, the library's internals, the work done and
+  what is open. Keeping the sources in the repository means they are reviewed, versioned and
+  tested with the code; the wiki is a published copy.
+- **Tests:** `WikiSyncTests` checks that every C# block on a wiki page is a marked example equal to
+  its `#region doc:...` in `WikiExamples.cs` (new, 6 examples) or `ApiGuideExamples.cs`, that every
+  wiki region is used, and that every page link names an existing page. The script fails on links
+  to files that do not exist.
+- **Behaviour:** none (documentation, tests and a script).
+- **Verified:** 2,050 tests pass on net8.0 and net10.0; the script builds 16 pages and every link
+  in them resolves.
+- **Discussed:** yes, 2026-10-10. Choice made without asking: the wiki is generated from the
+  repository rather than edited on GitHub, so edits made on the website are overwritten by the
+  next publish.

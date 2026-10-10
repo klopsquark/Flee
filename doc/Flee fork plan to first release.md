@@ -164,6 +164,7 @@ Documentation is written after the API settles, so it describes what ships. Upst
 - [x] **Limitations:** no NativeAOT or iOS because of runtime IL generation, and what is and is not thread-safe.
 - [x] **Migration notes from Flee 2.0.0** and a changelog.
 - [x] Compile the documentation examples as tests so they cannot go stale.
+- [x] A wiki as the handbook for users and developers, built from `wiki/` and `doc/` (R-058; asked for by the maintainer on 2026-10-10).
 
 ## Phase 7: Performance optimization (stretch)
 

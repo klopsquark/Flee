@@ -110,6 +110,17 @@ object? max = context.CompileDynamic("cast(int.MaxValue, long) + 1").Evaluate();
 
 ## Expression owner
 
+<!-- example: OrderClass -->
+```csharp
+public class Order
+{
+    public double Price = 12.5;
+    public int Quantity = 4;
+    private string _customer = "ACME";
+    public string Customer => _customer;
+}
+```
+
 <!-- example: Owner -->
 ```csharp
 var order = new Order { Price = 12.5, Quantity = 4 };

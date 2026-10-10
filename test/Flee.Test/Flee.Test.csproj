@@ -26,6 +26,8 @@
       <None Include="..\..\doc\language-reference.md" Link="Docs\language-reference.md" CopyToOutputDirectory="PreserveNewest" />
       <None Include="..\..\doc\api-guide.md" Link="Docs\api-guide.md" CopyToOutputDirectory="PreserveNewest" />
       <None Include="DocumentationTests\ApiGuideExamples.cs" Link="Docs\ApiGuideExamples.cs" CopyToOutputDirectory="PreserveNewest" />
+      <None Include="DocumentationTests\WikiExamples.cs" Link="Docs\WikiExamples.cs" CopyToOutputDirectory="PreserveNewest" />
+      <None Include="..\..\wiki\*.md;..\..\wiki\generated-pages.txt" Link="Docs\wiki\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

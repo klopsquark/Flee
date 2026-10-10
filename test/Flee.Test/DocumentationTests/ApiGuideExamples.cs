@@ -18,6 +18,7 @@ namespace Flee.Test.DocumentationTests
     [TestFixture]
     public class ApiGuideExamples
     {
+        #region doc:OrderClass
         public class Order
         {
             public double Price = 12.5;
@@ -25,6 +26,7 @@ namespace Flee.Test.DocumentationTests
             private string _customer = "ACME";
             public string Customer => _customer;
         }
+        #endregion
 
         [Test]
         public void QuickStart()

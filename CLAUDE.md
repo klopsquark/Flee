@@ -71,6 +71,8 @@ Decisions made so far (details in the plan's Open decisions table):
 | `benchmarks/Flee.Benchmarks` | BenchmarkDotNet project; results in `benchmarks/results` |
 | `test/Flee.Test/TestScripts` | Expression script files: `ValidExpressions.txt`, `InvalidExpressions.txt`, `ValidCasts.txt`, `CheckedTests.txt` and others |
 | `doc` | Plan, findings, change rationale, upstream issue triage |
+| `wiki` | Hand-written wiki pages; `generated-pages.txt` maps `doc/` files to wiki pages |
+| `tools/Publish-Wiki.ps1` | Builds the GitHub wiki from `wiki/` and `doc/`; `-Push` publishes it |
 | `build` | All build output (git-ignored), see below |
 
 ## Build and test
