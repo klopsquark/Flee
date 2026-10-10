@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using Flee.InternalTypes;
 using Flee.Resources;
 
@@ -9,9 +10,10 @@ namespace Flee.PublicTypes
 
         private static Dictionary<string, Type> _builtinTypeMap = CreateBuiltinTypeMap();
         private NamespaceImport _rootImport;
-        private TypeImport _ownerImport;
+        private TypeImport? _ownerImport;
 
-        private ExpressionContext _context;
+        // Set by SetContext right after construction (ExpressionContext constructor and CloneInternal).
+        private ExpressionContext? _context;
         internal ExpressionImports()
         {
             _rootImport = new NamespaceImport("true");
@@ -60,12 +62,12 @@ namespace Flee.PublicTypes
         internal void ImportOwner(Type ownerType)
         {
             _ownerImport = new TypeImport(ownerType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false);
-            _ownerImport.SetContext(_context);
+            _ownerImport.SetContext(_context!);
         }
 
         internal bool HasNamespace(string ns)
         {
-            NamespaceImport import = _rootImport.FindImport(ns) as NamespaceImport;
+            NamespaceImport? import = _rootImport.FindImport(ns) as NamespaceImport;
             return (import != null);
         }
 
@@ -76,7 +78,7 @@ namespace Flee.PublicTypes
                 return _rootImport;
             }
 
-            NamespaceImport import = _rootImport.FindImport(ns) as NamespaceImport;
+            NamespaceImport? import = _rootImport.FindImport(ns) as NamespaceImport;
 
             if (import == null)
             {
@@ -89,16 +91,17 @@ namespace Flee.PublicTypes
 
         internal MemberInfo[] FindOwnerMembers(string memberName, System.Reflection.MemberTypes memberType)
         {
-            return _ownerImport.FindMembers(memberName, memberType);
+            // The expression calls ImportOwner before it compiles, and only the compiler calls this.
+            return _ownerImport!.FindMembers(memberName, memberType);
         }
 
-        internal Type FindType(string[] typeNameParts)
+        internal Type? FindType(string[] typeNameParts)
         {
             string[] namespaces = new string[typeNameParts.Length - 1];
             string typeName = typeNameParts[typeNameParts.Length - 1];
 
             System.Array.Copy(typeNameParts, namespaces, namespaces.Length);
-            ImportBase currentImport = _rootImport;
+            ImportBase? currentImport = _rootImport;
 
             foreach (string ns in namespaces)
             {
@@ -112,9 +115,9 @@ namespace Flee.PublicTypes
             return currentImport?.FindType(typeName);
         }
 
-        static internal Type GetBuiltinType(string name)
+        static internal Type? GetBuiltinType(string name)
         {
-            Type t = null;
+            Type? t = null;
 
             if (_builtinTypeMap.TryGetValue(name, out t))
             {
@@ -133,7 +136,7 @@ namespace Flee.PublicTypes
             Utility.AssertNotNull(t, "t");
             Utility.AssertNotNull(ns, "namespace");
 
-            _context.AssertTypeIsAccessible(t);
+            _context!.AssertTypeIsAccessible(t);
 
             NamespaceImport import = this.GetImport(ns);
             import.Add(new TypeImport(t, BindingFlags.Public | BindingFlags.Static, false));
@@ -150,7 +153,7 @@ namespace Flee.PublicTypes
             Utility.AssertNotNull(t, "t");
             Utility.AssertNotNull(ns, "namespace");
 
-            MethodInfo mi = t.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+            MethodInfo? mi = t.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
 
             if (mi == null)
             {
@@ -166,7 +169,8 @@ namespace Flee.PublicTypes
             Utility.AssertNotNull(mi, "mi");
             Utility.AssertNotNull(ns, "namespace");
 
-            _context.AssertTypeIsAccessible(mi.ReflectedType);
+            // ReflectedType is null only for a module-level (global) method, which C# cannot declare.
+            _context!.AssertTypeIsAccessible(mi.ReflectedType!);
 
             if (!mi.IsStatic || !mi.IsPublic)
             {

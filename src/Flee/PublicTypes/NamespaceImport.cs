@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using Flee.InternalTypes;
 using Flee.Resources;
 
@@ -47,11 +48,11 @@ namespace Flee.PublicTypes
         {
         }
 
-        internal override Type FindType(string typeName)
+        internal override Type? FindType(string typeName)
         {
             foreach (ImportBase import in this.NonContainerImports)
             {
-                Type t = import.FindType(typeName);
+                Type? t = import.FindType(typeName);
 
                 if ((t != null))
                 {
@@ -62,7 +63,7 @@ namespace Flee.PublicTypes
             return null;
         }
 
-        internal override ImportBase FindImport(string name)
+        internal override ImportBase? FindImport(string name)
         {
             foreach (ImportBase import in _imports)
             {
@@ -76,7 +77,8 @@ namespace Flee.PublicTypes
 
         internal override bool IsMatch(string name)
         {
-            return string.Equals(_namespace, name, this.Context.Options.MemberStringComparison);
+            // Only called while compiling, when the import belongs to a context.
+            return string.Equals(_namespace, name, this.Context!.Options.MemberStringComparison);
         }
 
         private ICollection<ImportBase> NonContainerImports
@@ -97,10 +99,12 @@ namespace Flee.PublicTypes
             }
         }
 
-        protected override bool EqualsInternal(ImportBase import)
+        protected override bool EqualsInternal(ImportBase? import)
         {
-            NamespaceImport otherSameType = import as NamespaceImport;
-            return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, this.Context.Options.MemberStringComparison);
+            NamespaceImport? otherSameType = import as NamespaceImport;
+            // Assumes the import belongs to a context; on a detached NamespaceImport this throws
+            // NullReferenceException, as before.
+            return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, this.Context!.Options.MemberStringComparison);
         }
 
         public override bool IsContainer => true;

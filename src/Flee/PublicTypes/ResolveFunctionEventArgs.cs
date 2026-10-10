@@ -1,4 +1,5 @@
-﻿namespace Flee.PublicTypes
+﻿#nullable enable
+namespace Flee.PublicTypes
 {
     public class ResolveFunctionEventArgs : EventArgs
     {
@@ -6,7 +7,7 @@
         private readonly string _name;
         private readonly Type[] _argumentTypes;
 
-        private Type _returnType;
+        private Type? _returnType;
         internal ResolveFunctionEventArgs(string name, Type[] argumentTypes)
         {
             _name = name;
@@ -23,7 +24,7 @@
             get { return _argumentTypes; }
         }
 
-        public Type ReturnType
+        public Type? ReturnType
         {
             get { return _returnType; }
             set { _returnType = value; }

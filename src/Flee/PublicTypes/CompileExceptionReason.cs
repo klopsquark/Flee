@@ -1,4 +1,5 @@
-﻿using Flee.InternalTypes;
+﻿#nullable enable
+using Flee.InternalTypes;
 using Flee.Parsing;
 using Flee.Resources;
 

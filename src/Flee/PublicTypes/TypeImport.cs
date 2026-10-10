@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using Flee.InternalTypes;
 using Flee.Resources;
 
@@ -28,12 +29,14 @@ namespace Flee.PublicTypes
 
         internal override void Validate()
         {
-            this.Context.AssertTypeIsAccessible(_type);
+            // Validate runs from SetContext, after the context is set.
+            this.Context!.AssertTypeIsAccessible(_type);
         }
 
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            MemberInfo[] members = _type.FindMembers(memberType, _bindFlags, this.Context.Options.MemberFilter, memberName);
+            // Only called while compiling, when the import belongs to a context.
+            MemberInfo[] members = _type.FindMembers(memberType, _bindFlags, this.Context!.Options.MemberFilter, memberName);
             ImportBase.AddMemberRange(members, dest);
         }
 
@@ -50,7 +53,8 @@ namespace Flee.PublicTypes
         {
             if (_useTypeNameAsNamespace)
             {
-                return string.Equals(_type.Name, name, this.Context.Options.MemberStringComparison);
+                // Only called while compiling, when the import belongs to a context.
+                return string.Equals(_type.Name, name, this.Context!.Options.MemberStringComparison);
             }
             else
             {
@@ -58,9 +62,10 @@ namespace Flee.PublicTypes
             }
         }
 
-        internal override Type FindType(string typeName)
+        internal override Type? FindType(string typeName)
         {
-            if (string.Equals(typeName, _type.Name, this.Context.Options.MemberStringComparison))
+            // Only called while compiling, when the import belongs to a context.
+            if (string.Equals(typeName, _type.Name, this.Context!.Options.MemberStringComparison))
             {
                 return _type;
             }
@@ -70,9 +75,9 @@ namespace Flee.PublicTypes
             }
         }
 
-        protected override bool EqualsInternal(ImportBase import)
+        protected override bool EqualsInternal(ImportBase? import)
         {
-            TypeImport otherSameType = import as TypeImport;
+            TypeImport? otherSameType = import as TypeImport;
             return (otherSameType != null) && object.ReferenceEquals(_type, otherSameType._type);
         }
         #endregion

@@ -1,4 +1,5 @@
-﻿using Flee.CalcEngine.InternalTypes;
+﻿#nullable enable
+using Flee.CalcEngine.InternalTypes;
 using Flee.CalcEngine.PublicTypes;
 using Flee.ExpressionElements.Base;
 using Flee.InternalTypes;
@@ -73,7 +74,7 @@ namespace Flee.PublicTypes
             }
         }
 
-        private void AssertNestedTypeIsAccessible(Type t)
+        private void AssertNestedTypeIsAccessible(Type? t)
         {
             while ((t != null))
             {
@@ -128,7 +129,8 @@ namespace Flee.PublicTypes
 
                 Node rootNode = DoParse();
                 analyzer.Reset();
-                ExpressionElement topElement = (ExpressionElement)rootNode.Values[0];
+                // The analyzer always leaves the top element as the root node's first value.
+                ExpressionElement topElement = (ExpressionElement)rootNode.Values[0]!;
                 return topElement;
             }
         }
@@ -203,7 +205,7 @@ namespace Flee.PublicTypes
         {
             get
             {
-                ExpressionParser parser = _properties.GetValue<ExpressionParser>("IdentifierParser");
+                ExpressionParser? parser = _properties.GetValue<ExpressionParser>("IdentifierParser");
 
                 if (parser == null)
                 {
@@ -229,7 +231,7 @@ namespace Flee.PublicTypes
 
         internal object ExpressionOwner => _properties.GetValue<object>("ExpressionOwner");
 
-        internal string CalcEngineExpressionName => _properties.GetValue<string>("CalcEngineExpressionName");
+        internal string? CalcEngineExpressionName => _properties.GetValue<string>("CalcEngineExpressionName");
 
         internal ExpressionParser Parser => _properties.GetValue<ExpressionParser>("ExpressionParser");
 
@@ -244,7 +246,7 @@ namespace Flee.PublicTypes
 
         // Called from generated IL (calculation-engine atoms). NoInlining keeps the .NET 10 JIT from
         // inlining it into every compiled expression (R-019).
-        public CalculationEngine CalculationEngine
+        public CalculationEngine? CalculationEngine
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
             get => _properties.GetValue<CalculationEngine>("CalculationEngine");

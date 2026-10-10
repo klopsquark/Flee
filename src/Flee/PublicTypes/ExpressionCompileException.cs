@@ -1,4 +1,5 @@
-﻿using Flee.InternalTypes;
+﻿#nullable enable
+using Flee.InternalTypes;
 using Flee.Parsing;
 using Flee.Resources;
 
@@ -38,7 +39,9 @@ namespace Flee.PublicTypes
             {
                 if (_reason == CompileExceptionReason.SyntaxError)
                 {
-                    Exception innerEx = this.InnerException;
+                    // Only the constructor taking the parser exception sets SyntaxError, and it passes
+                    // that exception on as the inner exception.
+                    Exception innerEx = this.InnerException!;
                     string msg = $"{Utility.GetCompileErrorMessage(CompileErrorResourceKeys.SyntaxError)}: {innerEx.Message}";
                     return msg;
                 }

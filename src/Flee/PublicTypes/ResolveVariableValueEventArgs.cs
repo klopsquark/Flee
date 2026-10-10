@@ -1,11 +1,12 @@
-﻿namespace Flee.PublicTypes
+﻿#nullable enable
+namespace Flee.PublicTypes
 {
     public class ResolveVariableValueEventArgs : EventArgs
     {
         private readonly string _name;
         private readonly Type _type;
 
-        private object _value;
+        private object? _value;
         internal ResolveVariableValueEventArgs(string name, Type t)
         {
             _name = name;
@@ -22,7 +23,7 @@
             get { return _type; }
         }
 
-        public object VariableValue
+        public object? VariableValue
         {
             get { return _value; }
             set { _value = value; }

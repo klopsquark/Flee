@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using Flee.InternalTypes;
 using Flee.Resources;
 
@@ -16,12 +17,15 @@ namespace Flee.PublicTypes
 
         internal override void Validate()
         {
-            this.Context.AssertTypeIsAccessible(_method.ReflectedType);
+            // Validate runs from SetContext, after the context is set. ReflectedType is null only for a
+            // module-level (global) method, which C# cannot declare.
+            this.Context!.AssertTypeIsAccessible(_method.ReflectedType!);
         }
 
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            if (string.Equals(memberName, _method.Name, this.Context.Options.MemberStringComparison) && (memberType & MemberTypes.Method) != 0)
+            // Only called while compiling, when the import belongs to a context.
+            if (string.Equals(memberName, _method.Name, this.Context!.Options.MemberStringComparison) && (memberType & MemberTypes.Method) != 0)
             {
                 dest.Add(_method);
             }
@@ -37,17 +41,18 @@ namespace Flee.PublicTypes
 
         internal override bool IsMatch(string name)
         {
-            return string.Equals(_method.Name, name, this.Context.Options.MemberStringComparison);
+            // Only called while compiling, when the import belongs to a context.
+            return string.Equals(_method.Name, name, this.Context!.Options.MemberStringComparison);
         }
 
-        internal override Type FindType(string typeName)
+        internal override Type? FindType(string typeName)
         {
             return null;
         }
 
-        protected override bool EqualsInternal(ImportBase import)
+        protected override bool EqualsInternal(ImportBase? import)
         {
-            MethodImport otherSameType = import as MethodImport;
+            MethodImport? otherSameType = import as MethodImport;
             return (otherSameType != null) && _method.MethodHandle.Equals(otherSameType._method.MethodHandle);
         }
 

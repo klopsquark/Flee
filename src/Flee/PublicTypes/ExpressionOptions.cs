@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using System.Globalization;
 using Flee.InternalTypes;
 
@@ -9,9 +10,9 @@ namespace Flee.PublicTypes
     {
 
         private PropertyDictionary _properties;
-        private Type _ownerType;
+        private Type? _ownerType;
         private readonly ExpressionContext _owner;
-        internal event EventHandler CaseSensitiveChanged;
+        internal event EventHandler? CaseSensitiveChanged;
 
         internal ExpressionOptions(ExpressionContext owner)
         {
@@ -58,9 +59,10 @@ namespace Flee.PublicTypes
             return clonedOptions;
         }
 
-        internal bool IsOwnerType(Type t)
+        internal bool IsOwnerType(Type? t)
         {
-            return this._ownerType.IsAssignableFrom(t);
+            // The expression sets the owner type before it compiles, and only the compiler calls this.
+            return this._ownerType!.IsAssignableFrom(t);
         }
 
         internal void SetOwnerType(Type ownerType)
@@ -71,7 +73,7 @@ namespace Flee.PublicTypes
         #endregion
 
         #region "Properties - Public"
-        public Type ResultType
+        public Type? ResultType
         {
             get { return _properties.GetValue<Type>("ResultType"); }
             set
@@ -201,7 +203,7 @@ namespace Flee.PublicTypes
             }
         }
 
-        internal Type OwnerType => _ownerType;
+        internal Type? OwnerType => _ownerType;
 
         internal bool IsGeneric
         {

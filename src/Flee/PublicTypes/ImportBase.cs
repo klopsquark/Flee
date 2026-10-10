@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿#nullable enable
+using System.Reflection;
 using Flee.InternalTypes;
 using Flee.Resources;
 
@@ -6,7 +7,7 @@ namespace Flee.PublicTypes
 {
     public abstract class ImportBase : IEnumerable<ImportBase>, IEquatable<ImportBase>
     {
-        private ExpressionContext _context;
+        private ExpressionContext? _context;
 
         internal ImportBase()
         {
@@ -47,15 +48,15 @@ namespace Flee.PublicTypes
             }
         }
 
-        protected bool AlwaysMemberFilter(MemberInfo member, object criteria)
+        protected bool AlwaysMemberFilter(MemberInfo member, object? criteria)
         {
             return true;
         }
 
         internal abstract bool IsMatch(string name);
-        internal abstract Type FindType(string typename);
+        internal abstract Type? FindType(string typename);
 
-        internal virtual ImportBase FindImport(string name)
+        internal virtual ImportBase? FindImport(string name)
         {
             return null;
         }
@@ -95,16 +96,17 @@ namespace Flee.PublicTypes
         #endregion
 
         #region "IEquatable Implementation"
-        public bool Equals(ImportBase other)
+        public bool Equals(ImportBase? other)
         {
             return this.EqualsInternal(other);
         }
 
-        protected abstract bool EqualsInternal(ImportBase import);
+        protected abstract bool EqualsInternal(ImportBase? import);
         #endregion
 
         #region "Properties - Protected"
-        protected ExpressionContext Context => _context;
+        // Null until the import is added to an ExpressionContext's imports.
+        protected ExpressionContext? Context => _context;
 
         #endregion
 
