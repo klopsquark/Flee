@@ -37,17 +37,19 @@ namespace Flee.CalcEngine.PublicTypes
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="atomName"/>, <paramref name="expression"/> or <paramref name="context"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentException">The loader already has an expression with the given name.</exception>
+        /// <exception cref="ExpressionCompileException">The expression has a syntax error.  The loader is left unchanged.</exception>
         public void Add(string atomName, string expression, ExpressionContext context)
         {
             Utility.AssertNotNull(atomName, "atomName");
             Utility.AssertNotNull(expression, "expression");
             Utility.AssertNotNull(context, "context");
 
+            // Parse first: an expression with a syntax error must leave nothing behind (D-25).
+            ICollection<string> references = this.GetReferences(expression, context);
+
             BatchLoadInfo info = new BatchLoadInfo(atomName, expression, context);
             _nameInfoMap.Add(atomName, info);
             _dependencies.AddTail(atomName);
-
-            ICollection<string> references = this.GetReferences(expression, context);
 
             foreach (string reference in references)
             {

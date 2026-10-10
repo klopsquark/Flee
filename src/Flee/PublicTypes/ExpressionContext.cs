@@ -215,7 +215,15 @@ namespace Flee.PublicTypes
             IdentifierAnalyzer analyzer = (IdentifierAnalyzer)parser.Analyzer;
             analyzer.Reset();
 
-            parser.Parse();
+            try
+            {
+                parser.Parse();
+            }
+            catch (ParserLogException ex)
+            {
+                // Syntax error; report it as DoParse does, not as the parser's own exception (D-25)
+                throw new ExpressionCompileException(ex);
+            }
 
             return (IdentifierAnalyzer)parser.Analyzer;
         }

@@ -85,6 +85,7 @@ Entry template:
 | R-048 | XML documentation comments on the public API | docs | Phase 6 |
 | R-049 | Package ships Flee.xml instead of DocComments.xml | build | Phase 6 |
 | R-050 | Two malformed doc comments in the parser fixed | docs | Phase 6 |
+| R-051 | Syntax errors in calculation-engine and batch expressions are compile errors | fix | Phase 6 |
 
 ## Entries
 
@@ -983,3 +984,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** `Flee` builds with no warnings and no CS1570 suggestions; tests pass.
 - **Discussed:** yes, 2026-10-10: the maintainer asked for the fix. The second approved exception
   to the parser rule, after R-042.
+
+### R-051: Syntax errors in calculation-engine and batch expressions are compile errors
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** ad426fc (test), the commit that adds this entry (fix)
+- **What:** `ExpressionContext.ParseIdentifiers` wraps the parser's `ParserLogException` in
+  `ExpressionCompileException` with reason `SyntaxError`, as `DoParse` does. `BatchLoader.Add` parses
+  before it records the name, so a failed add leaves the loader unchanged.
+- **Why:** D-25: `BatchLoader.Add`, `SimpleCalcEngine.AddDynamic` and `AddGeneric` threw the
+  internal `Flee.Parsing.ParserLogException`, which callers cannot catch by a public type, and
+  `BatchLoader.Add` kept the name of the failed expression.
+- **Behaviour:** these three methods now throw `ExpressionCompileException` for a syntax error, like
+  every other compile path. The parser exception is its `InnerException`.
+- **Verified:** `BatchSyntaxErrorIsCompileError` and `SimpleCalcEngineSyntaxErrorIsCompileError`
+  failed before and pass now; full suite green on net8.0 and net10.0.
+- **Discussed:** yes, 2026-10-10: the maintainer asked for D-25 to D-29 to be fixed before the release.

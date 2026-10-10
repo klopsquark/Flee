@@ -51,8 +51,6 @@ namespace Flee.Test.CalcEngineTests
         // Found while writing the XML comments (R-048), recorded in doc/deferred.md.
 
         [Test(Description = "D-25: a syntax error in a batch expression is a compile error and adds nothing")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: ParserLogException from ExpressionContext.ParseIdentifiers (D-25)")]
         public void BatchSyntaxErrorIsCompileError()
         {
             var engine = new CalculationEngine();
@@ -65,8 +63,6 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "D-25: a syntax error in a SimpleCalcEngine expression is a compile error")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: ParserLogException from ExpressionContext.ParseIdentifiers (D-25)")]
         public void SimpleCalcEngineSyntaxErrorIsCompileError()
         {
             var engine = new SimpleCalcEngine();

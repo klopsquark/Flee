@@ -37,7 +37,7 @@ How to use it:
 | D-22 | Fixes from the maintainer's local Flee copy | When supplied | Open |
 | D-23 | `Resources/DocComments.xml` is shipped as a content file | Phase 6 | **Done** (R-049) |
 | D-24 | Other names the IDE may flag | When convenient | Open |
-| D-25 | Syntax errors in calculation-engine and batch expressions leak `ParserLogException` | Before the release, if approved | Open |
+| D-25 | Syntax errors in calculation-engine and batch expressions leak `ParserLogException` | Before the release, if approved | **Done** (R-051) |
 | D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | Open |
 | D-27 | Evaluating a variable created by `DefineVariable` before it has a value | Before the release, if approved | Open |
 | D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | Open |
@@ -250,6 +250,7 @@ How to use it:
   fix itself is outside the parser.
 - **Pick up:** before the release if approved: pin it with a known-failure test, then wrap the
   exception as `DoParse` does.
+- **Done:** R-051.
 
 ### D-26: `BatchLoader` with an unknown name throws `KeyNotFoundException`
 
