@@ -39,7 +39,10 @@ namespace Flee.ExpressionElements.Base.Literals
             }
             else if (value >= 0 & value <= UInt32.MaxValue)
             {
-                ilg.Emit(OpCodes.Ldc_I4, unchecked((int)Convert.ToUInt32(value)));
+                // Through the Int32 overload, which picks the short opcode forms itself. The runtime's
+                // ILGenerator shortens ldc.i4 -1 (0xFFFFFFFF) to one byte, which Flee's own length
+                // bookkeeping did not expect (R-025).
+                EmitLoad(unchecked((int)Convert.ToUInt32(value)), ilg);
                 ilg.Emit(OpCodes.Conv_U8);
             }
             else

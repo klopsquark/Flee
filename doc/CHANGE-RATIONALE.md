@@ -59,6 +59,7 @@ Entry template:
 | R-022 | `in` works with non-generic IList and IDictionary | fix | Phase 4 |
 | R-023 | Out-of-range real literals report ConstantOverflow again | fix | Phase 4 |
 | R-024 | Method calls on value types use the value-type path (GetType crash) | fix | Phase 4 |
+| R-025 | Debug IL length check passes for 0xFFFFFFFF as a long | fix | Phase 4 |
 
 ## Entries
 
@@ -477,4 +478,21 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the 4 script cases of the `crash` category run and pass, and leave the
   known-failures list; full suite green in Debug and Release on net8.0 and net10.0 (Release:
   1,856 pass, 2 skipped).
+- **Discussed:** not needed (bug fix).
+
+### R-025: Debug IL length check passes for 0xFFFFFFFF as a long
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `LiteralElement.EmitLoad(long)` emits values between `Int32.MaxValue` and
+  `UInt32.MaxValue` through the Int32 overload of `EmitLoad`, followed by `conv.u8` as before,
+  instead of calling `Emit(OpCodes.Ldc_I4, ...)` directly.
+- **Why:** For 0xFFFFFFFF the signed operand is -1, and the runtime's `ILGenerator` writes that as
+  the one-byte `ldc.i4.m1`, while Flee's length bookkeeping counted the five-byte `ldc.i4`. The
+  Debug-only consistency check then failed (category `debug-il-length`). Found by logging both
+  lengths per opcode. The Int32 overload chooses the short forms itself, so both agree.
+- **Behaviour:** none in Release; Debug builds no longer assert. The emitted IL is the same as the
+  runtime already produced.
+- **Verified:** the last 2 script known failures pass; `KnownFailures.txt` is empty. Debug and
+  Release: 1,856 pass, 2 skipped (fixture known failures), net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).

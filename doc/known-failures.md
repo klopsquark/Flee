@@ -1,26 +1,28 @@
 # Known failures
 
-Script cases that fail on the unchanged library (upstream `f3b4fe2`), as recorded in Phase 1.
-The authoritative list is `test/Flee.Test/TestScripts/KnownFailures.txt`; this page explains it.
-Phase 4 works through it: each category is fixed, or kept and documented as a limitation.
+Script cases that failed on the unchanged library (upstream `f3b4fe2`), as recorded in Phase 1,
+and what became of them. The live list is `test/Flee.Test/TestScripts/KnownFailures.txt`; since
+Phase 4 it is empty, and all 1,756 script cases pass in Debug and Release on net8.0 and net10.0.
 
-Measured on 2026-10-09 with net6.0 on Windows, test culture en-GB. Since Phase 3 the tests run
-on net8.0 and net10.0 with exactly the same list.
+Two fixture tests ported from the original VB tests are still marked
+`[Category("KnownFailure")]`: `TestOverloadResolution` and `TestElementNamesInResourceFile`
+(see R-009 in `doc/CHANGE-RATIONALE.md`).
 
 ## Overview
 
-| Category | Cases | Kind | Short cause |
-| --- | ---: | --- | --- |
-| `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| **Total** | **2** | | of 1,756 cases (1,754 pass) |
+| Category | Cases | Kind | Short cause | Resolved by |
+| --- | ---: | --- | --- | --- |
+| `unsigned-literal` | 67 | bug | UInt32/UInt64 constants above the signed maximum could not be emitted | R-021 |
+| `wrong-reason` | 62 | test expectation | Rejected correctly, but with another `CompileExceptionReason` than the script said | R-020 (script updated) |
+| `real-overflow-undetected` | 7 | runtime change | Out-of-range real literals became infinity instead of `ConstantOverflow` | R-023 |
+| `in-collection` | 7 | bug | `x in list` rejected non-generic `IList` and `Hashtable` | R-022 |
+| `crash` | 4 | bug | `GetType()` on a value-type field killed the process | R-024 |
+| `debug-il-length` | 2 | bug, Debug only | IL length self-check failed for `0xFFFFFFFFL` and `0xFFFFFFFFUL` | R-025 |
+| `script-error` | 1 | test data | A result value where the reason belongs | R-020 (script updated) |
+| **Total** | **150** | | of 1,756 cases | |
 
-In a Release build the two `debug-il-length` cases pass, so the totals are 0 and 1,756.
-
-The list started with 150 cases. In Phase 4, 63 left it when the expected reasons in
-`InvalidExpressions.txt` were updated (categories `wrong-reason` and `script-error`, see the last
-section), 67 when the `unsigned-literal` bug was fixed (R-021), 7 with the `in-collection` fix (R-022) and
-7 with the `real-overflow-undetected` fix (R-023) and 4 with the `crash` fix (R-024); all are
-described below.
+Measured in Phase 1 on 2026-10-09 with net6.0 on Windows, test culture en-GB. One case moved
+from its own category `valuetype-gettype` to `crash` when the tests moved to .NET 8 and 10.
 
 ## Categories
 
@@ -73,11 +75,14 @@ paths with `mi.GetType().IsValueType`, the type of the `MethodInfo` object itsel
 a value type. The original VB code tested `mi.ReflectedType.IsValueType`. So the value-type path,
 which boxes the value before `GetType()`, never ran. Fixed in Phase 4 (R-024); all 4 cases pass.
 
-### debug-il-length (2)
+### debug-il-length (2, fixed in Phase 4)
 
-`0xFFFFFFFFL` and `0xFFFFFFFFUL` trip `Debug.Assert(Length == ILGeneratorLength)` in
-`src/Flee/InternalTypes/FleeILGenerator.cs:260`: Flee's own IL length bookkeeping disagrees
-with the real IL for these literals. Release builds skip the check and evaluate correctly.
+`0xFFFFFFFFL` and `0xFFFFFFFFUL` tripped `Debug.Assert(Length == ILGeneratorLength)` in
+`src/Flee/InternalTypes/FleeILGenerator.cs`: Flee's own IL length bookkeeping disagreed with the
+real IL. `LiteralElement.EmitLoad(long)` emitted `ldc.i4` with the operand -1 (0xFFFFFFFF as a
+signed int) and counted five bytes, but the runtime's `ILGenerator` wrote the one-byte
+`ldc.i4.m1`. Release builds skipped the check and evaluated correctly. Fixed in Phase 4 by going
+through the Int32 overload, which picks the short forms itself (R-025).
 
 Related: on .NET 8 and later every Debug build failed this check, because
 `Utility.GetILGeneratorLength` read a private field of `ILGenerator` that no longer exists. Fixed
