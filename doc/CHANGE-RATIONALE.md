@@ -89,6 +89,7 @@ Entry template:
 | R-052 | A batch with an unknown name reports a compile error | fix | Phase 6 |
 | R-053 | A defined variable without a value reads as its type's default | fix | Phase 6 |
 | R-054 | Cloned contexts no longer share options, parser and imports with the original | fix | Phase 6 |
+| R-055 | A failed SimpleCalcEngine add keeps the context's variables | fix | Phase 6 |
 
 ## Entries
 
@@ -1067,3 +1068,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   about 0.1 KB more allocated per compile (2.7 KB with all built-in types imported).
 - **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release). The identifier-parser
   part was found on the way and belongs to the same symptom.
+
+### R-055: A failed SimpleCalcEngine add keeps the context's variables
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** ad426fc (test), the commit that adds this entry (fix)
+- **What:** `SimpleCalcEngine.AddDynamic` and `AddGeneric` check for a duplicate name first, then
+  parse, link and compile, and clear `Context.Variables` only after the expression is added.
+- **Why:** D-29: the variables were cleared while linking, before the duplicate check and the
+  compile, so a failed add lost every variable meant for the expression. The duplicate check also
+  came after the compile, which wasted it.
+- **Behaviour:** a successful add clears the variables as before. A failed add keeps them. A
+  duplicate name throws the same `InvalidOperationException`, now before compiling.
+- **Verified:** `SimpleCalcEngineFailedAddKeepsVariables` failed before and passes now; the
+  `SimpleCalcEngineTests` script cases pass; full suite green on net8.0 and net10.0 in Debug and
+  Release.
+- **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release).

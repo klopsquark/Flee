@@ -41,7 +41,7 @@ How to use it:
 | D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | **Done** (R-052) |
 | D-27 | Evaluating a variable created by `DefineVariable` before it has a value | Before the release, if approved | **Done** (R-053) |
 | D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | **Done** (R-054) |
-| D-29 | `SimpleCalcEngine` clears the variables before checking the new expression | Before the release, if approved | Open |
+| D-29 | `SimpleCalcEngine` clears the variables before checking the new expression | Before the release, if approved | **Done** (R-055) |
 | D-30 | Changing `Options.CaseSensitive` empties the variables | Phase 5 | Open |
 | D-31 | `ParseCulture`: LCID comparison and multi-character separators | Phase 5 | Open |
 | D-32 | Small oddities found while writing the XML comments | When touched | Open |
@@ -296,6 +296,7 @@ How to use it:
   A failed add still loses every variable.
 - **Origin:** XML comments (R-048), from reading the code.
 - **Pick up:** before the release if approved, with D-25.
+- **Done:** R-055.
 
 ### D-30: Changing `Options.CaseSensitive` empties the variables
 

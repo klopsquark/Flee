@@ -102,8 +102,6 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "D-29: a failed SimpleCalcEngine add keeps the context's variables")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: variables are cleared before the duplicate check (D-29)")]
         public void SimpleCalcEngineFailedAddKeepsVariables()
         {
             var engine = new SimpleCalcEngine();

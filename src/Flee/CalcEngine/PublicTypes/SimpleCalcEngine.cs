@@ -35,16 +35,21 @@ namespace Flee.CalcEngine.PublicTypes
 
         #region "Methods - Private"
 
-        private void AddCompiledExpression(string expressionName, IExpression expression)
+        private void AssertNameIsFree(string expressionName)
         {
             if (_expressions.ContainsKey(expressionName))
             {
                 throw new InvalidOperationException($"The calc engine already contains an expression named '{expressionName}'");
             }
-            else
-            {
-                _expressions.Add(expressionName, expression);
-            }
+        }
+
+        private void AddCompiledExpression(string expressionName, IExpression expression)
+        {
+            _expressions.Add(expressionName, expression);
+
+            // Clear our context's variables, only once the expression is in: a failed add keeps
+            // them for the next attempt (D-29)
+            _context.Variables.Clear();
         }
 
         private ExpressionContext ParseAndLink(string expressionName, string expression)
@@ -56,9 +61,6 @@ namespace Flee.CalcEngine.PublicTypes
 
             // Tell the expression not to clone the context since it's already been cloned
             context2.NoClone = true;
-
-            // Clear our context's variables
-            _context.Variables.Clear();
 
             return context2;
         }
@@ -93,7 +95,8 @@ namespace Flee.CalcEngine.PublicTypes
         /// <param name="expression">The expression text.</param>
         /// <remarks>
         /// The expression is compiled against a copy of <see cref="Context"/>, in which the expressions it references are variables.
-        /// Afterwards all variables of <see cref="Context"/> are removed, so variables meant for the next expression have to be set again.
+        /// Once the expression is added, all variables of <see cref="Context"/> are removed, so variables meant for the next expression have to be set again.
+        /// If the add fails, the variables are kept.
         /// </remarks>
         /// <exception cref="InvalidOperationException">
         /// The expression references a name that is not in the engine -or- the engine already holds an expression with the given name.
@@ -101,6 +104,7 @@ namespace Flee.CalcEngine.PublicTypes
         /// <exception cref="ExpressionCompileException">The expression could not be compiled.</exception>
         public void AddDynamic(string expressionName, string expression)
         {
+            this.AssertNameIsFree(expressionName);
             ExpressionContext linkedContext = this.ParseAndLink(expressionName, expression);
             IExpression e = linkedContext.CompileDynamic(expression);
             this.AddCompiledExpression(expressionName, e);
@@ -112,7 +116,8 @@ namespace Flee.CalcEngine.PublicTypes
         /// <param name="expression">The expression text.</param>
         /// <remarks>
         /// The expression is compiled against a copy of <see cref="Context"/>, in which the expressions it references are variables.
-        /// Afterwards all variables of <see cref="Context"/> are removed, so variables meant for the next expression have to be set again.
+        /// Once the expression is added, all variables of <see cref="Context"/> are removed, so variables meant for the next expression have to be set again.
+        /// If the add fails, the variables are kept.
         /// </remarks>
         /// <exception cref="InvalidOperationException">
         /// The expression references a name that is not in the engine -or- the engine already holds an expression with the given name.
@@ -120,6 +125,7 @@ namespace Flee.CalcEngine.PublicTypes
         /// <exception cref="ExpressionCompileException">The expression could not be compiled.</exception>
         public void AddGeneric<T>(string expressionName, string expression)
         {
+            this.AssertNameIsFree(expressionName);
             ExpressionContext linkedContext = this.ParseAndLink(expressionName, expression);
             IExpression e = linkedContext.CompileGeneric<T>(expression);
             this.AddCompiledExpression(expressionName, e);
