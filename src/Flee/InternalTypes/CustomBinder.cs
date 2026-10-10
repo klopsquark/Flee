@@ -16,8 +16,12 @@ namespace Flee.InternalTypes
             return null;
         }
 
-        public System.Reflection.MethodBase BindToMethod(System.Reflection.BindingFlags bindingAttr, System.Reflection.MethodBase[] match, ref object[] args, System.Reflection.ParameterModifier[] modifiers, System.Globalization.CultureInfo culture, string[] names, ref object state)
+        // The VB original returned Nothing here. The C# conversion made this a separate method with
+        // a ref parameter, and the derived binders forwarded the real override to a field that was
+        // never assigned, so calling it threw NullReferenceException (R-036).
+        public override System.Reflection.MethodBase BindToMethod(System.Reflection.BindingFlags bindingAttr, System.Reflection.MethodBase[] match, ref object[] args, System.Reflection.ParameterModifier[] modifiers, System.Globalization.CultureInfo culture, string[] names, out object state)
         {
+            state = null;
             return null;
         }
 
