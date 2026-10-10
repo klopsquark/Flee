@@ -1,4 +1,4 @@
-// Individual tests of the expression compiler: imports, variables, owner member access,
+﻿// Individual tests of the expression compiler: imports, variables, owner member access,
 // parser options, overload resolution, cloning and threading.
 //
 // Ported to C# from IndividualTests.vb (and the helpers it uses from Core.vb) of the
@@ -871,15 +871,7 @@ namespace Flee.Test.ExpressionTests
             Assert.IsInstanceOf(typeof(decimal), e.Evaluate());
         }
 
-        // Known failure: src/Flee/Resources/ElementNames.resx has no entry for
-        // LocalBasedElement (InternalTypes/Miscellaneous.cs:496) and DecimalLiteralElement
-        // (ExpressionElements/Literals/Real/Decimal.cs:10), and lists Int32LiteralElement
-        // (ExpressionElements/Literals/Integral/Int32.cs:9) under the key "Int32Literal"
-        // (ElementNames.resx:165). ExpressionElement.Name (Base/ExpressionElement.cs:49) looks
-        // names up by class name, so it returns null for these three.
         [Test(Description = "Test that the names of all flee elements have entries in the resource file")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure (element-names): no ElementNames.resx entry for LocalBasedElement, DecimalLiteralElement, Int32LiteralElement (listed as Int32Literal)")]
         public void TestElementNamesInResourceFile()
         {
             // Use reflection since this is internal stuff

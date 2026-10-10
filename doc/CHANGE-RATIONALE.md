@@ -61,6 +61,7 @@ Entry template:
 | R-024 | Method calls on value types use the value-type path (GetType crash) | fix | Phase 4 |
 | R-025 | Debug IL length check passes for 0xFFFFFFFF as a long | fix | Phase 4 |
 | R-026 | Member access on value-type calculation-engine atoms (upstream #64, #111) | fix | Phase 4 |
+| R-027 | Element names for three elements in the resources | fix | Phase 4 |
 
 ## Entries
 
@@ -513,4 +514,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** new `ValueTypeAtomTests` (two tests, from the two issues) crashed before the fix
   (committed as ignored known failures) and pass after it; full suite green in Debug and Release
   on net8.0 and net10.0.
+- **Discussed:** not needed (bug fix).
+
+### R-027: Element names for three elements in the resources
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `ElementNames.resx` (and its designer file) gets entries for `LocalBasedElement` and
+  `DecimalLiteralElement`, and the entry `Int32Literal` is renamed to `Int32LiteralElement`, the
+  class it belongs to.
+- **Why:** `ExpressionElement.Name` looks the name up by class name and is used as the prefix of
+  compile error messages. For these three classes it returned null (and asserted in Debug
+  builds). Found by the ported original test `TestElementNamesInResourceFile`.
+- **Behaviour:** compile errors raised by these elements now start with the element name, like all
+  others; Debug builds no longer assert there.
+- **Verified:** `TestElementNamesInResourceFile` passes and is no longer ignored; full suite green
+  on net8.0 and net10.0 (1,859 pass, 1 skipped).
 - **Discussed:** not needed (bug fix).

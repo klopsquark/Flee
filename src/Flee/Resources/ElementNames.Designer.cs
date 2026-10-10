@@ -143,6 +143,15 @@ namespace Flee.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DecimalLiteralElement.
+        /// </summary>
+        internal static string DecimalLiteralElement {
+            get {
+                return ResourceManager.GetString("DecimalLiteralElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DoubleLiteralElement.
         /// </summary>
         internal static string DoubleLiteralElement {
@@ -197,11 +206,11 @@ namespace Flee.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Int32Literal.
+        ///   Looks up a localized string similar to Int32LiteralElement.
         /// </summary>
-        internal static string Int32Literal {
+        internal static string Int32LiteralElement {
             get {
-                return ResourceManager.GetString("Int32Literal", resourceCulture);
+                return ResourceManager.GetString("Int32LiteralElement", resourceCulture);
             }
         }
         
@@ -211,6 +220,15 @@ namespace Flee.Resources {
         internal static string Int64LiteralElement {
             get {
                 return ResourceManager.GetString("Int64LiteralElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LocalBasedElement.
+        /// </summary>
+        internal static string LocalBasedElement {
+            get {
+                return ResourceManager.GetString("LocalBasedElement", resourceCulture);
             }
         }
         
