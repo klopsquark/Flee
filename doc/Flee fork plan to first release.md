@@ -113,14 +113,14 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 
 ### Bug fixes
 
-- [ ] Work through the known-failures list from Phase 1.
-- [ ] Check the four `break; // TODO: might not be correct` markers against the intended loop behaviour: two in `InvocationList.cs`, one each in `CalculationEngine.cs` and `ExpressionImports.cs`.
-- [ ] Review the roughly 29 places that combine booleans with `&` or `|`. Both sides are always evaluated there, which is wrong wherever the right side relies on the left.
-- [ ] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`.
+- [x] Work through the known-failures list from Phase 1. Empty: all 150 fixed or corrected (R-020 to R-025).
+- [x] Check the four `break; // TODO: might not be correct` markers against the intended loop behaviour: two in `InvocationList.cs`, one each in `CalculationEngine.cs` and `ExpressionImports.cs`. All correct (R-031).
+- [x] Review the roughly 29 places that combine booleans with `&` or `|`. Both sides are always evaluated there, which is wrong wherever the right side relies on the left. 71 found, none relies on the left; all converted to `&&`/`||` (R-032).
+- [x] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`. The only case (R-033).
 - [ ] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds.
 - [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
 
-- [ ] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`).
+- [x] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`). JIT inlining of helpers; fixed (R-019).
 - [ ] Clear the remaining build warnings (obsolete `PropertyDictionary` uses, unused variables), then treat warnings as errors.
 
 ### Mechanical cleanup
@@ -129,8 +129,8 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 
 These change no behaviour and each gets its own commit.
 
-- [ ] Remove the 227 `== true` and `== false` comparisons.
-- [ ] Split the four `Miscellaneous.cs` files into one type per file and make file names match type names.
+- [x] Remove the 227 `== true` and `== false` comparisons. 260 found and removed outside the parser (R-030).
+- [x] Split the four `Miscellaneous.cs` files into one type per file and make file names match type names. Done for the whole library outside the parser (R-034).
 - [ ] Replace the non-generic collections (about 69 uses) between analyzer and elements with typed ones.
 - [x] Decide whether to rename the `_my` and `_our` field prefixes, about 1,100 occurrences. It is a matter of taste; if you do it, do it in a single commit. Decided 2026-10-10: renamed to common conventions (R-028); the five parser fields stay.
 - [ ] Resolve `PropertyDictionary`: it is marked obsolete but still backs three public classes. Drop the attribute now; replacing it belongs to Phase 5.

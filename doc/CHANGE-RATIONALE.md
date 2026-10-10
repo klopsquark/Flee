@@ -68,6 +68,7 @@ Entry template:
 | R-031 | Converter TODO markers on loop exits checked and removed | cleanup | Phase 4 |
 | R-032 | Boolean & and \| replaced by && and \|\| | cleanup | Phase 4 |
 | R-033 | ArithmeticElement looks up its helper methods once | cleanup | Phase 4 |
+| R-034 | One type per file, file names match type names | cleanup | Phase 4 |
 
 ## Entries
 
@@ -641,4 +642,22 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** tests green; no benchmark run for this change alone (the saving is three
   reflection lookups per `+`, `-`, `*`, `/`, `%` or `^` parsed, too small to separate from noise
   in the stage benchmarks without a dedicated run).
+- **Discussed:** not needed (plan item).
+
+### R-034: One type per file, file names match type names
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** Outside `src/Flee/Parsing`, every file now holds one type and is named after it. The
+  multi-type files (the four `Miscellaneous.cs`, both `Exceptions.cs`, `BranchManager.cs`,
+  `VariableTypes.cs`, `ImportTypes.cs`, `ResourceKeys.cs`) are split into 47 files, and 39
+  single-type files are renamed (`Arithmetic.cs` -> `ArithmeticElement.cs`, `Member.cs` ->
+  `MemberElement.cs`, and so on). Folders and namespaces are unchanged.
+- **Why:** Plan item; makes types easy to find and stops the IDE's file-name hints. Done with a
+  small Roslyn-based tool that copies each type's text verbatim (with its comments) under the
+  original file's usings and namespace, and `git mv` for the renames, so history follows.
+- **Behaviour:** none. Source-file paths quoted in older documents (Phase 1 findings,
+  `doc/known-failures.md`) refer to the old names.
+- **Verified:** build unchanged (106 warnings); tests green in Debug and Release on net8.0 and
+  net10.0; public API identical to before (reflection listing).
 - **Discussed:** not needed (plan item).
