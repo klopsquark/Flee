@@ -26,6 +26,13 @@ namespace Flee.ExpressionElements.Literals.Real
             try
             {
                 float value = options.ParseSingle(image);
+                // .NET Core 3.0 and later return infinity for out-of-range input instead of
+                // throwing OverflowException; a literal can never mean infinity (R-023).
+                if (float.IsInfinity(value))
+                {
+                    element.OnParseOverflow(image);
+                    return null;
+                }
                 return new SingleLiteralElement(value);
             }
             catch (OverflowException ex)

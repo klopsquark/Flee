@@ -11,17 +11,16 @@ on net8.0 and net10.0 with exactly the same list.
 
 | Category | Cases | Kind | Short cause |
 | --- | ---: | --- | --- |
-| `real-overflow-undetected` | 7 | runtime change | Out-of-range real literals become infinity instead of `ConstantOverflow` |
 | `crash` | 4 | bug | `GetType()` on a value-type field: the process dies |
 | `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| **Total** | **13** | | of 1,756 cases (1,743 pass) |
+| **Total** | **6** | | of 1,756 cases (1,750 pass) |
 
-In a Release build the two `debug-il-length` cases pass, so the totals are 11 and 1,745.
+In a Release build the two `debug-il-length` cases pass, so the totals are 4 and 1,752.
 
 The list started with 150 cases. In Phase 4, 63 left it when the expected reasons in
 `InvalidExpressions.txt` were updated (categories `wrong-reason` and `script-error`, see the last
-section), 67 when the `unsigned-literal` bug was fixed (R-021) and 7 with the `in-collection` fix (R-022);
-both are described below.
+section), 67 when the `unsigned-literal` bug was fixed (R-021), 7 with the `in-collection` fix (R-022) and
+7 with the `real-overflow-undetected` fix (R-023); all are described below.
 
 ## Categories
 
@@ -41,13 +40,13 @@ Phase 4 (R-021); all 67 cases pass. All CheckedTests
 entries in this category fail for the same reason: the compile error surfaces as an
 `OverflowException` that the test reads as an arithmetic overflow.
 
-### real-overflow-undetected (7)
+### real-overflow-undetected (7, fixed in Phase 4)
 
 `1.7976931348623157E+309` (and the single-precision equivalents) compile and evaluate to
 infinity. Since .NET Core 3.0, `double.Parse` and `float.Parse` return infinity for out-of-range
 input instead of throwing `OverflowException`, so the `catch` in
-`src/Flee/ExpressionElements/Literals/Real/Double.cs:32` and `Single.cs:31` never runs. A fix
-checks for infinity after parsing.
+`src/Flee/ExpressionElements/Literals/Real/Double.cs:32` and `Single.cs:31` never runs. Fixed in
+Phase 4 by checking for infinity after parsing (R-023); all 7 cases pass.
 
 ### in-collection (7, fixed in Phase 4)
 

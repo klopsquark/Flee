@@ -57,6 +57,7 @@ Entry template:
 | R-020 | Expected reasons in InvalidExpressions.txt updated | test | Phase 4 |
 | R-021 | UInt32 and UInt64 constants above the signed maximum compile | fix | Phase 4 |
 | R-022 | `in` works with non-generic IList and IDictionary | fix | Phase 4 |
+| R-023 | Out-of-range real literals report ConstantOverflow again | fix | Phase 4 |
 
 ## Entries
 
@@ -440,3 +441,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the 7 script cases of the `in-collection` category pass and leave the
   known-failures list; full suite green on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).
+
+### R-023: Out-of-range real literals report ConstantOverflow again
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `DoubleLiteralElement.Parse` and `SingleLiteralElement.Parse` treat an infinite parse
+  result as an overflow and raise the `ConstantOverflow` compile error. The existing
+  `OverflowException` handler stays for .NET Framework, where parsing still throws.
+- **Why:** Since .NET Core 3.0, `double.Parse` and `float.Parse` return infinity for values out of
+  range instead of throwing, so `1.7976931348623157E+309` silently compiled to infinity. A
+  literal can never mean infinity, so infinity can only come from an out-of-range value.
+- **Behaviour:** such literals are rejected at compile time with `ConstantOverflow`, as Flee did on
+  .NET Framework. Expressions that compute infinity at run time (`1.0 / 0`) are unaffected.
+- **Verified:** the 7 script cases of the `real-overflow-undetected` category pass and leave the
+  known-failures list; full suite green on net8.0 and net10.0.
+- **Discussed:** not needed (bug fix that restores the documented behaviour).

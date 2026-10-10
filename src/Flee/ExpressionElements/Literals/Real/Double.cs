@@ -27,6 +27,13 @@ namespace Flee.ExpressionElements.Literals.Real
             try
             {
                 double value = options.ParseDouble(image);
+                // .NET Core 3.0 and later return infinity for out-of-range input instead of
+                // throwing OverflowException; a literal can never mean infinity (R-023).
+                if (double.IsInfinity(value))
+                {
+                    element.OnParseOverflow(image);
+                    return null;
+                }
                 return new DoubleLiteralElement(value);
             }
             catch (OverflowException ex)

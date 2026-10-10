@@ -8,8 +8,6 @@
 ' Categories:
 '   crash                     Crashes the test process (invalid IL); never run.
 '                             Cause: GetType() called on a value type.
-'   real-overflow-undetected  Double/single literals beyond the range compile to infinity
-'                             instead of failing with ConstantOverflow (.NET Core 3.0+ parsing).
 '   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
 ValidExpressions.txt;110;debug-il-length;int64;0xFFFFFFFFL;4294967295
 ValidExpressions.txt;120;debug-il-length;uint64;0xFFFFFFFFUL;4294967295
@@ -17,10 +15,3 @@ ValidExpressions.txt;867;crash;String;DateTimeA.GetType().Name;DateTime
 ValidExpressions.txt;1057;crash;string;datetimea.gettype().fullname.split(chararr)[1];DateTime
 ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
 ValidExpressions.txt;1257;crash;string;mouse.shareddt.gettype().name;DateTime
-InvalidExpressions.txt;9;real-overflow-undetected;System.Object;1.34E+400;ConstantOverflow
-InvalidExpressions.txt;10;real-overflow-undetected;System.Double;-1.7976931348623157E+309;ConstantOverflow
-InvalidExpressions.txt;11;real-overflow-undetected;System.Double;1.7976931348623157E+309;ConstantOverflow
-InvalidExpressions.txt;12;real-overflow-undetected;System.Double;-1.8976931348623157E+308;ConstantOverflow
-InvalidExpressions.txt;13;real-overflow-undetected;System.Double;1.8976931348623157E+308;ConstantOverflow
-InvalidExpressions.txt;15;real-overflow-undetected;System.Single;1.234e+100f;ConstantOverflow
-InvalidExpressions.txt;16;real-overflow-undetected;System.Single;-1.234e+100f;ConstantOverflow
