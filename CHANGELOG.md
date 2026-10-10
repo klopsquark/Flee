@@ -46,3 +46,11 @@ brackets).
 - `cast(x, char)` did not convert, wrap or check for overflow [R-045].
 - Debug builds of Flee failed on every compile on .NET 8 and later (upstream #110, #82) [R-010].
 - Impossible internal states now throw a clear exception instead of emitting invalid IL [R-035].
+- Syntax errors in `BatchLoader.Add`, `SimpleCalcEngine.AddDynamic` and `AddGeneric` threw the internal
+  `ParserLogException` instead of `ExpressionCompileException` [R-051].
+- A batch expression with an unknown name threw `KeyNotFoundException` from `BatchLoad` [R-052].
+- A variable created with `DefineVariable` threw `NullReferenceException` when read before it had a
+  value; it now reads as its type's default [R-053].
+- A cloned context shared parser options, the parse culture and imports with the original, and
+  `RecreateParser` kept the calculation engines' old name parser [R-054].
+- A failed `SimpleCalcEngine` add cleared the context's variables [R-055].

@@ -298,11 +298,14 @@ object? b = ((IDynamicExpression)engine["b"]!).Evaluate();   // 20
 
 `SimpleCalcEngine` is a lighter variant without dependency tracking or recalculation: expressions
 refer to earlier ones by name, and the indexer returns the compiled expression to evaluate.
+Variables set on `Context` apply to the next expression only: a successful add copies them into
+that expression's context and clears them; a failed add keeps them.
 
 ## Threads, contexts and cloning
 
-- Each compile works on a copy of the context (`ExpressionContext.Clone` makes one explicitly):
-  options and imports are copied, variables are shared.
+- Each compile works on a copy of the context, with copied options and imports and shared
+  variables. `ExpressionContext.Clone` makes an explicit copy that also copies the variables;
+  changing the copy's options, parser options or imports leaves the original alone.
 - Parsing takes a lock on the context. Compiling from several threads with one shared context has
   not been verified in this fork; to be safe, give each thread its own context (a `Clone`).
 - A compiled expression can be evaluated from several threads as long as its owner does not

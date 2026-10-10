@@ -159,7 +159,7 @@ Documentation is written after the API settles, so it describes what ships. Upst
 - [x] **README:** what the fork is, how it relates to Flee, status, installation and one worked example.
 - [x] **Language reference:** operators and precedence, literal forms, `if`, `cast` and `in`, type promotion rules, case-insensitivity, the configurable decimal and argument separators. `Expression.grammar` covers 40 tokens and 29 productions; the rest is defined in code and has to be written down.
 - [x] **API guide:** contexts, imports, variables, on-demand variables and functions, expression owners, options and the calculation engine.
-- [x] **XML comments on every public type.** `Resources/DocComments.xml` holds about 1,200 lines of original API documentation with examples and is a good source. Done: ported and completed (R-048), shipped as `Flee.xml` (R-049); bugs found on the way are D-25 to D-32 in `doc/deferred.md`.
+- [x] **XML comments on every public type.** `Resources/DocComments.xml` holds about 1,200 lines of original API documentation with examples and is a good source. Done: ported and completed (R-048), shipped as `Flee.xml` (R-049); bugs found on the way are D-25 to D-32 in `doc/deferred.md`; D-25 to D-29 fixed before the release at the maintainer's request (R-051 to R-055), the parser's two malformed comments too (R-050).
 - [x] **Architecture note:** the pipeline from parser to element tree to IL emission, for your future self.
 - [x] **Limitations:** no NativeAOT or iOS because of runtime IL generation, and what is and is not thread-safe.
 - [x] **Migration notes from Flee 2.0.0** and a changelog.

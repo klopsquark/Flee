@@ -3,7 +3,7 @@
 Compile cost before and after the fix for cloned contexts (D-28), which copies the namespace
 imports on every compile and gives each copy of the options its own owner.
 
-- **Before:** commit cd55425. **After:** the R-054 commit (same tree plus the fix).
+- **Before:** commit cd55425. **After:** commit 4076879 (cd55425 plus the fix).
 - **Machine:** the maintainer's desktop, Windows 11, .NET 10.0, default BenchmarkDotNet job.
   The two runs ran one after the other, before first.
 - **Filter:** `*StageBenchmarks.Compile*` (Compile and CompileAndEvaluate) and

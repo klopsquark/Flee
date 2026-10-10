@@ -46,6 +46,12 @@ All of these fix bugs; most turn an exception or a crash into a working result.
 | Comparing `NamespaceImport` objects not added to a context | `NullReferenceException` | Works | R-041 |
 | Debug builds of Flee on .NET 8 and later | Every compile failed | Work | R-010 |
 | Broken internal invariants (should never happen) | Wrong IL, failing later | `InvalidOperationException("Flee internal error: ...")` | R-035 |
+| Syntax error in `BatchLoader.Add`, `SimpleCalcEngine.AddDynamic`/`AddGeneric` | Internal `ParserLogException` | `ExpressionCompileException` with `SyntaxError` | R-051 |
+| Batch expression with an unknown name | `KeyNotFoundException` from `BatchLoad` | `BatchLoadCompileException`, inner reason `UndefinedName` | R-052 |
+| Reading a `DefineVariable` variable before setting it | `NullReferenceException` for value types | The type's default value | R-053 |
+| Changing options, parser options or imports of a cloned context | Also changed the original | Changes the clone only | R-054 |
+| `RecreateParser` after changing separators | Calculation engines kept parsing names with the old separators | Use the new ones | R-054 |
+| Failed `SimpleCalcEngine` add | Cleared `Context.Variables` | Keeps them | R-055 |
 
 ## Performance
 
