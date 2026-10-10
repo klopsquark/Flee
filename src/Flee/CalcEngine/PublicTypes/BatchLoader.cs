@@ -1,4 +1,5 @@
-﻿using Flee.CalcEngine.InternalTypes;
+﻿#nullable enable
+using Flee.CalcEngine.InternalTypes;
 using Flee.InternalTypes;
 using Flee.PublicTypes;
 

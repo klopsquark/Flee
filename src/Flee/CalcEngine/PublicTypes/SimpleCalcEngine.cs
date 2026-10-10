@@ -1,4 +1,5 @@
-﻿using Flee.CalcEngine.InternalTypes;
+﻿#nullable enable
+using Flee.CalcEngine.InternalTypes;
 using Flee.PublicTypes;
 
 namespace Flee.CalcEngine.PublicTypes
@@ -63,7 +64,7 @@ namespace Flee.CalcEngine.PublicTypes
 
         private void LinkIdentifier(string identifier, string expressionName, ExpressionContext context)
         {
-            IExpression child = null;
+            IExpression? child = null;
 
             if (!_expressions.TryGetValue(identifier, out child))
             {
@@ -100,11 +101,11 @@ namespace Flee.CalcEngine.PublicTypes
         #endregion
 
         #region "Properties - Public"
-        public IExpression this[string name]
+        public IExpression? this[string name]
         {
             get
             {
-                IExpression e = null;
+                IExpression? e = null;
                 _expressions.TryGetValue(name, out e);
                 return e;
             }

@@ -1,10 +1,11 @@
-﻿using Flee.PublicTypes;
+﻿#nullable enable
+using Flee.PublicTypes;
 
 namespace Flee.CalcEngine.PublicTypes
 {
     public class CircularReferenceException : System.Exception
     {
-        private readonly string _circularReferenceSource;
+        private readonly string? _circularReferenceSource;
 
         internal CircularReferenceException()
         {

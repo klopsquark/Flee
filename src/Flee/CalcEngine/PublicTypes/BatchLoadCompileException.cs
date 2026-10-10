@@ -1,4 +1,5 @@
-﻿using Flee.PublicTypes;
+﻿#nullable enable
+using Flee.PublicTypes;
 
 namespace Flee.CalcEngine.PublicTypes
 {
