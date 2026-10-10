@@ -6,12 +6,6 @@
 ' Format: File;Line;Category;Script line (exactly as in the script file)
 '
 ' Categories:
-'   crash                     Crashes the test process (invalid IL); never run.
-'                             Cause: GetType() called on a value type.
 '   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
 ValidExpressions.txt;110;debug-il-length;int64;0xFFFFFFFFL;4294967295
 ValidExpressions.txt;120;debug-il-length;uint64;0xFFFFFFFFUL;4294967295
-ValidExpressions.txt;867;crash;String;DateTimeA.GetType().Name;DateTime
-ValidExpressions.txt;1057;crash;string;datetimea.gettype().fullname.split(chararr)[1];DateTime
-ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
-ValidExpressions.txt;1257;crash;string;mouse.shareddt.gettype().name;DateTime

@@ -93,7 +93,9 @@ namespace Flee.ExpressionElements.Base
 
         protected static void EmitMethodCall(Type resultType, bool nextRequiresAddress, MethodInfo mi, FleeILGenerator ilg)
         {
-            if (mi.GetType().IsValueType == false)
+            // The type the method is called on, as in the original VB code; mi.GetType() was the
+            // MethodInfo's own type and never a value type (R-024).
+            if (mi.ReflectedType.IsValueType == false)
             {
                 EmitReferenceTypeMethodCall(mi, ilg);
             }

@@ -11,16 +11,16 @@ on net8.0 and net10.0 with exactly the same list.
 
 | Category | Cases | Kind | Short cause |
 | --- | ---: | --- | --- |
-| `crash` | 4 | bug | `GetType()` on a value-type field: the process dies |
 | `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| **Total** | **6** | | of 1,756 cases (1,750 pass) |
+| **Total** | **2** | | of 1,756 cases (1,754 pass) |
 
-In a Release build the two `debug-il-length` cases pass, so the totals are 4 and 1,752.
+In a Release build the two `debug-il-length` cases pass, so the totals are 0 and 1,756.
 
 The list started with 150 cases. In Phase 4, 63 left it when the expected reasons in
 `InvalidExpressions.txt` were updated (categories `wrong-reason` and `script-error`, see the last
 section), 67 when the `unsigned-literal` bug was fixed (R-021), 7 with the `in-collection` fix (R-022) and
-7 with the `real-overflow-undetected` fix (R-023); all are described below.
+7 with the `real-overflow-undetected` fix (R-023) and 4 with the `crash` fix (R-024); all are
+described below.
 
 ## Categories
 
@@ -59,14 +59,19 @@ conversion (inferred, not checked against the VB source). The existing test
 `IN_OperatorTest` only covers generic collections. Fixed in Phase 4 by checking the non-generic
 interfaces (R-022); all 7 cases pass.
 
-### crash (4)
+### crash (4, fixed in Phase 4)
 
 `DateTimeA.GetType().Name` (an instance field of type `DateTime`) crashes the test process with
 an access violation. `mouse.shareddt.gettype().name` (a static `DateTime` field) threw
 `InvalidProgramException` on .NET 6; on .NET 8 and 10 it crashes the process with an internal
 CLR error, so it moved from its own category `valuetype-gettype` to `crash` in Phase 3. Both
-point at calling `Object.GetType()` on an unboxed value type. Not analysed further yet. Crash
-cases are never run, because they would take the whole test run down.
+point at calling `Object.GetType()` on an unboxed value type. Crash cases were never run,
+because they would take the whole test run down.
+
+Cause: `MemberElement.EmitMethodCall` decided between the value-type and reference-type call
+paths with `mi.GetType().IsValueType`, the type of the `MethodInfo` object itself, which is never
+a value type. The original VB code tested `mi.ReflectedType.IsValueType`. So the value-type path,
+which boxes the value before `GetType()`, never ran. Fixed in Phase 4 (R-024); all 4 cases pass.
 
 ### debug-il-length (2)
 

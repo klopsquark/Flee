@@ -58,6 +58,7 @@ Entry template:
 | R-021 | UInt32 and UInt64 constants above the signed maximum compile | fix | Phase 4 |
 | R-022 | `in` works with non-generic IList and IDictionary | fix | Phase 4 |
 | R-023 | Out-of-range real literals report ConstantOverflow again | fix | Phase 4 |
+| R-024 | Method calls on value types use the value-type path (GetType crash) | fix | Phase 4 |
 
 ## Entries
 
@@ -457,3 +458,23 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the 7 script cases of the `real-overflow-undetected` category pass and leave the
   known-failures list; full suite green on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix that restores the documented behaviour).
+
+### R-024: Method calls on value types use the value-type path (GetType crash)
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `MemberElement.EmitMethodCall` tests `mi.ReflectedType.IsValueType` instead of
+  `mi.GetType().IsValueType`.
+- **Why:** `mi.GetType()` is the type of the `MethodInfo` object, never a value type, so every
+  method call took the reference-type path (`callvirt`). For `GetType()` on a value-type field,
+  which needs the value boxed, that produced invalid IL: `DateTimeA.GetType().Name` killed the
+  process with an access violation, and the static-field variant threw `InvalidProgramException`
+  (.NET 6) or crashed (.NET 8 and 10). The original VB code tested `mi.ReflectedType`; the
+  VB-to-C# conversion changed it.
+- **Behaviour:** `GetType()` on value-type members works. Other method calls on value types now
+  get the IL the original design intended (`call` for the struct's own methods, `constrained.`
+  plus `callvirt` for inherited `Equals`, `GetHashCode`, `ToString`); results are unchanged.
+- **Verified:** the 4 script cases of the `crash` category run and pass, and leave the
+  known-failures list; full suite green in Debug and Release on net8.0 and net10.0 (Release:
+  1,856 pass, 2 skipped).
+- **Discussed:** not needed (bug fix).
