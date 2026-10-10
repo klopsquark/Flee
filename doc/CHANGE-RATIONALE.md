@@ -91,6 +91,7 @@ Entry template:
 | R-054 | Cloned contexts no longer share options, parser and imports with the original | fix | Phase 6 |
 | R-055 | A failed SimpleCalcEngine add keeps the context's variables | fix | Phase 6 |
 | R-056 | Upstream wiki examples run as tests | test | Phase 6 |
+| R-057 | CI reports build errors as annotations | build | Phase 6 |
 
 ## Entries
 
@@ -1102,3 +1103,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   (a property on the wrong object, a call with a parameter that does not exist and a method that
   is not public, a wrong cast, a missing method body, console input); each is marked in the test.
 - **Discussed:** yes, 2026-10-10: the maintainer asked about the wiki.
+
+### R-057: CI reports build errors as annotations
+
+- **Kind / phase:** build / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** the CI build writes its errors to `build-errors.log` (`-flp:...;errorsonly`); when the
+  build fails, a follow-up step turns up to ten of them into `::error::` annotations, or reports
+  that nothing was logged.
+- **Why:** the ubuntu Debug job failed in Build twice (runs 38042096747 and 38045817555) and
+  passed on the other run of the same commit. setup-dotnet's problem matcher ignores `MSBxxxx`
+  errors, so no annotation said why, and job logs need a GitHub sign-in that this environment
+  does not have. Annotations are public.
+- **Behaviour:** none in the library; a successful build is unchanged.
+- **Verified:** the logger syntax builds locally and leaves an empty log on success; the failure
+  path is checked by the next failing run.
+- **Discussed:** not needed (diagnostics only).
