@@ -7,6 +7,9 @@
              benchmarks/README.md shows how to run one runtime or several. -->
         <TargetFrameworks>net6.0;net8.0;net10.0</TargetFrameworks>
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+        <!-- net6.0 is kept on purpose as the baseline runtime; silence the packages' warnings that
+             they no longer support it. -->
+        <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <!-- BenchmarkDotNet needs optimized code and complains about a debugger. -->

@@ -123,7 +123,7 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 - [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
 
 - [x] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`). JIT inlining of helpers; fixed (R-019).
-- [ ] Clear the remaining build warnings (obsolete `PropertyDictionary` uses, unused variables), then treat warnings as errors.
+- [x] Clear the remaining build warnings (obsolete `PropertyDictionary` uses, unused variables), then treat warnings as errors. Done (R-029, R-036, R-037, R-044); the parser's warnings are suggestions until D-03.
 
 ### Mechanical cleanup
 

@@ -3,7 +3,10 @@ using Flee.PublicTypes;
 
 namespace Flee.CalcEngine.InternalTypes
 {
+    // Analyzer carries a misplaced [Obsolete] from the VB conversion (doc/deferred.md, D-03).
+#pragma warning disable CS0618
     internal class IdentifierAnalyzer : Analyzer
+#pragma warning restore CS0618
     {
 
         private readonly IDictionary<int, string> _identifiers;

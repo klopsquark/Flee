@@ -78,6 +78,7 @@ Entry template:
 | R-041 | Detached NamespaceImports can be compared | fix | Phase 4 |
 | R-042 | Keywords parse under the Turkish culture (upstream #105) | fix | Phase 4 |
 | R-043 | Overload resolution test records today's choices | test | Phase 4 |
+| R-044 | Warnings are errors | build | Phase 4 |
 
 ## Entries
 
@@ -843,3 +844,22 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the test passes; the suite has no skipped tests left (1,863 pass on net8.0 and
   net10.0).
 - **Discussed:** decided by the maintainer on 2026-10-10.
+
+### R-044: Warnings are errors
+
+- **Kind / phase:** build / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `Directory.Build.props` sets `TreatWarningsAsErrors` for every project, except NU1900
+  (the NuGet vulnerability audit could not reach a feed) and NETSDK1138 (the benchmarks keep the
+  out-of-support net6.0 target on purpose). Known warnings that cannot be fixed yet are handled
+  where they arise: the parser's (misplaced `[Obsolete]` uses, an unused catch variable, CA2200)
+  become suggestions through `.editorconfig` for `src/Flee/Parsing` only (D-03); the one use of
+  the parser's `Analyzer` outside it gets a `#pragma` (D-03); the obsolete serialization members of
+  `ExpressionCompileException` get a `#pragma` (D-19). The benchmark project sets
+  `SuppressTfmSupportBuildWarnings` for its net6.0 target.
+- **Why:** Plan item (Phase 3, moved to the end of Phase 4 by R-018): once the build is clean, it
+  should stay clean. From 2,430 warnings at the start of Phase 3 the solution is down to the two
+  intentional NETSDK1138 messages.
+- **Behaviour:** none in the library. A new warning now fails the build, locally and in CI.
+- **Verified:** full rebuild in Debug and Release: 0 errors, 2 warnings (NETSDK1138); tests green.
+- **Discussed:** not needed (plan item). Each exception points to its entry in `doc/deferred.md`.

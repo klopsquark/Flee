@@ -90,10 +90,10 @@ dotnet test Flee.sln
   CycloneDX SBOM there, and produces a NuGet package. The package goes to `C:\dev\nuget\` when
   that folder exists, otherwise to `build/nuget/`.
 - `/p:SkipSbom=true` skips the SBOM for fast local cycles.
-- The build reports about 74 warning lines (each counted once per target framework). Almost all
-  come from `src/Flee/Parsing` (two misplaced `[Obsolete]` attributes and their uses), which is
-  not touched before the release without the maintainer's OK; the rest are the obsolete
-  serialization members of `ExpressionCompileException`, kept for compatibility.
+- Warnings are errors (`Directory.Build.props`). The only remaining messages are NETSDK1138 for
+  the benchmarks' deliberate net6.0 target. Known parser warnings are suggestions via
+  `.editorconfig` (`doc/deferred.md`, D-03). Do not silence a new warning without an entry in the
+  change log and, if it waits for later, in `doc/deferred.md`.
 
 ## State of the tests
 

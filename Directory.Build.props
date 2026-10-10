@@ -4,6 +4,11 @@
         <!-- Explicit, so every project gets the same language level regardless
              of its target framework's default. -->
         <LangVersion>latest</LangVersion>
+        <!-- Warnings fail the build (plan, Phase 3/4). Exceptions: NU1900 means the NuGet
+             vulnerability audit could not reach a feed, which says nothing about the code;
+             NETSDK1138 flags the out-of-support net6.0 target the benchmarks keep on purpose. -->
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1900;NETSDK1138</WarningsNotAsErrors>
         <Authors>Flee Contributors; klopsquark</Authors>
         <Company>Flee</Company>
         <Copyright>Copyright © 2022 Flee Contributors</Copyright>

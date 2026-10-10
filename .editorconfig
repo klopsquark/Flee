@@ -28,6 +28,13 @@ dotnet_separate_import_directive_groups = false
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
+[src/Flee/Parsing/**.cs]
+# The parser is not touched before the first release (doc/deferred.md, D-03). Its known warnings
+# stay visible as suggestions instead of failing the build, which treats warnings as errors.
+dotnet_diagnostic.CS0618.severity = suggestion
+dotnet_diagnostic.CS0168.severity = suggestion
+dotnet_diagnostic.CA2200.severity = suggestion
+
 [*.{csproj,props,targets,xml,resx,config}]
 indent_size = 4
 
