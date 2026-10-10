@@ -95,14 +95,15 @@ namespace Flee.ExpressionElements
                 }
             }
 
-            // Try to see if it is a regular IList or IDictionary
-            if (typeof(IList<>).IsAssignableFrom(collType) == true)
+            // Try to see if it is a regular IList or IDictionary. These are the non-generic
+            // interfaces: the open generic types IList<> and IDictionary<,> never match here (R-022).
+            if (typeof(System.Collections.IList).IsAssignableFrom(collType) == true)
             {
-                return typeof(IList<>);
+                return typeof(System.Collections.IList);
             }
-            else if (typeof(IDictionary<,>).IsAssignableFrom(collType) == true)
+            else if (typeof(System.Collections.IDictionary).IsAssignableFrom(collType) == true)
             {
-                return typeof(IDictionary<,>);
+                return typeof(System.Collections.IDictionary);
             }
 
             // Not a known collection type

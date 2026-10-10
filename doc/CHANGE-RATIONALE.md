@@ -56,6 +56,7 @@ Entry template:
 | R-019 | Generated code no longer inlines Flee's helpers (.NET 10 first-call cost) | perf, fix | Phase 4 |
 | R-020 | Expected reasons in InvalidExpressions.txt updated | test | Phase 4 |
 | R-021 | UInt32 and UInt64 constants above the signed maximum compile | fix | Phase 4 |
+| R-022 | `in` works with non-generic IList and IDictionary | fix | Phase 4 |
 
 ## Entries
 
@@ -419,4 +420,23 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** the 67 script cases of the `unsigned-literal` category pass and leave the
   known-failures list (failing first, as pinned in Phase 1). Debug: 1,836 pass, 22 skipped;
   Release: 1,838 and 20; net8.0 and net10.0.
+- **Discussed:** not needed (bug fix).
+
+### R-022: `in` works with non-generic IList and IDictionary
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `InElement.GetTargetCollectionType` falls back to the non-generic
+  `System.Collections.IList` and `IDictionary` instead of the open generic `IList<>` and
+  `IDictionary<,>`.
+- **Why:** `typeof(IList<>).IsAssignableFrom(...)` is never true, so `x in list` with an
+  `ArrayList`, a `Hashtable` or any other collection that only implements the non-generic
+  interfaces failed to compile ("not a known collection type"). The code comment ("a regular
+  IList or IDictionary") shows the non-generic interfaces were meant; most likely a VB-to-C#
+  conversion slip. `Contains` is then called on the non-generic interface, with the operand
+  converted to `object`.
+- **Behaviour:** `in` against such collections now compiles and returns the right result. Types
+  with a generic `ICollection<T>` or `IDictionary<K,V>` are matched earlier and unchanged.
+- **Verified:** the 7 script cases of the `in-collection` category pass and leave the
+  known-failures list; full suite green on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).

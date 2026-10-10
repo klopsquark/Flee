@@ -12,16 +12,16 @@ on net8.0 and net10.0 with exactly the same list.
 | Category | Cases | Kind | Short cause |
 | --- | ---: | --- | --- |
 | `real-overflow-undetected` | 7 | runtime change | Out-of-range real literals become infinity instead of `ConstantOverflow` |
-| `in-collection` | 7 | bug | `x in list` rejects non-generic `IList` and `Hashtable` |
 | `crash` | 4 | bug | `GetType()` on a value-type field: the process dies |
 | `debug-il-length` | 2 | bug, Debug only | IL length self-check fails for hex `Int64`/`UInt64` literals |
-| **Total** | **20** | | of 1,756 cases (1,736 pass) |
+| **Total** | **13** | | of 1,756 cases (1,743 pass) |
 
-In a Release build the two `debug-il-length` cases pass, so the totals are 18 and 1,738.
+In a Release build the two `debug-il-length` cases pass, so the totals are 11 and 1,745.
 
 The list started with 150 cases. In Phase 4, 63 left it when the expected reasons in
 `InvalidExpressions.txt` were updated (categories `wrong-reason` and `script-error`, see the last
-section), and 67 when the `unsigned-literal` bug was fixed (R-021, described below).
+section), 67 when the `unsigned-literal` bug was fixed (R-021) and 7 with the `in-collection` fix (R-022);
+both are described below.
 
 ## Categories
 
@@ -49,7 +49,7 @@ input instead of throwing `OverflowException`, so the `catch` in
 `src/Flee/ExpressionElements/Literals/Real/Double.cs:32` and `Single.cs:31` never runs. A fix
 checks for infinity after parsing.
 
-### in-collection (7)
+### in-collection (7, fixed in Phase 4)
 
 `"a" in list` with a non-generic `IList`, and `100 in Dict` with a `Hashtable`, fail with
 "Search argument type is not a known collection type". The fallback check compares against the
@@ -57,7 +57,8 @@ open generic types `IList<>` and `IDictionary<,>`, which `IsAssignableFrom` neve
 `src/Flee/ExpressionElements/In.cs:99` and `:103`. The comment above it ("a regular IList or
 IDictionary") suggests the non-generic interfaces were meant, probably lost in the VB-to-C#
 conversion (inferred, not checked against the VB source). The existing test
-`IN_OperatorTest` only covers generic collections.
+`IN_OperatorTest` only covers generic collections. Fixed in Phase 4 by checking the non-generic
+interfaces (R-022); all 7 cases pass.
 
 ### crash (4)
 

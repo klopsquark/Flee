@@ -10,7 +10,6 @@
 '                             Cause: GetType() called on a value type.
 '   real-overflow-undetected  Double/single literals beyond the range compile to infinity
 '                             instead of failing with ConstantOverflow (.NET Core 3.0+ parsing).
-'   in-collection             "x in list" rejects IList and Hashtable.
 '   debug-il-length           Debug builds only: IL length check fails for hex Int64 literals.
 ValidExpressions.txt;110;debug-il-length;int64;0xFFFFFFFFL;4294967295
 ValidExpressions.txt;120;debug-il-length;uint64;0xFFFFFFFFUL;4294967295
@@ -18,13 +17,6 @@ ValidExpressions.txt;867;crash;String;DateTimeA.GetType().Name;DateTime
 ValidExpressions.txt;1057;crash;string;datetimea.gettype().fullname.split(chararr)[1];DateTime
 ValidExpressions.txt;1256;crash;string;datetimea.gettype().name;DateTime
 ValidExpressions.txt;1257;crash;string;mouse.shareddt.gettype().name;DateTime
-ValidExpressions.txt;1313;in-collection;boolean;"a" in list;true
-ValidExpressions.txt;1314;in-collection;boolean;100 in list;true
-ValidExpressions.txt;1315;in-collection;boolean;'.' in list;false
-ValidExpressions.txt;1316;in-collection;boolean;45.67 in list;false
-ValidExpressions.txt;1318;in-collection;boolean;"abc" in Dict;true
-ValidExpressions.txt;1319;in-collection;boolean;100 in Dict;true
-ValidExpressions.txt;1320;in-collection;boolean;"zzz" in Dict;false
 InvalidExpressions.txt;9;real-overflow-undetected;System.Object;1.34E+400;ConstantOverflow
 InvalidExpressions.txt;10;real-overflow-undetected;System.Double;-1.7976931348623157E+309;ConstantOverflow
 InvalidExpressions.txt;11;real-overflow-undetected;System.Double;1.7976931348623157E+309;ConstantOverflow
