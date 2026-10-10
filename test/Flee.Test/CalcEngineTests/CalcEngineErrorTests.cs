@@ -15,8 +15,6 @@ namespace Flee.Test.CalcEngineTests
     public class CalcEngineErrorTests
     {
         [Test(Description = "An unknown name in an engine expression is a compile error")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: ArgumentNullException (\"key\") from the dependency manager")]
         public void UnknownNameIsUndefinedNameCompileError()
         {
             var engine = new CalculationEngine();

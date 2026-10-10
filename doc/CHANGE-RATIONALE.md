@@ -73,6 +73,7 @@ Entry template:
 | R-036 | Operator binders: BindToMethod returns null as designed | fix | Phase 4 |
 | R-037 | Unused variables and fields removed (library and tests) | cleanup | Phase 4 |
 | R-038 | Public API annotated for nullable reference types | api | Phase 4 |
+| R-039 | Unknown names in calculation-engine expressions are compile errors | fix | Phase 4 |
 
 ## Entries
 
@@ -750,3 +751,23 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `CalculationEngine.Add` leaves its name behind; `NamespaceImport.Equals` on an import not yet
   attached throws `NullReferenceException`. These are Phase 4 bug candidates.
 - **Discussed:** decided by the maintainer on 2026-10-09 (R-017).
+
+### R-039: Unknown names in calculation-engine expressions are compile errors
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** 2303840 (pinning tests), the commit that adds this entry
+- **What:** `IdentifierElement` treats a name as a calculation-engine atom only when the engine
+  has an atom of that name (`CalculationEngine.HasTail`); otherwise it reports the usual
+  `UndefinedName` compile error.
+- **Why:** For an expression added to an engine, every name that was not a variable or member was
+  passed to the engine as a dependency, even if no such atom existed. The dependency manager then
+  threw `ArgumentNullException` (parameter "key"), which says nothing about the expression. Found
+  while annotating the public API (R-038).
+- **Behaviour:** `engine.Add("a", "1 + zzz", context)` now throws `ExpressionCompileException`
+  with reason `UndefinedName`, like a plain context, instead of `ArgumentNullException`. Valid
+  expressions are unaffected; the batch loader adds atoms in dependency order, so references are
+  known when they are compiled.
+- **Verified:** `UnknownNameIsUndefinedNameCompileError` failed before and passes now; all
+  calculation-engine tests and the full suite green.
+- **Discussed:** not needed (bug fix). Callers catching `ArgumentNullException` here would need to
+  catch `ExpressionCompileException` instead; worth a line in the migration notes.

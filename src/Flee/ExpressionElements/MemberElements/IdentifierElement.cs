@@ -51,7 +51,9 @@ namespace Flee.ExpressionElements.MemberElements
 
             CalculationEngine ce = Context.CalculationEngine;
 
-            if ((ce != null))
+            // Only names the engine knows are atoms; anything else falls through to the
+            // UndefinedName compile error below (R-039).
+            if (ce != null && ce.HasTail(MemberName))
             {
                 ce.AddDependency(MemberName, Context);
                 _calcEngineReferenceType = ce.ResolveTailType(MemberName);
