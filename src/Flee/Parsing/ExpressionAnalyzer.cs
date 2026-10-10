@@ -289,10 +289,10 @@
         }
 
         /// <summary>
-        /// Called when exiting a parse tree node.the node being exited the node to add to the parse tree, or null if no parse tree should be created<
+        /// Called when exiting a parse tree node.
         /// </summary>
-        /// <param name="node"></param>
-        /// <returns></returns>
+        /// <param name="node">the node being exited</param>
+        /// <returns>the node to add to the parse tree, or null if no parse tree should be created</returns>
         public override Node Exit(Node node)
         {
             switch (node.Id)

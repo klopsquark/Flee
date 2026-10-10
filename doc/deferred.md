@@ -316,6 +316,5 @@ How to use it:
 - `BatchLoadCompileException` prints "atom '$a'": a `$` left over from the old reference syntax.
 - The root namespace import is named `"true"` (`ExpressionImports`).
 - `VariableCollection.Copy` subscribes to `CaseSensitiveChanged` a second time; harmless.
-- Two malformed comments in the parser (`ExpressionAnalyzer.cs`, `TokenNFA.cs`) are reported as
-  CS1570 suggestions; they belong to D-03.
+- ~~Two malformed comments in the parser reported as CS1570 suggestions.~~ Done (R-050).
 - **Pick up:** when the code is touched.

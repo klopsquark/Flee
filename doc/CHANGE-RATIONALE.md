@@ -84,6 +84,7 @@ Entry template:
 | R-047 | API guide examples run as tests and are kept in sync | test | Phase 6 |
 | R-048 | XML documentation comments on the public API | docs | Phase 6 |
 | R-049 | Package ships Flee.xml instead of DocComments.xml | build | Phase 6 |
+| R-050 | Two malformed doc comments in the parser fixed | docs | Phase 6 |
 
 ## Entries
 
@@ -965,4 +966,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   runtime in both. Packed to a scratch folder: `lib/<tfm>/Flee.xml` for all four targets, no
   `contentFiles`.
 - **Discussed:** the parser exemption follows the rule that the parser is not touched; editing the
-  two comments instead would be a separate commit if the maintainer prefers it.
+  two comments instead would be a separate commit if the maintainer prefers it. The maintainer
+  chose the fix: the CS1570 exemption was replaced by fixing the comments (R-050).
+
+### R-050: Two malformed doc comments in the parser fixed
+
+- **Kind / phase:** docs / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** `ExpressionAnalyzer.Exit` had a summary that ran its parameter and return descriptions
+  together and ended in a stray `<`; they now sit in the `param` and `returns` tags. The
+  `NFAStateQueue` comment in `TokenNFA.cs` used Java's `<p>`, now `<para/>`. `.editorconfig` no
+  longer lowers CS1570 for `src/Flee/Parsing`, so a malformed comment there fails the build again.
+- **Why:** with documentation output on (R-049) both are reported as CS1570. R-049 lowered the
+  warning to keep the parser untouched; the maintainer preferred fixing the comments.
+- **Behaviour:** none (comments only).
+- **Verified:** `Flee` builds with no warnings and no CS1570 suggestions; tests pass.
+- **Discussed:** yes, 2026-10-10: the maintainer asked for the fix. The second approved exception
+  to the parser rule, after R-042.

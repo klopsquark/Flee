@@ -754,7 +754,7 @@
      * keep track of the current and subsequent NFA states. The
      * current state is read from the beginning of the queue, and new
      * states are added at the end. A marker index is used to
-     * separate the current from the subsequent states.<p>
+     * separate the current from the subsequent states.<para/>
      *
      * The queue implementation is optimized for quick removal at the
      * beginning and addition at the end. It will attempt to use a
