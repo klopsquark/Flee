@@ -8,7 +8,9 @@ using Flee.Resources;
 
 namespace Flee.ExpressionElements.MemberElements
 {
-    [Obsolete("Element representing an array index")]
+    /// <summary>
+    /// Element representing an array index
+    /// </summary>
     internal class IndexerElement : MemberElement
     {
         private ExpressionElement _indexerElement;

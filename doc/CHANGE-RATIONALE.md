@@ -63,6 +63,7 @@ Entry template:
 | R-026 | Member access on value-type calculation-engine atoms (upstream #64, #111) | fix | Phase 4 |
 | R-027 | Element names for three elements in the resources | fix | Phase 4 |
 | R-028 | Fields renamed to common C# naming conventions | cleanup | Phase 4 |
+| R-029 | Misplaced [Obsolete] attributes turned back into doc comments | cleanup | Phase 4 |
 
 ## Entries
 
@@ -558,3 +559,18 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   reflection, is identical to upstream Flee 2.0.0 except for the intended `[Obsolete]` on
   `EmitToAssembly` (R-015).
 - **Discussed:** decided by the maintainer on 2026-10-10.
+
+### R-029: Misplaced [Obsolete] attributes turned back into doc comments
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** Twelve internal classes outside the parser carried `[Obsolete("...")]` whose text is
+  a class description ("Holds various shared utility methods", "Represents a function call").
+  The text becomes a `/// <summary>` comment and the attribute goes.
+- **Why:** The VB-to-C# conversion turned the original descriptions into `Obsolete` attributes.
+  The classes are not obsolete; the attributes only produced warning CS0618 at every use (the plan
+  noted it for `PropertyDictionary`). Two more in `src/Flee/Parsing` (`Analyzer`, `Parser`) stay
+  for now, following the rule not to touch the parser.
+- **Behaviour:** none; all twelve classes are internal.
+- **Verified:** solution warnings drop from 450 to 106; tests unchanged.
+- **Discussed:** not needed (plan item).

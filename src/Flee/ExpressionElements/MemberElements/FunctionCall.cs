@@ -9,7 +9,9 @@ using Flee.Resources;
 
 namespace Flee.ExpressionElements.MemberElements
 {
-    [Obsolete("Represents a function call")]
+    /// <summary>
+    /// Represents a function call
+    /// </summary>
     internal class FunctionCallElement : MemberElement
     {
         private readonly ArgumentList _arguments;

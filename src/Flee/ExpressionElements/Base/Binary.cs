@@ -8,7 +8,9 @@ using Flee.Resources;
 
 namespace Flee.ExpressionElements.Base
 {
-    [Obsolete("Base class for expression elements that operate on two child elements")]
+    /// <summary>
+    /// Base class for expression elements that operate on two child elements
+    /// </summary>
     internal abstract class BinaryExpressionElement : ExpressionElement
     {
 

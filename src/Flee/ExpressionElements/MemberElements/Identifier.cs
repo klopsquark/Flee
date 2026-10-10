@@ -15,7 +15,9 @@ using Flee.Resources;
 
 namespace Flee.ExpressionElements.MemberElements
 {
-    [Obsolete("Represents an identifier")]
+    /// <summary>
+    /// Represents an identifier
+    /// </summary>
     internal class IdentifierElement : MemberElement
     {
         private FieldInfo _field;

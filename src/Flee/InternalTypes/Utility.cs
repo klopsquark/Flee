@@ -6,7 +6,9 @@ using Flee.Resources;
 
 namespace Flee.InternalTypes
 {
-    [Obsolete("Holds various shared utility methods")]
+    /// <summary>
+    /// Holds various shared utility methods
+    /// </summary>
     internal class Utility
     {
         private Utility()
