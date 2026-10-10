@@ -78,14 +78,19 @@ namespace Flee.CalcEngine.PublicTypes
 
             IList<string> result = _dependencies.TopologicalSort(sources);
 
-            BatchLoadInfo[] infos = new BatchLoadInfo[result.Count];
+            List<BatchLoadInfo> infos = new List<BatchLoadInfo>(result.Count);
 
-            for (int i = 0; i <= result.Count - 1; i++)
+            foreach (string name in result)
             {
-                infos[i] = _nameInfoMap[result[i]];
+                // A referenced name that is not in the batch is left to the compiler, which reports
+                // it as an undefined name for the expression that uses it (D-26).
+                if (_nameInfoMap.TryGetValue(name, out BatchLoadInfo? info))
+                {
+                    infos.Add(info);
+                }
             }
 
-            return infos;
+            return infos.ToArray();
         }
 
         private ICollection<string> GetReferences(string expression, ExpressionContext context)

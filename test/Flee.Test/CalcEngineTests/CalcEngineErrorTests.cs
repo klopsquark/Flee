@@ -73,8 +73,6 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "D-26: an unknown name in a batch is a compile error naming the atom")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: KeyNotFoundException from BatchLoader.GetBachInfos (D-26)")]
         public void BatchUnknownNameIsCompileError()
         {
             var engine = new CalculationEngine();

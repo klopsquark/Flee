@@ -86,6 +86,7 @@ Entry template:
 | R-049 | Package ships Flee.xml instead of DocComments.xml | build | Phase 6 |
 | R-050 | Two malformed doc comments in the parser fixed | docs | Phase 6 |
 | R-051 | Syntax errors in calculation-engine and batch expressions are compile errors | fix | Phase 6 |
+| R-052 | A batch with an unknown name reports a compile error | fix | Phase 6 |
 
 ## Entries
 
@@ -1000,3 +1001,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** `BatchSyntaxErrorIsCompileError` and `SimpleCalcEngineSyntaxErrorIsCompileError`
   failed before and pass now; full suite green on net8.0 and net10.0.
 - **Discussed:** yes, 2026-10-10: the maintainer asked for D-25 to D-29 to be fixed before the release.
+
+### R-052: A batch with an unknown name reports a compile error
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** ad426fc (test), the commit that adds this entry (fix)
+- **What:** `BatchLoader.GetBachInfos` skips referenced names that are not in the batch instead of
+  looking them up with the dictionary indexer.
+- **Why:** D-26: a batch expression that used an unknown name made `CalculationEngine.BatchLoad`
+  throw `KeyNotFoundException`. Now the expression is compiled and fails like any other: a
+  `BatchLoadCompileException` naming the atom, whose inner `ExpressionCompileException` has reason
+  `UndefinedName` (the same path as R-039). The engine is left empty, as before for compile errors.
+- **Behaviour:** `KeyNotFoundException` becomes `BatchLoadCompileException`. Batches without unknown
+  names load as before.
+- **Verified:** `BatchUnknownNameIsCompileError` failed before and passes now;
+  `BatchCanCallImportedFunctions` (imported functions are not taken for unknown atoms) passes before
+  and after; full suite green on net8.0 and net10.0.
+- **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release).

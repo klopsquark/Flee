@@ -38,7 +38,7 @@ How to use it:
 | D-23 | `Resources/DocComments.xml` is shipped as a content file | Phase 6 | **Done** (R-049) |
 | D-24 | Other names the IDE may flag | When convenient | Open |
 | D-25 | Syntax errors in calculation-engine and batch expressions leak `ParserLogException` | Before the release, if approved | **Done** (R-051) |
-| D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | Open |
+| D-26 | `BatchLoader` with an unknown name throws `KeyNotFoundException` | Before the release, if approved | **Done** (R-052) |
 | D-27 | Evaluating a variable created by `DefineVariable` before it has a value | Before the release, if approved | Open |
 | D-28 | Cloned contexts share option and import state with the original | Before the release, if approved | Open |
 | D-29 | `SimpleCalcEngine` clears the variables before checking the new expression | Before the release, if approved | Open |
@@ -260,6 +260,7 @@ How to use it:
 - **Origin:** XML comments (R-048); confirmed by running it. Related to R-039, which fixed the same
   symptom for `CalculationEngine.Add`.
 - **Pick up:** before the release if approved, with a known-failure test first.
+- **Done:** R-052.
 
 ### D-27: Evaluating a variable created by `DefineVariable` before it has a value
 
