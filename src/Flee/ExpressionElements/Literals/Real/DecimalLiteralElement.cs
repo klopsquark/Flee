@@ -43,7 +43,7 @@ namespace Flee.ExpressionElements.Literals.Real
                 decimal value = options.ParseDecimal(image);
                 return new DecimalLiteralElement(value);
             }
-            catch (OverflowException ex)
+            catch (OverflowException)
             {
                 element.OnParseOverflow(image);
                 return null;

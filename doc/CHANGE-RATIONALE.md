@@ -70,6 +70,8 @@ Entry template:
 | R-033 | ArithmeticElement looks up its helper methods once | cleanup | Phase 4 |
 | R-034 | One type per file, file names match type names | cleanup | Phase 4 |
 | R-035 | Debug.Assert on impossible paths becomes an exception | fix | Phase 4 |
+| R-036 | Operator binders: BindToMethod returns null as designed | fix | Phase 4 |
+| R-037 | Unused variables and fields removed (library and tests) | cleanup | Phase 4 |
 
 ## Entries
 
@@ -687,3 +689,31 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   clear exception.
 - **Verified:** tests green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** not needed (plan item).
+
+### R-036: Operator binders: BindToMethod returns null as designed
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** `CustomBinder` overrides `Binder.BindToMethod` and returns null, and the two derived
+  binders (`BinaryOperatorBinder`, `ExplicitOperatorMethodBinder`) lose their forwarding override
+  and the field it forwarded to.
+- **Why:** The VB original's `CustomBinder.BindToMethod` returned Nothing. The conversion produced
+  a separate, non-overriding method with a `ref` parameter, and each derived binder implemented
+  the real override by calling `BindToMethod` on a field that was never assigned (warning CS0649),
+  so a call would have thrown `NullReferenceException`. Flee only ever calls `SelectMethod` on
+  these binders, so the path is not reached today.
+- **Behaviour:** none on reachable paths.
+- **Verified:** tests green in Debug and Release on net8.0 and net10.0.
+- **Discussed:** not needed (bug fix).
+
+### R-037: Unused variables and fields removed (library and tests)
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** Unused `catch` variables in four literal elements and in `LongScriptTests`, the unused
+  field `FleeILGenerator._brContext`, and a nullable warning in the test helper `TestData` (`Id`
+  initialised to an empty string).
+- **Why:** Plan item (clear the build warnings before treating them as errors).
+- **Behaviour:** none.
+- **Verified:** solution warnings 106 -> 74 (together with R-036); tests green.
+- **Discussed:** not needed.

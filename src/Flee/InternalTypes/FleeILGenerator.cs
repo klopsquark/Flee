@@ -11,7 +11,6 @@ namespace Flee.InternalTypes
         private int _labelCount;
         private readonly Dictionary<Type, LocalBuilder> _localBuilderTemp;
         private int _pass;
-        private int _brContext;
         private BranchManager _bm;
 
         public FleeILGenerator(ILGenerator ilg)

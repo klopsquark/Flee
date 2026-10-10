@@ -13,7 +13,7 @@ namespace Flee.ExpressionElements.Literals.Integral
             {
                 _value = UInt64.Parse(image, ns);
             }
-            catch (OverflowException ex)
+            catch (OverflowException)
             {
                 base.OnParseOverflow(image);
             }

@@ -36,7 +36,7 @@ namespace Flee.ExpressionElements.Literals.Real
                 }
                 return new DoubleLiteralElement(value);
             }
-            catch (OverflowException ex)
+            catch (OverflowException)
             {
                 element.OnParseOverflow(image);
                 return null;
