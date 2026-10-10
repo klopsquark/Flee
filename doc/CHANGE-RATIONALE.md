@@ -678,11 +678,11 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   wrong result or a `NullReferenceException`. Now it fails where it happens, with a message.
 - **Kept as asserts (23), on purpose:** invariants that a later line would hit anyway (argument
   counts in overload scoring, local index range, which `Convert` checks), development checks (IL
-  length bookkeeping, element names), and three that Release code relies on being reachable:
-  `ImplicitConverter`'s type index returns -1 for non-primitive value types and callers test for
-  it; `PropertyDictionary` returns the default for a property not set yet, which
-  `ExpressionContext` uses for its lazily created identifier parser; `MemberElement`'s
-  accessibility check returns false for member kinds it does not know.
+  length bookkeeping, element names, and `PropertyDictionary`'s unknown-name check, which only a
+  typo in Flee's own property names can trigger and every Debug test run would catch), and two
+  that Release code relies on being reachable: `ImplicitConverter`'s type index returns -1 for
+  non-primitive value types and callers test for it; `MemberElement`'s accessibility check
+  returns false for member kinds it does not know.
 - **Behaviour:** none on any path the tests reach; only paths that were already broken now throw a
   clear exception.
 - **Verified:** tests green in Debug and Release on net8.0 and net10.0.
