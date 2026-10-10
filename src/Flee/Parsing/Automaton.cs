@@ -69,7 +69,7 @@
         {
             if (lowerCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             if (_value == (char)0 || _value == c)
             {
@@ -89,7 +89,7 @@
         {
             if (lowerCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             if (_value == (char)0)
             {

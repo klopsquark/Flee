@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop, master, 'claude/**' ]
+  pull_request:
+    branches: [ develop, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.configuration }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+        configuration: [ Debug, Release ]
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # GitVersion needs the full history
+
+      # The 10.0 SDK builds every target; the tests run on net8.0 and net10.0.
+      # The benchmark project also targets net6.0 (the baseline runtime), so it is built too.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      # Errors also go to build-errors.log. setup-dotnet's problem matcher skips MSBxxxx errors,
+      # so the next step turns each logged error into an annotation, which is readable without
+      # signing in to GitHub.
+      - name: Build
+        run: dotnet build Flee.sln -c ${{ matrix.configuration }} "-flp:logfile=build-errors.log;errorsonly"
+
+      - name: Report build errors
+        if: failure()
+        run: |
+          if [ -s build-errors.log ]; then
+            sort -u build-errors.log | head -n 10 | while IFS= read -r line; do echo "::error title=Build error::${line}"; done
+          else
+            echo "::error title=Build error::The build failed without logging an error (crash or killed process)."
+          fi
+
+      # Benchmarks are not run here: shared runners are too noisy (benchmarks/README.md).
+      - name: Test
+        run: >
+          dotnet test Flee.sln -c ${{ matrix.configuration }} --no-build
+          --logger "trx;LogFileName=results.trx"
+          --results-directory TestResults
+          --collect "XPlat Code Coverage"
+
+      - name: Summarize tests and coverage
+        if: always()
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as ET
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          for trx in glob.glob('TestResults/**/*.trx', recursive=True):
+              c = ET.parse(trx).getroot().find('.//t:ResultSummary/t:Counters', ns)
+              print(f"**Tests:** {c.get('total')} total, {c.get('passed')} passed, "
+                    f"{c.get('failed')} failed, {int(c.get('total')) - int(c.get('executed'))} not run "
+                    f"(known failures)\n")
+          for cov in glob.glob('TestResults/**/coverage.cobertura.xml', recursive=True):
+              r = ET.parse(cov).getroot()
+              print(f"**Line coverage:** {float(r.get('line-rate')) * 100:.1f} %, "
+                    f"**branch coverage:** {float(r.get('branch-rate')) * 100:.1f} %\n")
+          EOF
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.configuration }}
+          path: TestResults

@@ -185,8 +185,8 @@
                 {
                     state = new NFAState();
                 }
-                AddOut(new NFACharTransition(Char.ToLower(ch), state));
-                AddOut(new NFACharTransition(Char.ToUpper(ch), state));
+                AddOut(new NFACharTransition(Char.ToLowerInvariant(ch), state));
+                AddOut(new NFACharTransition(Char.ToUpperInvariant(ch), state));
                 return state;
             }
             else
@@ -433,7 +433,7 @@
         {
             if (IgnoreCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             AddContent(c);
         }
@@ -442,8 +442,8 @@
         {
             if (IgnoreCase)
             {
-                min = Char.ToLower(min);
-                max = Char.ToLower(max);
+                min = Char.ToLowerInvariant(min);
+                max = Char.ToLowerInvariant(max);
             }
             AddContent(new Range(min, max));
         }
@@ -462,7 +462,7 @@
 
             if (IgnoreCase)
             {
-                ch = Char.ToLower(ch);
+                ch = Char.ToLowerInvariant(ch);
             }
             for (int i = 0; i < _contents.Length; i++)
             {
@@ -754,7 +754,7 @@
      * keep track of the current and subsequent NFA states. The
      * current state is read from the beginning of the queue, and new
      * states are added at the end. A marker index is used to
-     * separate the current from the subsequent states.<p>
+     * separate the current from the subsequent states.<para/>
      *
      * The queue implementation is optimized for quick removal at the
      * beginning and addition at the end. It will attempt to use a

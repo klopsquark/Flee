@@ -1,0 +1,10 @@
+' Script cases that fail on the current library. Every entry is checked on each run: the case
+' must still fail, and the script line must still read as given here, so the list stays exact.
+' Causes, history and the cases already fixed: doc/known-failures.md.
+'
+' Format: File;Line;Category;Script line (exactly as in the script file)
+' Category crash means the case kills the test process; such cases are never run.
+' Category debug-il-length is a known failure only in Debug builds.
+'
+' Empty since Phase 4: all 150 cases recorded in Phase 1 were fixed or their expected values
+' corrected.

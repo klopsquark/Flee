@@ -144,6 +144,9 @@
   <data name="DateTimeLiteralElement" xml:space="preserve">
     <value>DateTimeLiteralElement</value>
   </data>
+  <data name="DecimalLiteralElement" xml:space="preserve">
+    <value>DecimalLiteralElement</value>
+  </data>
   <data name="DoubleLiteralElement" xml:space="preserve">
     <value>DoubleLiteralElement</value>
   </data>
@@ -162,11 +165,14 @@
   <data name="InElement" xml:space="preserve">
     <value>InElement</value>
   </data>
-  <data name="Int32Literal" xml:space="preserve">
-    <value>Int32Literal</value>
+  <data name="Int32LiteralElement" xml:space="preserve">
+    <value>Int32LiteralElement</value>
   </data>
   <data name="Int64LiteralElement" xml:space="preserve">
     <value>Int64LiteralElement</value>
+  </data>
+  <data name="LocalBasedElement" xml:space="preserve">
+    <value>LocalBasedElement</value>
   </data>
   <data name="InvocationListElement" xml:space="preserve">
     <value>InvocationListElement</value>

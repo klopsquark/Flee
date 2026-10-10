@@ -3,30 +3,43 @@
     <PropertyGroup>
         <AssemblyName>Flee</AssemblyName>
         <AssemblyTitle>Flee</AssemblyTitle>
-        <Description>Flee is Fast Lightweight Expression Evaluator.</Description>
+        <Description>Flee (Fast Lightweight Expression Evaluator) parses expressions such as sqrt(a^2 + b^2) at runtime and compiles them to IL. Maintained fork of mparlak/Flee.</Description>
         <Product>Flee</Product>
-        <TargetFrameworks>net6.0;net5.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net10.0</TargetFrameworks>
         <!-- Several target frameworks: keep one output folder per framework
              (Directory.Build.props turns this off for single-target projects). -->
         <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <!-- Off project-wide: the code predates nullable reference types and was never annotated.
+             Files opt in one by one with #nullable enable once annotated (public API first);
+             when all have, this becomes enable. See doc/CHANGE-RATIONALE.md, R-017. -->
+        <Nullable>disable</Nullable>
+        <!-- Writes Flee.xml next to the assembly, so the package ships the XML comments for
+             IntelliSense. Missing comments (CS1591) fail the build outside src/Flee/Parsing,
+             which .editorconfig exempts. -->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IsPackable>true</IsPackable>
         <IsMainAssembly>true</IsMainAssembly>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>Flee</Title>
         <PackageProjectUrl>https://github.com/klopsquark/Flee</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/mparlak/Flee</PackageLicenseUrl>
-        <PackageIconUrl>https://github.com/mparlak/Flee</PackageIconUrl>
+        <PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageTags>flee,expression evaluator,Expression Evaluator for c#</PackageTags>
+        <!-- Symbols as a separate .snupkg; Source Link (built into the SDK) points the PDBs at the
+             repository, so debuggers can fetch the sources. -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Resources\DocComments.xml" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Resources\DocComments.xml" />
+        <!-- The benchmark project measures the parse stage on its own, which needs internals. -->
+        <InternalsVisibleTo Include="Flee.Benchmarks" />
     </ItemGroup>
 
     <ItemGroup>
@@ -34,8 +47,10 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-        <PackageReference Include="System.Reflection" Version="4.3.0" />
+    </ItemGroup>
+
+    <!-- netstandard2.0 lacks Reflection.Emit; every other target has it built in. -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
         <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />

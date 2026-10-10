@@ -4,6 +4,11 @@
         <!-- Explicit, so every project gets the same language level regardless
              of its target framework's default. -->
         <LangVersion>latest</LangVersion>
+        <!-- Warnings fail the build (plan, Phase 3/4). Exceptions: NU1900 means the NuGet
+             vulnerability audit could not reach a feed, which says nothing about the code;
+             NETSDK1138 flags the out-of-support net6.0 target the benchmarks keep on purpose. -->
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1900;NETSDK1138</WarningsNotAsErrors>
         <Authors>Flee Contributors; klopsquark</Authors>
         <Company>Flee</Company>
         <Copyright>Copyright © 2022 Flee Contributors</Copyright>
@@ -41,6 +46,16 @@
         <PackageOutputPath Condition="'$(PackageOutputPath)' == ''">$(MSBuildThisFileDirectory)build\nuget\</PackageOutputPath>
         <RepositoryUrl>https://github.com/klopsquark/Flee</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- GitVersion.MsBuild writes its result to obj/gitversion.json and reads it back. A
+             multi-targeting project runs it in every framework's build and in the outer build
+             (SBOM), in parallel, so one build could read the file while another rewrote it
+             ("The input does not contain any JSON tokens", R-059). One file per configuration and
+             framework keeps them apart. Set here because GitVersion's own props use the value. -->
+        <GitVersionOutputFile Condition="'$(GitVersionOutputFile)' == '' AND '$(TargetFramework)' != ''">$(MSBuildProjectDirectory)\obj\gitversion.$(Configuration).$(TargetFramework).json</GitVersionOutputFile>
+        <GitVersionOutputFile Condition="'$(GitVersionOutputFile)' == ''">$(MSBuildProjectDirectory)\obj\gitversion.$(Configuration).json</GitVersionOutputFile>
     </PropertyGroup>
 
     <!-- Copy main assemblies to the runtime folder, but exclude experiments.

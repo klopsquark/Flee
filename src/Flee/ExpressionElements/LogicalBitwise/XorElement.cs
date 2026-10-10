@@ -1,0 +1,44 @@
+﻿using System.Reflection.Emit;
+using Flee.ExpressionElements.Base;
+using Flee.InternalTypes;
+
+
+namespace Flee.ExpressionElements.LogicalBitwise
+{
+    internal class XorElement : BinaryExpressionElement
+    {
+        protected override System.Type GetResultType(System.Type leftType, System.Type rightType)
+        {
+            Type bitwiseType = Utility.GetBitwiseOpType(leftType, rightType);
+
+            if ((bitwiseType != null))
+            {
+                return bitwiseType;
+            }
+            else if (this.AreBothChildrenOfType(typeof(bool)))
+            {
+                return typeof(bool);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public override void Emit(FleeILGenerator ilg, IServiceProvider services)
+        {
+            Type resultType = this.ResultType;
+
+            LeftChild.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(LeftChild.ResultType, resultType, ilg);
+            RightChild.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(RightChild.ResultType, resultType, ilg);
+            ilg.Emit(OpCodes.Xor);
+        }
+
+
+        protected override void GetOperation(object operation)
+        {
+        }
+    }
+}

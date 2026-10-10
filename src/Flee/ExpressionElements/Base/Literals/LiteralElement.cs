@@ -16,11 +16,11 @@ namespace Flee.ExpressionElements.Base.Literals
 
         public static void EmitLoad(Int32 value, FleeILGenerator ilg)
         {
-            if (value >= -1 & value <= 8)
+            if (value >= -1 && value <= 8)
             {
                 EmitSuperShort(value, ilg);
             }
-            else if (value >= sbyte.MinValue & value <= sbyte.MaxValue)
+            else if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
             {
                 ilg.Emit(OpCodes.Ldc_I4_S, Convert.ToSByte(value));
             }
@@ -32,14 +32,17 @@ namespace Flee.ExpressionElements.Base.Literals
 
         protected static void EmitLoad(Int64 value, FleeILGenerator ilg)
         {
-            if (value >= Int32.MinValue & value <= Int32.MaxValue)
+            if (value >= Int32.MinValue && value <= Int32.MaxValue)
             {
                 EmitLoad(Convert.ToInt32(value), ilg);
                 ilg.Emit(OpCodes.Conv_I8);
             }
-            else if (value >= 0 & value <= UInt32.MaxValue)
+            else if (value >= 0 && value <= UInt32.MaxValue)
             {
-                ilg.Emit(OpCodes.Ldc_I4, unchecked((int)Convert.ToUInt32(value)));
+                // Through the Int32 overload, which picks the short opcode forms itself. The runtime's
+                // ILGenerator shortens ldc.i4 -1 (0xFFFFFFFF) to one byte, which Flee's own length
+                // bookkeeping did not expect (R-025).
+                EmitLoad(unchecked((int)Convert.ToUInt32(value)), ilg);
                 ilg.Emit(OpCodes.Conv_U8);
             }
             else
@@ -50,7 +53,7 @@ namespace Flee.ExpressionElements.Base.Literals
 
         protected static void EmitLoad(bool value, FleeILGenerator ilg)
         {
-            if (value == true)
+            if (value)
             {
                 ilg.Emit(OpCodes.Ldc_I4_1);
             }
@@ -97,8 +100,7 @@ namespace Flee.ExpressionElements.Base.Literals
                     ldcOpcode = OpCodes.Ldc_I4_M1;
                     break;
                 default:
-                    Debug.Assert(false, "value out of range");
-                    break;
+                    throw new InvalidOperationException("Flee internal error: short constant out of range");
             }
 
             ilg.Emit(ldcOpcode);

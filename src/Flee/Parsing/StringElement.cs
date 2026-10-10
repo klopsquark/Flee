@@ -46,7 +46,7 @@
                 }
                 if (m.IsCaseInsensitive())
                 {
-                    c = (int)Char.ToLower((char)c);
+                    c = (int)Char.ToLowerInvariant((char)c);
                 }
                 if (c != (int)_value[i])
                 {
