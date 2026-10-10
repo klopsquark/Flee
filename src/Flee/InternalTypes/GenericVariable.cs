@@ -4,9 +4,7 @@ namespace Flee.InternalTypes
 {
     internal class GenericVariable<T> : IVariable, IGenericVariable<T>
     {
-        // Starts as the type's default, so a variable created by DefineVariable reads like one set
-        // to null through the indexer (D-27).
-        public object Value = default(T);
+        public object Value;
 
         public IVariable Clone()
         {

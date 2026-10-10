@@ -95,6 +95,7 @@ Entry template:
 | R-058 | Wiki: handbook pages, tested examples, publish script | docs | Phase 6 |
 | R-059 | GitVersion writes one result file per framework | build | Phase 6 |
 | R-060 | Maintainer housekeeping: solution folder, legacy README, parser whitespace | cleanup | Phase 6 |
+| R-061 | On-demand variable reads no longer box a default value (regression from R-053) | fix | Phase 6 |
 
 ## Entries
 
@@ -1183,3 +1184,22 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   2,050 tests pass on net8.0 and net10.0, CI green on 401a769. `CLAUDE.md` and the wiki's
   Development page now name `LEGACY.README.markdown`.
 - **Discussed:** made by the maintainer.
+
+### R-061: On-demand variable reads no longer box a default value (regression from R-053)
+
+- **Kind / phase:** fix / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** the default value for a variable created by `DefineVariable` (R-053) is now set in
+  `VariableCollection.DefineVariableInternal`, through the `ValueAsObject` setter that the indexer
+  also uses for null, instead of by a field initializer in `GenericVariable<T>`.
+- **Why:** the release benchmark run found that evaluating the OnDemand, LegacySmall,
+  LegacySmallBranching and LegacyBig vectors allocated 50 to 80 % more than the baseline (OnDemand
+  408 B to 624 B per evaluation on .NET 8). A bisect over the 64 commits since Phase 3 pointed
+  at R-053: `GetVariableValueInternal<T>` creates two `GenericVariable<T>` objects on every
+  on-demand read, and the field initializer boxed `default(T)` into each. The extra objects in that
+  path are upstream's and are left to Phase 7 (D-33).
+- **Behaviour:** none: a defined variable still reads as its type's default.
+- **Verified:** evaluation allocations are back to the baseline (OnDemand 408 B, LegacySmall
+  200 B, Constants 24 B on .NET 8, short job); `DefineVariableTests` and the full suite pass on
+  net8.0 and net10.0.
+- **Discussed:** not needed (regression fix; the behaviour chosen in R-053 is unchanged).

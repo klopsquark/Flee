@@ -330,7 +330,9 @@ How to use it:
 
 - **What:** the plan's Phase 7: profile the benchmark vectors and optimize from the evidence
   (candidates in the plan: variable reads at evaluation, the compile path, context cloning and
-  locking, parser allocations). Includes D-07, D-08 and D-21.
+  locking, parser allocations). Includes D-07, D-08 and D-21, and the on-demand variable read,
+  which creates two `GenericVariable<T>` objects per read (`GetVariableValueInternal<T>`, found
+  with R-061).
 - **Origin:** the plan; the maintainer decided on 2026-10-10 to leave it out of the first release.
 - **Why it waits:** the first release ships the bug fixes, documentation and modernization; the
   maintainer tests it in applications first.

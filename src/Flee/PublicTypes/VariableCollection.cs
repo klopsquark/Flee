@@ -100,6 +100,13 @@ namespace Flee.PublicTypes
             }
 
             IVariable v = this.CreateVariable(variableType, variableValue);
+            if (variableValue == null)
+            {
+                // DefineVariable: start with the type's default, as the indexer does for null (D-27).
+                // Done here rather than in GenericVariable<T>, whose instances the on-demand path
+                // creates on every read (R-061).
+                v.ValueAsObject = null;
+            }
             _variables.Add(name, v);
         }
 
