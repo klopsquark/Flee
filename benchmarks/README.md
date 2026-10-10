@@ -13,6 +13,7 @@ its own, with time and allocations:
 | `Parse` | Tokenizing, parsing and building the element tree, including name and type resolution. Uses library internals (`InternalsVisibleTo`). |
 | `Compile` | The public `CompileDynamic`: context clone, parse, IL emission (twice for long branches), delegate creation. |
 | `Evaluate` | One call of an already compiled expression. |
+| `CompileAndEvaluate` | Compile plus the first call, which is when the runtime JIT-compiles the generated method: the one-off cost per expression at startup. Added in Phase 4. |
 
 | Vector | Exercises |
 | --- | --- |

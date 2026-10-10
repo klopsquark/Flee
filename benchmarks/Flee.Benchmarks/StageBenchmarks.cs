@@ -57,5 +57,13 @@ namespace Flee.Benchmarks
 
         [Benchmark]
         public object Evaluate() => _compiled.Evaluate();
+
+        /// <summary>
+        /// Compile plus the first evaluation, which is when the runtime JIT-compiles the generated
+        /// method. This is the cost an application pays once per expression at startup. Added in
+        /// Phase 4 after .NET 10 turned out to make that first call much slower (R-019).
+        /// </summary>
+        [Benchmark]
+        public object CompileAndEvaluate() => _context.CompileDynamic(Vector.Expression).Evaluate();
     }
 }
