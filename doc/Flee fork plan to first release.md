@@ -168,6 +168,8 @@ Documentation is written after the API settles, so it describes what ships. Upst
 
 ## Phase 7: Performance optimization (stretch)
 
+**Decided 2026-10-10:** Phase 7 moves to the next release (2.7.0); the first release ships without it. Tracked as D-33 in `doc/deferred.md`.
+
 Optimization is the last, optional goal for the first release: it gets a fixed time box, and the release ships without it if the box runs out. Each change needs before-and-after numbers from the Phase 2 vectors and must leave behaviour untouched.
 
 Start by profiling the vectors, then pick from the evidence. From reading the code, these are the candidates, most promising first:
@@ -213,4 +215,4 @@ Other post-release ideas:
 | Nullable reference types | Phase 3 | **Decided 2026-10-09:** off now, files opt in once annotated, public API first (Phase 4) |
 | Rename the `_my` and `_our` prefixes | Phase 4 | **Decided 2026-10-10:** rename to common C# conventions |
 | Your list of API changes and extensions | Phase 5 | Open |
-| Time box for performance work | Phase 7 | Open |
+| Time box for performance work | Phase 7 | **Decided 2026-10-10:** Phase 7 moves to the next release (D-33) |

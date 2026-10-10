@@ -94,6 +94,7 @@ Entry template:
 | R-057 | CI reports build errors as annotations | build | Phase 6 |
 | R-058 | Wiki: handbook pages, tested examples, publish script | docs | Phase 6 |
 | R-059 | GitVersion writes one result file per framework | build | Phase 6 |
+| R-060 | Maintainer housekeeping: solution folder, legacy README, parser whitespace | cleanup | Phase 6 |
 
 ## Entries
 
@@ -126,7 +127,7 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 ### R-002: Licence file
 
 - **Kind / phase:** build / Phase 0
-- **Commits:** in the Phase 0 pull request
+- **Commits:** 08b1f59
 - **What:** Adds `LICENSE` with the unmodified text of the GNU LGPL version 2.1, as published at
   gnu.org.
 - **Why:** Upstream states "LGPL 2.1 or (at your option) any later version" in the grammar
@@ -225,7 +226,7 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 ### R-008: Benchmark project; timing tests moved out of the test project
 
 - **Kind / phase:** build, test / Phase 2
-- **Commits:** 9673ced, 966030e, and the BenchmarkDotNet 0.15.8 update
+- **Commits:** 9673ced, 966030e, 7059e4e (BenchmarkDotNet 0.15.8)
 - **What:** New `benchmarks/Flee.Benchmarks` (BenchmarkDotNet 0.15.8, net6.0) with 15 vectors
   through parse, compile and evaluate, a calculation-engine and a variable-write benchmark.
   `test/Flee.Test/ExpressionTests/Benchmarks.cs` is deleted; its two workloads live on as
@@ -717,7 +718,7 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 ### R-036: Operator binders: BindToMethod returns null as designed
 
 - **Kind / phase:** fix / Phase 4
-- **Commits:** the commit that adds this entry
+- **Commits:** 3af9688
 - **What:** `CustomBinder` overrides `Binder.BindToMethod` and returns null, and the two derived
   binders (`BinaryOperatorBinder`, `ExplicitOperatorMethodBinder`) lose their forwarding override
   and the field it forwarded to.
@@ -1166,3 +1167,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** a clean build writes the five files; every assembly and the SBOM carry the expected
   GitVersion version; tests pass. CI shows whether the failure is gone; it never reproduced locally.
 - **Discussed:** not needed (build fix).
+
+### R-060: Maintainer housekeeping: solution folder, legacy README, parser whitespace
+
+- **Kind / phase:** cleanup / Phase 6
+- **Commits:** 17b857d, 28bc708, 401a769 (by the maintainer); this entry records them
+- **What:** `Flee.sln` lost an empty solution folder. Upstream's `README.markdown` was renamed to
+  `LEGACY.README.markdown` and the fork's README links to the new name. In
+  `src/Flee/Parsing/StackParser.cs` trailing whitespace was removed from four lines and a
+  doubled semicolon (`return GetPattern(elem.Id); ;`) became a single one.
+- **Why:** tidying by the maintainer; the rename makes clear which README is the fork's.
+- **Behaviour:** none. The parser change only removes whitespace and an empty statement; it is the
+  third change to `src/Flee/Parsing` before the release, made by the maintainer.
+- **Verified:** found in the pre-release review of develop; Debug and Release build clean, all
+  2,050 tests pass on net8.0 and net10.0, CI green on 401a769. `CLAUDE.md` and the wiki's
+  Development page now name `LEGACY.README.markdown`.
+- **Discussed:** made by the maintainer.

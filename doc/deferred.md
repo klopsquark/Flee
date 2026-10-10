@@ -45,6 +45,8 @@ How to use it:
 | D-30 | Changing `Options.CaseSensitive` empties the variables | Phase 5 | Open |
 | D-31 | `ParseCulture`: LCID comparison and multi-character separators | Phase 5 | Open |
 | D-32 | Small oddities found while writing the XML comments | When touched | Open |
+| D-33 | Phase 7: performance optimization | Next release (2.7.0) | Open |
+| D-34 | Relative links in the package README | When convenient | Open |
 
 ## Entries
 
@@ -323,3 +325,22 @@ How to use it:
 - `VariableCollection.Copy` subscribes to `CaseSensitiveChanged` a second time; harmless.
 - ~~Two malformed comments in the parser reported as CS1570 suggestions.~~ Done (R-050).
 - **Pick up:** when the code is touched.
+
+### D-33: Phase 7: performance optimization
+
+- **What:** the plan's Phase 7: profile the benchmark vectors and optimize from the evidence
+  (candidates in the plan: variable reads at evaluation, the compile path, context cloning and
+  locking, parser allocations). Includes D-07, D-08 and D-21.
+- **Origin:** the plan; the maintainer decided on 2026-10-10 to leave it out of the first release.
+- **Why it waits:** the first release ships the bug fixes, documentation and modernization; the
+  maintainer tests it in applications first.
+- **Pick up:** the next release (2.7.0). Each change needs before-and-after numbers against
+  `benchmarks/results/baseline-net6.0` and the 2.6.0 release run.
+
+### D-34: Relative links in the package README
+
+- **What:** the package carries `README.md`, whose links (`doc/...`, `CHANGELOG.md`,
+  `LEGACY.README.markdown`) are relative to the repository. Package viewers do not resolve them.
+- **Origin:** pre-release review of develop, 2026-10-10.
+- **Choice:** absolute GitHub links in the README, or a separate, shorter package readme.
+- **Pick up:** when convenient; it does not affect the library.

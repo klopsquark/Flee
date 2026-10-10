@@ -53,8 +53,8 @@ dotnet test Flee.sln
 - **The parser stays untouched** before the first release, apart from approved exceptions.
 - **Phase 5 is on hold**: no API changes or extensions without a decision.
 - **Postponed work goes into `doc/deferred.md`** in the same pull request that postpones it.
-- Licence LGPL 2.1 or later; keep every copyright notice. `README.markdown` is upstream's README and
-  stays untouched; `README.md` is the fork's.
+- Licence LGPL 2.1 or later; keep every copyright notice. `LEGACY.README.markdown` is upstream's
+  README, kept unchanged; `README.md` is the fork's.
 
 ## Branches, versions, CI
 
@@ -101,6 +101,25 @@ commit, machine and runtime. Benchmarks are not part of CI.
 
 ## Releasing
 
-The first-release checklist in the plan: CI green on every target, known failures empty or
-documented, no benchmark regression beyond the threshold, documentation and changelog complete,
-package metadata final, package published to the private feed and the release tagged.
+Versions come from GitVersion. On `develop` every build is a pre-release (`2.6.0-alpha.177`). A
+release is a git tag `v<version>` on the commit to release; building that commit **checked out at
+the tag** gives the plain version (`2.6.0`). After the tag, `develop` continues as the next minor
+pre-release (`2.7.0-alpha.N`). Builds on `develop` itself never produce a release version, even on
+the tagged commit.
+
+1. **Check:** the first-release checklist in the plan is done: CI green, known failures empty,
+   benchmarks compared with the baseline, changelog dated, documentation current.
+2. **Update the local copy:** `git checkout develop`, then `git pull`.
+3. **Tag:** `git tag -a v2.6.0 -m "Flee 2.6.0"`, then `git push origin v2.6.0`.
+4. **Build the release:** `git checkout v2.6.0` (git reports a "detached HEAD": you are on the tag,
+   not on a branch, which is intended), then `dotnet build Flee.sln -c Release`. The package
+   `Flee.2.6.0.nupkg` (and `.snupkg`) lands in `C:\dev\nuget\`, the assemblies and the SBOM in
+   `build/runtime/Flee/`. Check that the file name says exactly `2.6.0`.
+5. **Return:** `git checkout develop`.
+6. **Optional:** on GitHub, create a release from the tag (Releases, Draft a new release, choose
+   `v2.6.0`), paste the changelog section and attach the package.
+7. **Wiki:** `pwsh tools/Publish-Wiki.ps1 -Push`.
+
+Applications then reference it with `dotnet add package Flee --version 2.6.0` from the private
+feed. A tag that was pushed by mistake can be removed with `git push origin :refs/tags/v2.6.0`
+and `git tag -d v2.6.0`, as long as no package built from it has been used.

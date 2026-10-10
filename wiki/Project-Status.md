@@ -28,7 +28,7 @@ postponed is in [Deferred Work](Deferred-Work).
 | 4 | Bug fixes and mechanical cleanup, warnings as errors, nullable annotations on the public API | Done |
 | 5 | Own API changes and extensions | On hold by decision |
 | 6 | Documentation: language reference, API guide, XML comments, internals, limitations, migration notes, changelog, this wiki | Done |
-| 7 | Performance optimization (stretch goal) | Open: skip or time-box, to be decided |
+| 7 | Performance optimization (stretch goal) | Moved to the next release (2.7.0) |
 
 ## What was done
 
@@ -83,9 +83,12 @@ postponed is in [Deferred Work](Deferred-Work).
 
 **Before the first release**
 
-- Decide about Phase 7 (performance): skip it, or set a time box.
-- Release checklist: final benchmark comparison with the baseline, tag the release, publish the
-  package to the private feed.
+- Tag the release and publish the package to the private feed (steps in [Development](Development#releasing)).
+
+**Next release (2.7.0)**
+
+- Phase 7, performance optimization from profiling evidence (D-33), including the remaining .NET 10
+  gaps (D-07, D-08) and a benchmark vector with real-world expressions (D-21).
 
 **After the first release** (details in [Deferred Work](Deferred-Work))
 
@@ -93,7 +96,6 @@ postponed is in [Deferred Work](Deferred-Work).
   new on every script case (D-02), cleanup (D-03), typed collections (D-04).
 - Nullable annotations for the internals, then project-wide (D-05).
 - `EmitToAssembly` on net10.0 with `PersistedAssemblyBuilder`, to inspect generated IL (D-06).
-- Remaining .NET 10 performance gaps (D-07, D-08).
 
 **Phase 5, on hold** (API changes that need a decision)
 
