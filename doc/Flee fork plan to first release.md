@@ -39,7 +39,7 @@ This phase settles the choices that are expensive to change later. No code chang
 - [x] Add a `LICENSE` file. The grammar header says LGPL 2.1 or later; the repository has no license file today. Keep the existing copyright notices. Check the terms yourself if you distribute commercially.
 - [x] Choose a package ID and decide whether the root namespace stays `Flee`. Decided 2026-10-09: package ID stays `Flee`, namespace stays `Flee`.
 - [x] Decide the compatibility stance: drop-in replacement for Flee 2.0.0, or free to break. Suggested: source-compatible for the first release, with every deviation documented. Decided 2026-10-09: source-compatible with Flee 2.0.0.
-- [ ] Keep the fixes from your local copy aside. They go in during Phase 4, once tests can prove them.
+- [ ] Keep the fixes from your local copy aside. They go in during Phase 4, once tests can prove them. None supplied yet; tracked as D-22 in `doc/deferred.md`.
 - [x] Skim the 75 open upstream issues and 2 open pull requests. Collect those with a reproducible case as candidates for Phase 4. Result: `doc/upstream-issues.md`, 8 reproducible bugs still present.
 
 ## Phase 1: Build and test sanitation
@@ -120,22 +120,22 @@ With tests and a baseline in place, the low-cost defects and the conversion left
 - [x] Review the roughly 29 places that combine booleans with `&` or `|`. Both sides are always evaluated there, which is wrong wherever the right side relies on the left. 71 found, none relies on the left; all converted to `&&`/`||` (R-032).
 - [x] Fix static fields that are assigned in instance constructors, as in `ArithmeticElement`. The only case (R-033).
 - [x] Go through the 32 `Debug.Assert` checks and turn those guarding real error conditions into exceptions. They vanish in release builds. 39 found; 16 now throw, 23 kept with reasons (R-035).
-- [ ] Bring in the fixes from your local copy and the upstream issues collected in Phase 0.
+- [x] Bring in the fixes from your local copy and the upstream issues collected in Phase 0. Upstream: #64, #111, #105 fixed (R-026, R-042); the rest deferred (`doc/upstream-issues.md`, status table). Local copy: none supplied (D-22).
 
 - [x] Find out why loading the calculation engine is 24 times slower on .NET 10 than on .NET 8 (`benchmarks/results/phase3-runtimes`). JIT inlining of helpers; fixed (R-019).
 - [x] Clear the remaining build warnings (obsolete `PropertyDictionary` uses, unused variables), then treat warnings as errors. Done (R-029, R-036, R-037, R-044); the parser's warnings are suggestions until D-03.
 
 ### Mechanical cleanup
 
-- [ ] Annotate the public API for nullable reference types (`PublicTypes`, `CalcEngine/PublicTypes`, about 25 types), file by file with `#nullable enable`. Real null bugs found on the way get a test and their own fix.
+- [x] Annotate the public API for nullable reference types (`PublicTypes`, `CalcEngine/PublicTypes`, about 25 types), file by file with `#nullable enable`. Done (R-038); the internals follow after the release (D-05). Real null bugs found on the way get a test and their own fix.
 
 These change no behaviour and each gets its own commit.
 
 - [x] Remove the 227 `== true` and `== false` comparisons. 260 found and removed outside the parser (R-030).
 - [x] Split the four `Miscellaneous.cs` files into one type per file and make file names match type names. Done for the whole library outside the parser (R-034).
-- [ ] Replace the non-generic collections (about 69 uses) between analyzer and elements with typed ones.
+- [ ] Replace the non-generic collections (about 69 uses) between analyzer and elements with typed ones. Deferred: crosses into the parser (D-04).
 - [x] Decide whether to rename the `_my` and `_our` field prefixes, about 1,100 occurrences. It is a matter of taste; if you do it, do it in a single commit. Decided 2026-10-10: renamed to common conventions (R-028); the five parser fields stay.
-- [ ] Resolve `PropertyDictionary`: it is marked obsolete but still backs three public classes. Drop the attribute now; replacing it belongs to Phase 5.
+- [x] Resolve `PropertyDictionary`: it is marked obsolete but still backs three public classes. Drop the attribute now; replacing it belongs to Phase 5. Dropped, with eleven other misplaced attributes (R-029).
 
 ## Phase 5: Adjustments to your needs
 
