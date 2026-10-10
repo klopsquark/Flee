@@ -7,14 +7,14 @@ namespace Flee.PublicTypes
     public sealed class ExpressionImports
     {
 
-        private static Dictionary<string, Type> OurBuiltinTypeMap = CreateBuiltinTypeMap();
-        private NamespaceImport MyRootImport;
-        private TypeImport MyOwnerImport;
+        private static Dictionary<string, Type> _builtinTypeMap = CreateBuiltinTypeMap();
+        private NamespaceImport _rootImport;
+        private TypeImport _ownerImport;
 
-        private ExpressionContext MyContext;
+        private ExpressionContext _context;
         internal ExpressionImports()
         {
-            MyRootImport = new NamespaceImport("true");
+            _rootImport = new NamespaceImport("true");
         }
 
         private static Dictionary<string, Type> CreateBuiltinTypeMap()
@@ -43,29 +43,29 @@ namespace Flee.PublicTypes
         #region "Methods - Non public"
         internal void SetContext(ExpressionContext context)
         {
-            MyContext = context;
-            MyRootImport.SetContext(context);
+            _context = context;
+            _rootImport.SetContext(context);
         }
 
         internal ExpressionImports Clone()
         {
             ExpressionImports copy = new ExpressionImports();
 
-            copy.MyRootImport = (NamespaceImport)MyRootImport.Clone();
-            copy.MyOwnerImport = MyOwnerImport;
+            copy._rootImport = (NamespaceImport)_rootImport.Clone();
+            copy._ownerImport = _ownerImport;
 
             return copy;
         }
 
         internal void ImportOwner(Type ownerType)
         {
-            MyOwnerImport = new TypeImport(ownerType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false);
-            MyOwnerImport.SetContext(MyContext);
+            _ownerImport = new TypeImport(ownerType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static, false);
+            _ownerImport.SetContext(_context);
         }
 
         internal bool HasNamespace(string ns)
         {
-            NamespaceImport import = MyRootImport.FindImport(ns) as NamespaceImport;
+            NamespaceImport import = _rootImport.FindImport(ns) as NamespaceImport;
             return (import != null);
         }
 
@@ -73,15 +73,15 @@ namespace Flee.PublicTypes
         {
             if (ns.Length == 0)
             {
-                return MyRootImport;
+                return _rootImport;
             }
 
-            NamespaceImport import = MyRootImport.FindImport(ns) as NamespaceImport;
+            NamespaceImport import = _rootImport.FindImport(ns) as NamespaceImport;
 
             if (import == null)
             {
                 import = new NamespaceImport(ns);
-                MyRootImport.Add(import);
+                _rootImport.Add(import);
             }
 
             return import;
@@ -89,7 +89,7 @@ namespace Flee.PublicTypes
 
         internal MemberInfo[] FindOwnerMembers(string memberName, System.Reflection.MemberTypes memberType)
         {
-            return MyOwnerImport.FindMembers(memberName, memberType);
+            return _ownerImport.FindMembers(memberName, memberType);
         }
 
         internal Type FindType(string[] typeNameParts)
@@ -98,7 +98,7 @@ namespace Flee.PublicTypes
             string typeName = typeNameParts[typeNameParts.Length - 1];
 
             System.Array.Copy(typeNameParts, namespaces, namespaces.Length);
-            ImportBase currentImport = MyRootImport;
+            ImportBase currentImport = _rootImport;
 
             foreach (string ns in namespaces)
             {
@@ -116,7 +116,7 @@ namespace Flee.PublicTypes
         {
             Type t = null;
 
-            if (OurBuiltinTypeMap.TryGetValue(name, out t) == true)
+            if (_builtinTypeMap.TryGetValue(name, out t) == true)
             {
                 return t;
             }
@@ -133,7 +133,7 @@ namespace Flee.PublicTypes
             Utility.AssertNotNull(t, "t");
             Utility.AssertNotNull(ns, "namespace");
 
-            MyContext.AssertTypeIsAccessible(t);
+            _context.AssertTypeIsAccessible(t);
 
             NamespaceImport import = this.GetImport(ns);
             import.Add(new TypeImport(t, BindingFlags.Public | BindingFlags.Static, false));
@@ -166,7 +166,7 @@ namespace Flee.PublicTypes
             Utility.AssertNotNull(mi, "mi");
             Utility.AssertNotNull(ns, "namespace");
 
-            MyContext.AssertTypeIsAccessible(mi.ReflectedType);
+            _context.AssertTypeIsAccessible(mi.ReflectedType);
 
             if (mi.IsStatic == false | mi.IsPublic == false)
             {
@@ -180,7 +180,7 @@ namespace Flee.PublicTypes
 
         public void ImportBuiltinTypes()
         {
-            foreach (KeyValuePair<string, Type> pair in OurBuiltinTypeMap)
+            foreach (KeyValuePair<string, Type> pair in _builtinTypeMap)
             {
                 this.AddType(pair.Value, pair.Key);
             }
@@ -188,7 +188,7 @@ namespace Flee.PublicTypes
         #endregion
 
         #region "Properties - Public"
-        public NamespaceImport RootImport => MyRootImport;
+        public NamespaceImport RootImport => _rootImport;
 
         #endregion
     }

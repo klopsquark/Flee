@@ -8,17 +8,17 @@ namespace Flee.CalcEngine.PublicTypes
 
         #region "Fields"
 
-        private readonly IDictionary<string, IExpression> _myExpressions;
+        private readonly IDictionary<string, IExpression> _expressions;
 
-        private ExpressionContext _myContext;
+        private ExpressionContext _context;
         #endregion
 
         #region "Constructor"
 
         public SimpleCalcEngine()
         {
-            _myExpressions = new Dictionary<string, IExpression>(StringComparer.OrdinalIgnoreCase);
-            _myContext = new ExpressionContext();
+            _expressions = new Dictionary<string, IExpression>(StringComparer.OrdinalIgnoreCase);
+            _context = new ExpressionContext();
         }
 
         #endregion
@@ -27,13 +27,13 @@ namespace Flee.CalcEngine.PublicTypes
 
         private void AddCompiledExpression(string expressionName, IExpression expression)
         {
-            if (_myExpressions.ContainsKey(expressionName) == true)
+            if (_expressions.ContainsKey(expressionName) == true)
             {
                 throw new InvalidOperationException($"The calc engine already contains an expression named '{expressionName}'");
             }
             else
             {
-                _myExpressions.Add(expressionName, expression);
+                _expressions.Add(expressionName, expression);
             }
         }
 
@@ -41,14 +41,14 @@ namespace Flee.CalcEngine.PublicTypes
         {
             IdentifierAnalyzer analyzer = Context.ParseIdentifiers(expression);
 
-            ExpressionContext context2 = _myContext.CloneInternal(true);
+            ExpressionContext context2 = _context.CloneInternal(true);
             this.LinkExpression(expressionName, context2, analyzer);
 
             // Tell the expression not to clone the context since it's already been cloned
             context2.NoClone = true;
 
             // Clear our context's variables
-            _myContext.Variables.Clear();
+            _context.Variables.Clear();
 
             return context2;
         }
@@ -65,7 +65,7 @@ namespace Flee.CalcEngine.PublicTypes
         {
             IExpression child = null;
 
-            if (_myExpressions.TryGetValue(identifier, out child) == false)
+            if (_expressions.TryGetValue(identifier, out child) == false)
             {
                 string msg = $"Expression '{expressionName}' references unknown name '{identifier}'";
                 throw new InvalidOperationException(msg);
@@ -94,7 +94,7 @@ namespace Flee.CalcEngine.PublicTypes
 
         public void Clear()
         {
-            _myExpressions.Clear();
+            _expressions.Clear();
         }
 
         #endregion
@@ -105,15 +105,15 @@ namespace Flee.CalcEngine.PublicTypes
             get
             {
                 IExpression e = null;
-                _myExpressions.TryGetValue(name, out e);
+                _expressions.TryGetValue(name, out e);
                 return e;
             }
         }
 
         public ExpressionContext Context
         {
-            get { return _myContext; }
-            set { _myContext = value; }
+            get { return _context; }
+            set { _context = value; }
         }
         #endregion
     }

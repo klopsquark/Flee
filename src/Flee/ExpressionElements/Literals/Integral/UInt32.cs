@@ -5,10 +5,10 @@ namespace Flee.ExpressionElements.Literals.Integral
 {
     internal class UInt32LiteralElement : IntegralLiteralElement
     {
-        private readonly UInt32 _myValue;
+        private readonly UInt32 _value;
         public UInt32LiteralElement(UInt32 value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public static UInt32LiteralElement TryCreate(string image, System.Globalization.NumberStyles ns)
@@ -28,7 +28,7 @@ namespace Flee.ExpressionElements.Literals.Integral
         {
             // The IL constant is the same bits, read as signed; unchecked so values above
             // Int32.MaxValue do not throw (R-021).
-            EmitLoad(unchecked((int)_myValue), ilg);
+            EmitLoad(unchecked((int)_value), ilg);
         }
 
         public override System.Type ResultType => typeof(UInt32);

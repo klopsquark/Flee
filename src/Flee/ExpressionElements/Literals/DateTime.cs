@@ -11,12 +11,12 @@ namespace Flee.ExpressionElements.Literals
 {
     internal class DateTimeLiteralElement : LiteralElement
     {
-        private DateTime _myValue;
+        private DateTime _value;
         public DateTimeLiteralElement(string image, ExpressionContext context)
         {
             ExpressionParserOptions options = context.ParserOptions;
 
-            if (DateTime.TryParseExact(image, options.DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _myValue) == false)
+            if (DateTime.TryParseExact(image, options.DateTimeFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out _value) == false)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.CannotParseType, CompileExceptionReason.InvalidFormat, typeof(DateTime).Name);
             }
@@ -28,7 +28,7 @@ namespace Flee.ExpressionElements.Literals
 
             Utility.EmitLoadLocalAddress(ilg, index);
 
-            LiteralElement.EmitLoad(_myValue.Ticks, ilg);
+            LiteralElement.EmitLoad(_value.Ticks, ilg);
 
             ConstructorInfo ci = typeof(DateTime).GetConstructor(new Type[] { typeof(long) });
 

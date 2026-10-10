@@ -7,19 +7,19 @@ namespace Flee.ExpressionElements.MemberElements
     [Obsolete("Encapsulates an argument list")]
     internal class ArgumentList
     {
-        private readonly IList<ExpressionElement> _myElements;
+        private readonly IList<ExpressionElement> _elements;
         public ArgumentList(ICollection elements)
         {
             ExpressionElement[] arr = new ExpressionElement[elements.Count];
             elements.CopyTo(arr, 0);
-            _myElements = arr;
+            _elements = arr;
         }
 
         private string[] GetArgumentTypeNames()
         {
             List<string> l = new List<string>();
 
-            foreach (ExpressionElement e in _myElements)
+            foreach (ExpressionElement e in _elements)
             {
                 l.Add(e.ResultType.Name);
             }
@@ -31,7 +31,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             List<Type> l = new List<Type>();
 
-            foreach (ExpressionElement e in _myElements)
+            foreach (ExpressionElement e in _elements)
             {
                 l.Add(e.ResultType);
             }
@@ -47,13 +47,13 @@ namespace Flee.ExpressionElements.MemberElements
 
         public ExpressionElement[] ToArray()
         {
-            ExpressionElement[] arr = new ExpressionElement[_myElements.Count];
-            _myElements.CopyTo(arr, 0);
+            ExpressionElement[] arr = new ExpressionElement[_elements.Count];
+            _elements.CopyTo(arr, 0);
             return arr;
         }
 
-        public ExpressionElement this[int index] => _myElements[index];
+        public ExpressionElement this[int index] => _elements[index];
 
-        public int Count => _myElements.Count;
+        public int Count => _elements.Count;
     }
 }

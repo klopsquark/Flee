@@ -8,7 +8,7 @@ namespace Flee.ExpressionElements
 {
     internal class ShiftElement : BinaryExpressionElement
     {
-        private ShiftOperation _myOperation;
+        private ShiftOperation _operation;
 
         public ShiftElement()
         {
@@ -52,12 +52,12 @@ namespace Flee.ExpressionElements
 
         protected override void GetOperation(object operation)
         {
-            _myOperation = (ShiftOperation)operation;
+            _operation = (ShiftOperation)operation;
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            MyLeftChild.Emit(ilg, services);
+            LeftChild.Emit(ilg, services);
             this.EmitShiftCount(ilg, services);
             this.EmitShift(ilg);
         }
@@ -66,8 +66,8 @@ namespace Flee.ExpressionElements
         // So we play it safe and force the shift count to 32/64 bits by ANDing it with the appropriate mask.
         private void EmitShiftCount(FleeILGenerator ilg, IServiceProvider services)
         {
-            MyRightChild.Emit(ilg, services);
-            TypeCode tc = Type.GetTypeCode(MyLeftChild.ResultType);
+            RightChild.Emit(ilg, services);
+            TypeCode tc = Type.GetTypeCode(LeftChild.ResultType);
             switch (tc)
             {
                 case TypeCode.Byte:
@@ -92,7 +92,7 @@ namespace Flee.ExpressionElements
 
         private void EmitShift(FleeILGenerator ilg)
         {
-            TypeCode tc = Type.GetTypeCode(MyLeftChild.ResultType);
+            TypeCode tc = Type.GetTypeCode(LeftChild.ResultType);
             OpCode op = default(OpCode);
 
             switch (tc)
@@ -104,7 +104,7 @@ namespace Flee.ExpressionElements
                 case TypeCode.Int32:
                 case TypeCode.Int64:
                     // Signed operand, emit a left shift or arithmetic right shift
-                    if (_myOperation == ShiftOperation.LeftShift)
+                    if (_operation == ShiftOperation.LeftShift)
                     {
                         op = OpCodes.Shl;
                     }
@@ -116,7 +116,7 @@ namespace Flee.ExpressionElements
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
                     // Unsigned operand, emit left shift or logical right shift
-                    if (_myOperation == ShiftOperation.LeftShift)
+                    if (_operation == ShiftOperation.LeftShift)
                     {
                         op = OpCodes.Shl;
                     }

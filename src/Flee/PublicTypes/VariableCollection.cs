@@ -10,8 +10,8 @@ namespace Flee.PublicTypes
     /// </summary>
     public sealed class VariableCollection : IDictionary<string, object>
     {
-        private IDictionary<string, IVariable> _myVariables;
-        private readonly ExpressionContext _myContext;
+        private IDictionary<string, IVariable> _variables;
+        private readonly ExpressionContext _context;
 
         public event EventHandler<ResolveVariableTypeEventArgs> ResolveVariableType;
 
@@ -23,7 +23,7 @@ namespace Flee.PublicTypes
 
         internal VariableCollection(ExpressionContext context)
         {
-            _myContext = context;
+            _context = context;
             this.CreateDictionary();
             this.HookOptions();
         }
@@ -32,12 +32,12 @@ namespace Flee.PublicTypes
 
         private void HookOptions()
         {
-            _myContext.Options.CaseSensitiveChanged += OnOptionsCaseSensitiveChanged;
+            _context.Options.CaseSensitiveChanged += OnOptionsCaseSensitiveChanged;
         }
 
         private void CreateDictionary()
         {
-            _myVariables = new Dictionary<string, IVariable>(_myContext.Options.StringComparer);
+            _variables = new Dictionary<string, IVariable>(_context.Options.StringComparer);
         }
 
         private void OnOptionsCaseSensitiveChanged(object sender, EventArgs e)
@@ -50,10 +50,10 @@ namespace Flee.PublicTypes
             dest.CreateDictionary();
             dest.HookOptions();
 
-            foreach (KeyValuePair<string, IVariable> pair in _myVariables)
+            foreach (KeyValuePair<string, IVariable> pair in _variables)
             {
                 IVariable copyVariable = pair.Value.Clone();
-                dest._myVariables.Add(pair.Key, copyVariable);
+                dest._variables.Add(pair.Key, copyVariable);
             }
         }
 
@@ -61,20 +61,20 @@ namespace Flee.PublicTypes
         {
             Utility.AssertNotNull(variableType, "variableType");
 
-            if (_myVariables.ContainsKey(name) == true)
+            if (_variables.ContainsKey(name) == true)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.VariableWithNameAlreadyDefined, name);
                 throw new ArgumentException(msg);
             }
 
             IVariable v = this.CreateVariable(variableType, variableValue);
-            _myVariables.Add(name, v);
+            _variables.Add(name, v);
         }
 
         internal Type GetVariableTypeInternal(string name)
         {
             IVariable value = null;
-            bool success = _myVariables.TryGetValue(name, out value);
+            bool success = _variables.TryGetValue(name, out value);
 
             if (success == true)
             {
@@ -90,7 +90,7 @@ namespace Flee.PublicTypes
         private IVariable GetVariable(string name, bool throwOnNotFound)
         {
             IVariable value = null;
-            bool success = _myVariables.TryGetValue(name, out value);
+            bool success = _variables.TryGetValue(name, out value);
 
             if (success == false & throwOnNotFound == true)
             {
@@ -131,7 +131,7 @@ namespace Flee.PublicTypes
             else
             {
                 // Create a variable for a regular value
-                _myContext.AssertTypeIsAccessible(variableValueType);
+                _context.AssertTypeIsAccessible(variableValueType);
                 variableType = typeof(GenericVariable<>);
             }
 
@@ -203,7 +203,7 @@ namespace Flee.PublicTypes
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
 
-            foreach (KeyValuePair<string, IVariable> pair in _myVariables)
+            foreach (KeyValuePair<string, IVariable> pair in _variables)
             {
                 dict.Add(pair.Key, pair.Value.ValueAsObject);
             }
@@ -231,7 +231,7 @@ namespace Flee.PublicTypes
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetVariableValueInternal<T>(string name)
         {
-            if (_myVariables.TryGetValue(name, out IVariable variable))
+            if (_variables.TryGetValue(name, out IVariable variable))
             {
                 if (variable is IGenericVariable<T> generic)
                 {
@@ -296,7 +296,7 @@ namespace Flee.PublicTypes
 
         public void Clear()
         {
-            _myVariables.Clear();
+            _variables.Clear();
         }
 
         private bool Contains1(System.Collections.Generic.KeyValuePair<string, object> item)
@@ -335,12 +335,12 @@ namespace Flee.PublicTypes
 
         public bool ContainsKey(string name)
         {
-            return _myVariables.ContainsKey(name);
+            return _variables.ContainsKey(name);
         }
 
         public bool Remove(string name)
         {
-            return _myVariables.Remove(name);
+            return _variables.Remove(name);
         }
 
         public bool TryGetValue(string key, out object value)
@@ -366,7 +366,7 @@ namespace Flee.PublicTypes
             return GetEnumerator1();
         }
 
-        public int Count => _myVariables.Count;
+        public int Count => _variables.Count;
 
         public bool IsReadOnly => false;
 
@@ -381,7 +381,7 @@ namespace Flee.PublicTypes
             {
                 IVariable v = null;
 
-                if (_myVariables.TryGetValue(name, out v) == true)
+                if (_variables.TryGetValue(name, out v) == true)
                 {
                     v.ValueAsObject = value;
                 }
@@ -392,7 +392,7 @@ namespace Flee.PublicTypes
             }
         }
 
-        public System.Collections.Generic.ICollection<string> Keys => _myVariables.Keys;
+        public System.Collections.Generic.ICollection<string> Keys => _variables.Keys;
 
         public System.Collections.Generic.ICollection<object> Values
         {

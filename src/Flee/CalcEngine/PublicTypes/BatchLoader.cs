@@ -7,13 +7,13 @@ namespace Flee.CalcEngine.PublicTypes
     public sealed class BatchLoader
     {
 
-        private readonly IDictionary<string, BatchLoadInfo> _myNameInfoMap;
+        private readonly IDictionary<string, BatchLoadInfo> _nameInfoMap;
 
-        private readonly DependencyManager<string> _myDependencies;
+        private readonly DependencyManager<string> _dependencies;
         internal BatchLoader()
         {
-            _myNameInfoMap = new Dictionary<string, BatchLoadInfo>(StringComparer.OrdinalIgnoreCase);
-            _myDependencies = new DependencyManager<string>(StringComparer.OrdinalIgnoreCase);
+            _nameInfoMap = new Dictionary<string, BatchLoadInfo>(StringComparer.OrdinalIgnoreCase);
+            _dependencies = new DependencyManager<string>(StringComparer.OrdinalIgnoreCase);
         }
 
         public void Add(string atomName, string expression, ExpressionContext context)
@@ -23,35 +23,35 @@ namespace Flee.CalcEngine.PublicTypes
             Utility.AssertNotNull(context, "context");
 
             BatchLoadInfo info = new BatchLoadInfo(atomName, expression, context);
-            _myNameInfoMap.Add(atomName, info);
-            _myDependencies.AddTail(atomName);
+            _nameInfoMap.Add(atomName, info);
+            _dependencies.AddTail(atomName);
 
             ICollection<string> references = this.GetReferences(expression, context);
 
             foreach (string reference in references)
             {
-                _myDependencies.AddTail(reference);
-                _myDependencies.AddDepedency(reference, atomName);
+                _dependencies.AddTail(reference);
+                _dependencies.AddDepedency(reference, atomName);
             }
         }
 
         public bool Contains(string atomName)
         {
-            return _myNameInfoMap.ContainsKey(atomName);
+            return _nameInfoMap.ContainsKey(atomName);
         }
 
         internal BatchLoadInfo[] GetBachInfos()
         {
-            string[] tails = _myDependencies.GetTails();
-            Queue<string> sources = _myDependencies.GetSources(tails);
+            string[] tails = _dependencies.GetTails();
+            Queue<string> sources = _dependencies.GetSources(tails);
 
-            IList<string> result = _myDependencies.TopologicalSort(sources);
+            IList<string> result = _dependencies.TopologicalSort(sources);
 
             BatchLoadInfo[] infos = new BatchLoadInfo[result.Count];
 
             for (int i = 0; i <= result.Count - 1; i++)
             {
-                infos[i] = _myNameInfoMap[result[i]];
+                infos[i] = _nameInfoMap[result[i]];
             }
 
             return infos;

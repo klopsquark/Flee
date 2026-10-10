@@ -62,6 +62,7 @@ Entry template:
 | R-025 | Debug IL length check passes for 0xFFFFFFFF as a long | fix | Phase 4 |
 | R-026 | Member access on value-type calculation-engine atoms (upstream #64, #111) | fix | Phase 4 |
 | R-027 | Element names for three elements in the resources | fix | Phase 4 |
+| R-028 | Fields renamed to common C# naming conventions | cleanup | Phase 4 |
 
 ## Entries
 
@@ -531,3 +532,29 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** `TestElementNamesInResourceFile` passes and is no longer ignored; full suite green
   on net8.0 and net10.0 (1,859 pass, 1 skipped).
 - **Discussed:** not needed (bug fix).
+
+### R-028: Fields renamed to common C# naming conventions
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** 150 fields with the VB-era prefixes `_my`, `_our`, `My` and `Our` in `src/Flee` are
+  renamed: private instance and private static fields to `_camelCase` (`_myValue` -> `_value`),
+  private static readonly fields to `PascalCase` (`OurBinaryTypes` -> `BinaryTypes`), non-private
+  fields of internal classes to `PascalCase` (`MyLeftChild` -> `LeftChild`). These are the default
+  naming rules of the maintainer's IDE (JetBrains Rider), which flagged the old names. Four names
+  would have clashed with an existing member and were resolved by hand: `MemberElement.MyName`
+  became the property `MemberName` (replacing a read-only property of that name),
+  `ExpressionResultPair.MyExpression` and `GenericExpressionResultPair<T>.MyResult` became private
+  fields `_expression` and `_result`, and `DefaultExpressionOwner.Instance` became an
+  auto-property.
+- **Why:** Requested by the maintainer (2026-10-10). The renames were done with Roslyn's renamer
+  (a small tool run from the scratch area), not by text replacement, so every reference follows
+  and nothing else changes. Fields declared in `src/Flee/Parsing` (five, in the hand-written
+  analyzer and the tokenizer) are left alone, following the rule not to touch the parser before
+  the release. Nothing visible outside the assembly is renamed.
+- **Behaviour:** none.
+- **Verified:** build (450 warnings, as before); tests green in Debug and Release on net8.0 and
+  net10.0 (1,859 pass, 1 skipped). The public API of the netstandard2.0 build, listed by
+  reflection, is identical to upstream Flee 2.0.0 except for the intended `[Obsolete]` on
+  `EmitToAssembly` (R-015).
+- **Discussed:** decided by the maintainer on 2026-10-10.

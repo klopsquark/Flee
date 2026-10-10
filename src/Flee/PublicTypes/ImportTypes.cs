@@ -6,7 +6,7 @@ namespace Flee.PublicTypes
 {
     public abstract class ImportBase : IEnumerable<ImportBase>, IEquatable<ImportBase>
     {
-        private ExpressionContext _myContext;
+        private ExpressionContext _context;
 
         internal ImportBase()
         {
@@ -15,7 +15,7 @@ namespace Flee.PublicTypes
         #region "Methods - Non Public"
         internal virtual void SetContext(ExpressionContext context)
         {
-            _myContext = context;
+            _context = context;
             this.Validate();
         }
 
@@ -104,7 +104,7 @@ namespace Flee.PublicTypes
         #endregion
 
         #region "Properties - Protected"
-        protected ExpressionContext Context => _myContext;
+        protected ExpressionContext Context => _context;
 
         #endregion
 
@@ -118,9 +118,9 @@ namespace Flee.PublicTypes
 
     public sealed class TypeImport : ImportBase
     {
-        private readonly Type _myType;
-        private readonly BindingFlags _myBindFlags;
-        private readonly bool _myUseTypeNameAsNamespace;
+        private readonly Type _type;
+        private readonly BindingFlags _bindFlags;
+        private readonly bool _useTypeNameAsNamespace;
         public TypeImport(Type importType) : this(importType, false)
         {
         }
@@ -133,36 +133,36 @@ namespace Flee.PublicTypes
         internal TypeImport(Type t, BindingFlags flags, bool useTypeNameAsNamespace)
         {
             Utility.AssertNotNull(t, "t");
-            _myType = t;
-            _myBindFlags = flags;
-            _myUseTypeNameAsNamespace = useTypeNameAsNamespace;
+            _type = t;
+            _bindFlags = flags;
+            _useTypeNameAsNamespace = useTypeNameAsNamespace;
         }
 
         internal override void Validate()
         {
-            this.Context.AssertTypeIsAccessible(_myType);
+            this.Context.AssertTypeIsAccessible(_type);
         }
 
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            MemberInfo[] members = _myType.FindMembers(memberType, _myBindFlags, this.Context.Options.MemberFilter, memberName);
+            MemberInfo[] members = _type.FindMembers(memberType, _bindFlags, this.Context.Options.MemberFilter, memberName);
             ImportBase.AddMemberRange(members, dest);
         }
 
         protected override void AddMembers(MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            if (_myUseTypeNameAsNamespace == false)
+            if (_useTypeNameAsNamespace == false)
             {
-                MemberInfo[] members = _myType.FindMembers(memberType, _myBindFlags, this.AlwaysMemberFilter, null);
+                MemberInfo[] members = _type.FindMembers(memberType, _bindFlags, this.AlwaysMemberFilter, null);
                 ImportBase.AddMemberRange(members, dest);
             }
         }
 
         internal override bool IsMatch(string name)
         {
-            if (_myUseTypeNameAsNamespace == true)
+            if (_useTypeNameAsNamespace == true)
             {
-                return string.Equals(_myType.Name, name, this.Context.Options.MemberStringComparison);
+                return string.Equals(_type.Name, name, this.Context.Options.MemberStringComparison);
             }
             else
             {
@@ -172,9 +172,9 @@ namespace Flee.PublicTypes
 
         internal override Type FindType(string typeName)
         {
-            if (string.Equals(typeName, _myType.Name, this.Context.Options.MemberStringComparison) == true)
+            if (string.Equals(typeName, _type.Name, this.Context.Options.MemberStringComparison) == true)
             {
-                return _myType;
+                return _type;
             }
             else
             {
@@ -185,17 +185,17 @@ namespace Flee.PublicTypes
         protected override bool EqualsInternal(ImportBase import)
         {
             TypeImport otherSameType = import as TypeImport;
-            return (otherSameType != null) && object.ReferenceEquals(_myType, otherSameType._myType);
+            return (otherSameType != null) && object.ReferenceEquals(_type, otherSameType._type);
         }
         #endregion
 
         #region "Methods - Public"
         public override IEnumerator<ImportBase> GetEnumerator()
         {
-            if (_myUseTypeNameAsNamespace == true)
+            if (_useTypeNameAsNamespace == true)
             {
                 List<ImportBase> coll = new List<ImportBase>();
-                coll.Add(new TypeImport(_myType, false));
+                coll.Add(new TypeImport(_type, false));
                 return coll.GetEnumerator();
             }
             else
@@ -206,11 +206,11 @@ namespace Flee.PublicTypes
         #endregion
 
         #region "Properties - Public"
-        public override bool IsContainer => _myUseTypeNameAsNamespace;
+        public override bool IsContainer => _useTypeNameAsNamespace;
 
-        public override string Name => _myType.Name;
+        public override string Name => _type.Name;
 
-        public Type Target => _myType;
+        public Type Target => _type;
 
         #endregion
     }
@@ -218,23 +218,23 @@ namespace Flee.PublicTypes
     public sealed class MethodImport : ImportBase
     {
 
-        private readonly MethodInfo _myMethod;
+        private readonly MethodInfo _method;
         public MethodImport(MethodInfo importMethod)
         {
             Utility.AssertNotNull(importMethod, "importMethod");
-            _myMethod = importMethod;
+            _method = importMethod;
         }
 
         internal override void Validate()
         {
-            this.Context.AssertTypeIsAccessible(_myMethod.ReflectedType);
+            this.Context.AssertTypeIsAccessible(_method.ReflectedType);
         }
 
         protected override void AddMembers(string memberName, MemberTypes memberType, ICollection<MemberInfo> dest)
         {
-            if (string.Equals(memberName, _myMethod.Name, this.Context.Options.MemberStringComparison) == true && (memberType & MemberTypes.Method) != 0)
+            if (string.Equals(memberName, _method.Name, this.Context.Options.MemberStringComparison) == true && (memberType & MemberTypes.Method) != 0)
             {
-                dest.Add(_myMethod);
+                dest.Add(_method);
             }
         }
 
@@ -242,13 +242,13 @@ namespace Flee.PublicTypes
         {
             if ((memberType & MemberTypes.Method) != 0)
             {
-                dest.Add(_myMethod);
+                dest.Add(_method);
             }
         }
 
         internal override bool IsMatch(string name)
         {
-            return string.Equals(_myMethod.Name, name, this.Context.Options.MemberStringComparison);
+            return string.Equals(_method.Name, name, this.Context.Options.MemberStringComparison);
         }
 
         internal override Type FindType(string typeName)
@@ -259,18 +259,18 @@ namespace Flee.PublicTypes
         protected override bool EqualsInternal(ImportBase import)
         {
             MethodImport otherSameType = import as MethodImport;
-            return (otherSameType != null) && _myMethod.MethodHandle.Equals(otherSameType._myMethod.MethodHandle);
+            return (otherSameType != null) && _method.MethodHandle.Equals(otherSameType._method.MethodHandle);
         }
 
-        public override string Name => _myMethod.Name;
+        public override string Name => _method.Name;
 
-        public MethodInfo Target => _myMethod;
+        public MethodInfo Target => _method;
     }
 
     public sealed class NamespaceImport : ImportBase, ICollection<ImportBase>
     {
-        private readonly string _myNamespace;
-        private readonly List<ImportBase> _myImports;
+        private readonly string _namespace;
+        private readonly List<ImportBase> _imports;
         public NamespaceImport(string importNamespace)
         {
             Utility.AssertNotNull(importNamespace, "importNamespace");
@@ -280,15 +280,15 @@ namespace Flee.PublicTypes
                 throw new ArgumentException(msg);
             }
 
-            _myNamespace = importNamespace;
-            _myImports = new List<ImportBase>();
+            _namespace = importNamespace;
+            _imports = new List<ImportBase>();
         }
 
         internal override void SetContext(ExpressionContext context)
         {
             base.SetContext(context);
 
-            foreach (ImportBase import in _myImports)
+            foreach (ImportBase import in _imports)
             {
                 import.SetContext(context);
             }
@@ -327,7 +327,7 @@ namespace Flee.PublicTypes
 
         internal override ImportBase FindImport(string name)
         {
-            foreach (ImportBase import in _myImports)
+            foreach (ImportBase import in _imports)
             {
                 if (import.IsMatch(name) == true)
                 {
@@ -339,7 +339,7 @@ namespace Flee.PublicTypes
 
         internal override bool IsMatch(string name)
         {
-            return string.Equals(_myNamespace, name, this.Context.Options.MemberStringComparison);
+            return string.Equals(_namespace, name, this.Context.Options.MemberStringComparison);
         }
 
         private ICollection<ImportBase> NonContainerImports
@@ -348,7 +348,7 @@ namespace Flee.PublicTypes
             {
                 List<ImportBase> found = new List<ImportBase>();
 
-                foreach (ImportBase import in _myImports)
+                foreach (ImportBase import in _imports)
                 {
                     if (import.IsContainer == false)
                     {
@@ -363,12 +363,12 @@ namespace Flee.PublicTypes
         protected override bool EqualsInternal(ImportBase import)
         {
             NamespaceImport otherSameType = import as NamespaceImport;
-            return (otherSameType != null) && _myNamespace.Equals(otherSameType._myNamespace, this.Context.Options.MemberStringComparison);
+            return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, this.Context.Options.MemberStringComparison);
         }
 
         public override bool IsContainer => true;
 
-        public override string Name => _myNamespace;
+        public override string Name => _namespace;
 
         #region "ICollection implementation"
         public void Add(ImportBase item)
@@ -380,35 +380,35 @@ namespace Flee.PublicTypes
                 item.SetContext(this.Context);
             }
 
-            _myImports.Add(item);
+            _imports.Add(item);
         }
 
         public void Clear()
         {
-            _myImports.Clear();
+            _imports.Clear();
         }
 
         public bool Contains(ImportBase item)
         {
-            return _myImports.Contains(item);
+            return _imports.Contains(item);
         }
 
         public void CopyTo(ImportBase[] array, int arrayIndex)
         {
-            _myImports.CopyTo(array, arrayIndex);
+            _imports.CopyTo(array, arrayIndex);
         }
 
         public bool Remove(ImportBase item)
         {
-            return _myImports.Remove(item);
+            return _imports.Remove(item);
         }
 
         public override System.Collections.Generic.IEnumerator<ImportBase> GetEnumerator()
         {
-            return _myImports.GetEnumerator();
+            return _imports.GetEnumerator();
         }
 
-        public int Count => _myImports.Count;
+        public int Count => _imports.Count;
 
         public bool IsReadOnly => false;
 

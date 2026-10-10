@@ -8,15 +8,15 @@ namespace Flee.PublicTypes
     public sealed class ExpressionOptions
     {
 
-        private PropertyDictionary _myProperties;
-        private Type _myOwnerType;
-        private readonly ExpressionContext _myOwner;
+        private PropertyDictionary _properties;
+        private Type _ownerType;
+        private readonly ExpressionContext _owner;
         internal event EventHandler CaseSensitiveChanged;
 
         internal ExpressionOptions(ExpressionContext owner)
         {
-            _myOwner = owner;
-            _myProperties = new PropertyDictionary();
+            _owner = owner;
+            _properties = new PropertyDictionary();
 
             this.InitializeProperties();
         }
@@ -28,20 +28,20 @@ namespace Flee.PublicTypes
             this.StringComparison = System.StringComparison.Ordinal;
             this.OwnerMemberAccess = BindingFlags.Public;
 
-            _myProperties.SetToDefault<bool>("CaseSensitive");
-            _myProperties.SetToDefault<bool>("Checked");
-            _myProperties.SetToDefault<bool>("EmitToAssembly");
-            _myProperties.SetToDefault<Type>("ResultType");
-            _myProperties.SetToDefault<bool>("IsGeneric");
-            _myProperties.SetToDefault<bool>("IntegersAsDoubles");
-            _myProperties.SetValue("ParseCulture", CultureInfo.CurrentCulture);
+            _properties.SetToDefault<bool>("CaseSensitive");
+            _properties.SetToDefault<bool>("Checked");
+            _properties.SetToDefault<bool>("EmitToAssembly");
+            _properties.SetToDefault<Type>("ResultType");
+            _properties.SetToDefault<bool>("IsGeneric");
+            _properties.SetToDefault<bool>("IntegersAsDoubles");
+            _properties.SetValue("ParseCulture", CultureInfo.CurrentCulture);
             this.SetParseCulture(this.ParseCulture);
-            _myProperties.SetValue("RealLiteralDataType", RealLiteralDataType.Double);
+            _properties.SetValue("RealLiteralDataType", RealLiteralDataType.Double);
         }
 
         private void SetParseCulture(CultureInfo ci)
         {
-            ExpressionParserOptions po = _myOwner.ParserOptions;
+            ExpressionParserOptions po = _owner.ParserOptions;
             po.DecimalSeparator = Convert.ToChar(ci.NumberFormat.NumberDecimalSeparator);
             po.FunctionArgumentSeparator = Convert.ToChar(ci.TextInfo.ListSeparator);
             po.DateTimeFormat = ci.DateTimeFormat.ShortDatePattern;
@@ -54,18 +54,18 @@ namespace Flee.PublicTypes
         internal ExpressionOptions Clone()
         {
             ExpressionOptions clonedOptions = (ExpressionOptions)this.MemberwiseClone();
-            clonedOptions._myProperties = _myProperties.Clone();
+            clonedOptions._properties = _properties.Clone();
             return clonedOptions;
         }
 
         internal bool IsOwnerType(Type t)
         {
-            return this._myOwnerType.IsAssignableFrom(t);
+            return this._ownerType.IsAssignableFrom(t);
         }
 
         internal void SetOwnerType(Type ownerType)
         {
-            _myOwnerType = ownerType;
+            _ownerType = ownerType;
         }
 
         #endregion
@@ -73,24 +73,24 @@ namespace Flee.PublicTypes
         #region "Properties - Public"
         public Type ResultType
         {
-            get { return _myProperties.GetValue<Type>("ResultType"); }
+            get { return _properties.GetValue<Type>("ResultType"); }
             set
             {
                 Utility.AssertNotNull(value, "value");
-                _myProperties.SetValue("ResultType", value);
+                _properties.SetValue("ResultType", value);
             }
         }
 
         public bool Checked
         {
-            get { return _myProperties.GetValue<bool>("Checked"); }
-            set { _myProperties.SetValue("Checked", value); }
+            get { return _properties.GetValue<bool>("Checked"); }
+            set { _properties.SetValue("Checked", value); }
         }
 
         public StringComparison StringComparison
         {
-            get { return _myProperties.GetValue<StringComparison>("StringComparison"); }
-            set { _myProperties.SetValue("StringComparison", value); }
+            get { return _properties.GetValue<StringComparison>("StringComparison"); }
+            set { _properties.SetValue("StringComparison", value); }
         }
 
         /// <summary>
@@ -101,24 +101,24 @@ namespace Flee.PublicTypes
         [Obsolete("EmitToAssembly has no effect: generated IL cannot be saved to an assembly on this platform.")]
         public bool EmitToAssembly
         {
-            get { return _myProperties.GetValue<bool>("EmitToAssembly"); }
-            set { _myProperties.SetValue("EmitToAssembly", value); }
+            get { return _properties.GetValue<bool>("EmitToAssembly"); }
+            set { _properties.SetValue("EmitToAssembly", value); }
         }
 
         public BindingFlags OwnerMemberAccess
         {
-            get { return _myProperties.GetValue<BindingFlags>("OwnerMemberAccess"); }
-            set { _myProperties.SetValue("OwnerMemberAccess", value); }
+            get { return _properties.GetValue<BindingFlags>("OwnerMemberAccess"); }
+            set { _properties.SetValue("OwnerMemberAccess", value); }
         }
 
         public bool CaseSensitive
         {
-            get { return _myProperties.GetValue<bool>("CaseSensitive"); }
+            get { return _properties.GetValue<bool>("CaseSensitive"); }
             set
             {
                 if (this.CaseSensitive != value)
                 {
-                    _myProperties.SetValue("CaseSensitive", value);
+                    _properties.SetValue("CaseSensitive", value);
                     if (CaseSensitiveChanged != null)
                     {
                         CaseSensitiveChanged(this, EventArgs.Empty);
@@ -129,29 +129,29 @@ namespace Flee.PublicTypes
 
         public bool IntegersAsDoubles
         {
-            get { return _myProperties.GetValue<bool>("IntegersAsDoubles"); }
-            set { _myProperties.SetValue("IntegersAsDoubles", value); }
+            get { return _properties.GetValue<bool>("IntegersAsDoubles"); }
+            set { _properties.SetValue("IntegersAsDoubles", value); }
         }
 
         public CultureInfo ParseCulture
         {
-            get { return _myProperties.GetValue<CultureInfo>("ParseCulture"); }
+            get { return _properties.GetValue<CultureInfo>("ParseCulture"); }
             set
             {
                 Utility.AssertNotNull(value, "ParseCulture");
                 if ((value.LCID != this.ParseCulture.LCID))
                 {
-                    _myProperties.SetValue("ParseCulture", value);
+                    _properties.SetValue("ParseCulture", value);
                     this.SetParseCulture(value);
-                    _myOwner.ParserOptions.RecreateParser();
+                    _owner.ParserOptions.RecreateParser();
                 }
             }
         }
 
         public RealLiteralDataType RealLiteralDataType
         {
-            get { return _myProperties.GetValue<RealLiteralDataType>("RealLiteralDataType"); }
-            set { _myProperties.SetValue("RealLiteralDataType", value); }
+            get { return _properties.GetValue<RealLiteralDataType>("RealLiteralDataType"); }
+            set { _properties.SetValue("RealLiteralDataType", value); }
         }
         #endregion
 
@@ -201,12 +201,12 @@ namespace Flee.PublicTypes
             }
         }
 
-        internal Type OwnerType => _myOwnerType;
+        internal Type OwnerType => _ownerType;
 
         internal bool IsGeneric
         {
-            get { return _myProperties.GetValue<bool>("IsGeneric"); }
-            set { _myProperties.SetValue("IsGeneric", value); }
+            get { return _properties.GetValue<bool>("IsGeneric"); }
+            set { _properties.SetValue("IsGeneric", value); }
         }
         #endregion
     }

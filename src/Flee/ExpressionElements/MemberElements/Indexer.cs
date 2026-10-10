@@ -11,18 +11,18 @@ namespace Flee.ExpressionElements.MemberElements
     [Obsolete("Element representing an array index")]
     internal class IndexerElement : MemberElement
     {
-        private ExpressionElement _myIndexerElement;
+        private ExpressionElement _indexerElement;
 
-        private readonly ArgumentList _myIndexerElements;
+        private readonly ArgumentList _indexerElements;
         public IndexerElement(ArgumentList indexer)
         {
-            _myIndexerElements = indexer;
+            _indexerElements = indexer;
         }
 
         protected override void ResolveInternal()
         {
             // Are we are indexing on an array?
-            Type target = MyPrevious.TargetType;
+            Type target = Previous.TargetType;
 
             // Yes, so setup for an array index
             if (target.IsArray == true)
@@ -34,19 +34,19 @@ namespace Flee.ExpressionElements.MemberElements
             // Not an array, so try to find an indexer on the type
             if (this.FindIndexer(target) == false)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.TypeNotArrayAndHasNoIndexerOfType, CompileExceptionReason.TypeMismatch, target.Name, _myIndexerElements);
+                base.ThrowCompileException(CompileErrorResourceKeys.TypeNotArrayAndHasNoIndexerOfType, CompileExceptionReason.TypeMismatch, target.Name, _indexerElements);
             }
         }
 
         private void SetupArrayIndexer()
         {
-            _myIndexerElement = _myIndexerElements[0];
+            _indexerElement = _indexerElements[0];
 
-            if (_myIndexerElements.Count > 1)
+            if (_indexerElements.Count > 1)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.MultiArrayIndexNotSupported, CompileExceptionReason.TypeMismatch);
             }
-            else if (ImplicitConverter.EmitImplicitConvert(_myIndexerElement.ResultType, typeof(Int32), null) == false)
+            else if (ImplicitConverter.EmitImplicitConvert(_indexerElement.ResultType, typeof(Int32), null) == false)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.ArrayIndexersMustBeOfType, CompileExceptionReason.TypeMismatch, typeof(Int32).Name);
             }
@@ -69,9 +69,9 @@ namespace Flee.ExpressionElements.MemberElements
                 }
             }
 
-            FunctionCallElement func = new FunctionCallElement("Indexer", methods.ToArray(), _myIndexerElements);
-            func.Resolve(MyServices);
-            _myIndexerElement = func;
+            FunctionCallElement func = new FunctionCallElement("Indexer", methods.ToArray(), _indexerElements);
+            func.Resolve(Services);
+            _indexerElement = func;
 
             return true;
         }
@@ -92,8 +92,8 @@ namespace Flee.ExpressionElements.MemberElements
 
         private void EmitArrayLoad(FleeILGenerator ilg, IServiceProvider services)
         {
-            _myIndexerElement.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(_myIndexerElement.ResultType, typeof(Int32), ilg);
+            _indexerElement.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(_indexerElement.ResultType, typeof(Int32), ilg);
 
             Type elementType = this.ResultType;
 
@@ -122,7 +122,7 @@ namespace Flee.ExpressionElements.MemberElements
 
         private void EmitIndexer(FleeILGenerator ilg, IServiceProvider services)
         {
-            FunctionCallElement func = (FunctionCallElement)_myIndexerElement;
+            FunctionCallElement func = (FunctionCallElement)_indexerElement;
             func.EmitFunctionCall(this.NextRequiresAddress, ilg, services);
         }
 
@@ -132,7 +132,7 @@ namespace Flee.ExpressionElements.MemberElements
             {
                 if (this.IsArray == true)
                 {
-                    return MyPrevious.TargetType;
+                    return Previous.TargetType;
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace Flee.ExpressionElements.MemberElements
             }
         }
 
-        private bool IsArray => MyPrevious.TargetType.IsArray;
+        private bool IsArray => Previous.TargetType.IsArray;
 
         protected override bool RequiresAddress => this.IsArray == false;
 
@@ -155,7 +155,7 @@ namespace Flee.ExpressionElements.MemberElements
                 }
                 else
                 {
-                    return _myIndexerElement.ResultType;
+                    return _indexerElement.ResultType;
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace Flee.ExpressionElements.MemberElements
                 }
                 else
                 {
-                    return IsElementPublic((MemberElement)_myIndexerElement);
+                    return IsElementPublic((MemberElement)_indexerElement);
                 }
             }
         }

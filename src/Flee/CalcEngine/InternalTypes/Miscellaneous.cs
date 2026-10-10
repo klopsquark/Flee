@@ -18,9 +18,9 @@ namespace Flee.CalcEngine.InternalTypes
     internal abstract class ExpressionResultPair
     {
 
-        private string _myName;
+        private string _name;
 
-        protected IDynamicExpression MyExpression;
+        private IDynamicExpression _expression;
 
         protected ExpressionResultPair()
         {
@@ -30,47 +30,47 @@ namespace Flee.CalcEngine.InternalTypes
 
         public void SetExpression(IDynamicExpression e)
         {
-            MyExpression = e;
+            _expression = e;
         }
 
         public void SetName(string name)
         {
-            _myName = name;
+            _name = name;
         }
 
         public override string ToString()
         {
-            return _myName;
+            return _name;
         }
 
-        public string Name => _myName;
+        public string Name => _name;
 
         public abstract Type ResultType { get; }
         public abstract object ResultAsObject { get; set; }
 
-        public IDynamicExpression Expression => MyExpression;
+        public IDynamicExpression Expression => _expression;
     }
 
     internal class GenericExpressionResultPair<T> : ExpressionResultPair
     {
-        public T MyResult;
+        private T _result;
         public GenericExpressionResultPair()
         {
         }
 
         public override void Recalculate()
         {
-            MyResult = (T)MyExpression.Evaluate();
+            _result = (T)Expression.Evaluate();
         }
 
-        public T Result => MyResult;
+        public T Result => _result;
 
         public override System.Type ResultType => typeof(T);
 
         public override object ResultAsObject
         {
-            get { return MyResult; }
-            set { MyResult = (T)value; }
+            get { return _result; }
+            set { _result = (T)value; }
         }
     }
 
@@ -91,9 +91,9 @@ namespace Flee.CalcEngine.InternalTypes
     public sealed class NodeEventArgs : EventArgs
     {
 
-        private string _myName;
+        private string _name;
 
-        private object _myResult;
+        private object _result;
 
         internal NodeEventArgs()
         {
@@ -101,13 +101,13 @@ namespace Flee.CalcEngine.InternalTypes
 
         internal void SetData(string name, object result)
         {
-            _myName = name;
-            _myResult = result;
+            _name = name;
+            _result = result;
         }
 
-        public string Name => _myName;
+        public string Name => _name;
 
-        public object Result => _myResult;
+        public object Result => _result;
     }
 
 }

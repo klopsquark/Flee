@@ -7,15 +7,15 @@ namespace Flee.ExpressionElements.Literals
 {
     internal class CharLiteralElement : LiteralElement
     {
-        private readonly char _myValue;
+        private readonly char _value;
         public CharLiteralElement(char value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            int intValue = Convert.ToInt32(_myValue);
+            int intValue = Convert.ToInt32(_value);
             EmitLoad(intValue, ilg);
         }
 

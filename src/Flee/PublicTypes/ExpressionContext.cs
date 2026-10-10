@@ -12,11 +12,11 @@ namespace Flee.PublicTypes
 
         #region "Fields"
 
-        private PropertyDictionary _myProperties;
+        private PropertyDictionary _properties;
 
-        private readonly object _mySyncRoot = new object();
+        private readonly object _syncRoot = new object();
 
-        private VariableCollection _myVariables;
+        private VariableCollection _variables;
         #endregion
 
         #region "Constructor"
@@ -28,22 +28,22 @@ namespace Flee.PublicTypes
         public ExpressionContext(object expressionOwner)
         {
             Utility.AssertNotNull(expressionOwner, "expressionOwner");
-            _myProperties = new PropertyDictionary();
+            _properties = new PropertyDictionary();
 
-            _myProperties.SetValue("CalculationEngine", null);
-            _myProperties.SetValue("CalcEngineExpressionName", null);
-            _myProperties.SetValue("IdentifierParser", null);
+            _properties.SetValue("CalculationEngine", null);
+            _properties.SetValue("CalcEngineExpressionName", null);
+            _properties.SetValue("IdentifierParser", null);
 
-            _myProperties.SetValue("ExpressionOwner", expressionOwner);
+            _properties.SetValue("ExpressionOwner", expressionOwner);
 
-            _myProperties.SetValue("ParserOptions", new ExpressionParserOptions(this));
+            _properties.SetValue("ParserOptions", new ExpressionParserOptions(this));
 
-            _myProperties.SetValue("Options", new ExpressionOptions(this));
-            _myProperties.SetValue("Imports", new ExpressionImports());
+            _properties.SetValue("Options", new ExpressionOptions(this));
+            _properties.SetValue("Imports", new ExpressionImports());
             this.Imports.SetContext(this);
-            _myVariables = new VariableCollection(this);
+            _variables = new VariableCollection(this);
 
-            _myProperties.SetToDefault<bool>("NoClone");
+            _properties.SetToDefault<bool>("NoClone");
 
             this.RecreateParser();
         }
@@ -87,16 +87,16 @@ namespace Flee.PublicTypes
         internal ExpressionContext CloneInternal(bool cloneVariables)
         {
             ExpressionContext context = (ExpressionContext)this.MemberwiseClone();
-            context._myProperties = _myProperties.Clone();
-            context._myProperties.SetValue("Options", context.Options.Clone());
-            context._myProperties.SetValue("ParserOptions", context.ParserOptions.Clone());
-            context._myProperties.SetValue("Imports", context.Imports.Clone());
+            context._properties = _properties.Clone();
+            context._properties.SetValue("Options", context.Options.Clone());
+            context._properties.SetValue("ParserOptions", context.ParserOptions.Clone());
+            context._properties.SetValue("Imports", context.Imports.Clone());
             context.Imports.SetContext(context);
 
             if (cloneVariables == true)
             {
-                context._myVariables = new VariableCollection(context);
-                this.Variables.Copy(context._myVariables);
+                context._variables = new VariableCollection(context);
+                this.Variables.Copy(context._variables);
             }
 
             return context;
@@ -116,7 +116,7 @@ namespace Flee.PublicTypes
 
         internal ExpressionElement Parse(string expression, IServiceProvider services)
         {
-            lock (_mySyncRoot)
+            lock (_syncRoot)
             {
                 System.IO.StringReader sr = new System.IO.StringReader(expression);
                 ExpressionParser parser = this.Parser;
@@ -135,11 +135,11 @@ namespace Flee.PublicTypes
 
         internal void RecreateParser()
         {
-            lock (_mySyncRoot)
+            lock (_syncRoot)
             {
                 FleeExpressionAnalyzer analyzer = new FleeExpressionAnalyzer();
                 ExpressionParser parser = new ExpressionParser(TextReader.Null, analyzer, this);
-                _myProperties.SetValue("ExpressionParser", parser);
+                _properties.SetValue("ExpressionParser", parser);
             }
         }
 
@@ -158,8 +158,8 @@ namespace Flee.PublicTypes
 
         internal void SetCalcEngine(CalculationEngine engine, string calcEngineExpressionName)
         {
-            _myProperties.SetValue("CalculationEngine", engine);
-            _myProperties.SetValue("CalcEngineExpressionName", calcEngineExpressionName);
+            _properties.SetValue("CalculationEngine", engine);
+            _properties.SetValue("CalcEngineExpressionName", calcEngineExpressionName);
         }
 
         internal IdentifierAnalyzer ParseIdentifiers(string expression)
@@ -203,14 +203,14 @@ namespace Flee.PublicTypes
         {
             get
             {
-                ExpressionParser parser = _myProperties.GetValue<ExpressionParser>("IdentifierParser");
+                ExpressionParser parser = _properties.GetValue<ExpressionParser>("IdentifierParser");
 
                 if (parser == null)
                 {
                     IdentifierAnalyzer analyzer = new IdentifierAnalyzer();
                     parser = new ExpressionParser(System.IO.TextReader.Null, analyzer, this);
                     //parser = new ExpressionParser(System.IO.StringReader.Null, analyzer, this);
-                    _myProperties.SetValue("IdentifierParser", parser);
+                    _properties.SetValue("IdentifierParser", parser);
                 }
 
                 return parser;
@@ -223,34 +223,34 @@ namespace Flee.PublicTypes
 
         internal bool NoClone
         {
-            get { return _myProperties.GetValue<bool>("NoClone"); }
-            set { _myProperties.SetValue("NoClone", value); }
+            get { return _properties.GetValue<bool>("NoClone"); }
+            set { _properties.SetValue("NoClone", value); }
         }
 
-        internal object ExpressionOwner => _myProperties.GetValue<object>("ExpressionOwner");
+        internal object ExpressionOwner => _properties.GetValue<object>("ExpressionOwner");
 
-        internal string CalcEngineExpressionName => _myProperties.GetValue<string>("CalcEngineExpressionName");
+        internal string CalcEngineExpressionName => _properties.GetValue<string>("CalcEngineExpressionName");
 
-        internal ExpressionParser Parser => _myProperties.GetValue<ExpressionParser>("ExpressionParser");
+        internal ExpressionParser Parser => _properties.GetValue<ExpressionParser>("ExpressionParser");
 
         #endregion
 
         #region "Properties - Public"
-        public ExpressionOptions Options => _myProperties.GetValue<ExpressionOptions>("Options");
+        public ExpressionOptions Options => _properties.GetValue<ExpressionOptions>("Options");
 
-        public ExpressionImports Imports => _myProperties.GetValue<ExpressionImports>("Imports");
+        public ExpressionImports Imports => _properties.GetValue<ExpressionImports>("Imports");
 
-        public VariableCollection Variables => _myVariables;
+        public VariableCollection Variables => _variables;
 
         // Called from generated IL (calculation-engine atoms). NoInlining keeps the .NET 10 JIT from
         // inlining it into every compiled expression (R-019).
         public CalculationEngine CalculationEngine
         {
             [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-            get => _myProperties.GetValue<CalculationEngine>("CalculationEngine");
+            get => _properties.GetValue<CalculationEngine>("CalculationEngine");
         }
 
-        public ExpressionParserOptions ParserOptions => _myProperties.GetValue<ExpressionParserOptions>("ParserOptions");
+        public ExpressionParserOptions ParserOptions => _properties.GetValue<ExpressionParserOptions>("ParserOptions");
 
         #endregion
     }

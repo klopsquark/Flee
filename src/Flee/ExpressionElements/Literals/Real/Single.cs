@@ -7,7 +7,7 @@ namespace Flee.ExpressionElements.Literals.Real
 {
     internal class SingleLiteralElement : RealLiteralElement
     {
-        private readonly float _myValue;
+        private readonly float _value;
 
         private SingleLiteralElement()
         {
@@ -15,7 +15,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
         public SingleLiteralElement(float value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public static SingleLiteralElement Parse(string image, IServiceProvider services)
@@ -44,7 +44,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            ilg.Emit(OpCodes.Ldc_R4, _myValue);
+            ilg.Emit(OpCodes.Ldc_R4, _value);
         }
 
         public override System.Type ResultType => typeof(float);

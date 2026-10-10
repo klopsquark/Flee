@@ -5,12 +5,12 @@ namespace Flee.Resources
     internal class FleeResourceManager
     {
 
-        private Dictionary<string, ResourceManager> MyResourceManagers;
+        private Dictionary<string, ResourceManager> _resourceManagers;
 
-        private static FleeResourceManager OurInstance = new FleeResourceManager();
+        private static FleeResourceManager _instance = new FleeResourceManager();
         private FleeResourceManager()
         {
-            MyResourceManagers = new Dictionary<string, ResourceManager>(StringComparer.OrdinalIgnoreCase);
+            _resourceManagers = new Dictionary<string, ResourceManager>(StringComparer.OrdinalIgnoreCase);
         }
 
         private ResourceManager GetResourceManager(string resourceFile)
@@ -18,11 +18,11 @@ namespace Flee.Resources
             lock (this)
             {
                 ResourceManager rm = null;
-                if (MyResourceManagers.TryGetValue(resourceFile, out rm) == false)
+                if (_resourceManagers.TryGetValue(resourceFile, out rm) == false)
                 {
                     Type t = typeof(FleeResourceManager);
                     rm = new ResourceManager(string.Format("{0}.{1}", t.Namespace, resourceFile), t.Assembly);
-                    MyResourceManagers.Add(resourceFile, rm);
+                    _resourceManagers.Add(resourceFile, rm);
                 }
                 return rm;
             }
@@ -51,7 +51,7 @@ namespace Flee.Resources
 
         public static FleeResourceManager Instance
         {
-            get { return OurInstance; }
+            get { return _instance; }
         }
     }
 }

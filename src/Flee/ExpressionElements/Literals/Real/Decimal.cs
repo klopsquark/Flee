@@ -9,8 +9,8 @@ namespace Flee.ExpressionElements.Literals.Real
 {
     internal class DecimalLiteralElement : RealLiteralElement
     {
-        private static readonly ConstructorInfo OurConstructorInfo = GetConstructor();
-        private readonly decimal _myValue;
+        private static readonly ConstructorInfo ConstructorInfo = GetConstructor();
+        private readonly decimal _value;
 
         private DecimalLiteralElement()
         {
@@ -18,7 +18,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
         public DecimalLiteralElement(decimal value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         private static ConstructorInfo GetConstructor()
@@ -55,7 +55,7 @@ namespace Flee.ExpressionElements.Literals.Real
             int index = ilg.GetTempLocalIndex(typeof(decimal));
             Utility.EmitLoadLocalAddress(ilg, index);
 
-            int[] bits = decimal.GetBits(_myValue);
+            int[] bits = decimal.GetBits(_value);
             EmitLoad(bits[0], ilg);
             EmitLoad(bits[1], ilg);
             EmitLoad(bits[2], ilg);
@@ -66,7 +66,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
             EmitLoad(flags >> 16, ilg);
 
-            ilg.Emit(OpCodes.Call, OurConstructorInfo);
+            ilg.Emit(OpCodes.Call, ConstructorInfo);
 
             Utility.EmitLoadLocal(ilg, index);
         }

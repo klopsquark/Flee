@@ -132,7 +132,7 @@ These change no behaviour and each gets its own commit.
 - [ ] Remove the 227 `== true` and `== false` comparisons.
 - [ ] Split the four `Miscellaneous.cs` files into one type per file and make file names match type names.
 - [ ] Replace the non-generic collections (about 69 uses) between analyzer and elements with typed ones.
-- [ ] Decide whether to rename the `_my` and `_our` field prefixes, about 1,100 occurrences. It is a matter of taste; if you do it, do it in a single commit.
+- [x] Decide whether to rename the `_my` and `_our` field prefixes, about 1,100 occurrences. It is a matter of taste; if you do it, do it in a single commit. Decided 2026-10-10: renamed to common conventions (R-028); the five parser fields stay.
 - [ ] Resolve `PropertyDictionary`: it is marked obsolete but still backs three public classes. Drop the attribute now; replacing it belongs to Phase 5.
 
 ## Phase 5: Adjustments to your needs
@@ -208,6 +208,6 @@ Other post-release ideas:
 | Target frameworks, and whether netstandard2.0 stays | Phase 3 | **Decided 2026-10-09:** netstandard2.0, netstandard2.1, net8.0, net10.0 |
 | Keep or remove `EmitToAssembly` | Phase 3 | **Decided 2026-10-09:** keep as an obsolete no-op |
 | Nullable reference types | Phase 3 | **Decided 2026-10-09:** off now, files opt in once annotated, public API first (Phase 4) |
-| Rename the `_my` and `_our` prefixes | Phase 4 | Open, purely taste |
+| Rename the `_my` and `_our` prefixes | Phase 4 | **Decided 2026-10-10:** rename to common C# conventions |
 | Your list of API changes and extensions | Phase 5 | Open |
 | Time box for performance work | Phase 7 | Open |

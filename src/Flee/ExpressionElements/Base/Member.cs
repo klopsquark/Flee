@@ -9,13 +9,13 @@ namespace Flee.ExpressionElements.Base
 {
     internal abstract class MemberElement : ExpressionElement
     {
-        protected string MyName;
-        protected MemberElement MyPrevious;
-        protected MemberElement MyNext;
-        protected IServiceProvider MyServices;
-        protected ExpressionOptions MyOptions;
-        protected ExpressionContext MyContext;
-        protected ImportBase MyImport;
+        public string MemberName { get; protected set; }
+        protected MemberElement Previous;
+        protected MemberElement Next;
+        protected IServiceProvider Services;
+        protected ExpressionOptions Options;
+        protected ExpressionContext Context;
+        protected ImportBase Import;
 
         public const BindingFlags BindFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
@@ -25,25 +25,25 @@ namespace Flee.ExpressionElements.Base
 
         public void Link(MemberElement nextElement)
         {
-            MyNext = nextElement;
+            Next = nextElement;
             if ((nextElement != null))
             {
-                nextElement.MyPrevious = this;
+                nextElement.Previous = this;
             }
         }
 
         public void Resolve(IServiceProvider services)
         {
-            MyServices = services;
-            MyOptions = (ExpressionOptions)services.GetService(typeof(ExpressionOptions));
-            MyContext = (ExpressionContext)services.GetService(typeof(ExpressionContext));
+            Services = services;
+            Options = (ExpressionOptions)services.GetService(typeof(ExpressionOptions));
+            Context = (ExpressionContext)services.GetService(typeof(ExpressionContext));
             this.ResolveInternal();
             this.Validate();
         }
 
         public void SetImport(ImportBase import)
         {
-            MyImport = import;
+            Import = import;
         }
 
         protected abstract void ResolveInternal();
@@ -53,26 +53,26 @@ namespace Flee.ExpressionElements.Base
 
         protected virtual void Validate()
         {
-            if (MyPrevious == null)
+            if (Previous == null)
             {
                 return;
             }
 
             if (this.IsStatic == true && this.SupportsStatic == false && IsExtensionMethod == false)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.StaticMemberCannotBeAccessedWithInstanceReference, CompileExceptionReason.TypeMismatch, MyName);
+                base.ThrowCompileException(CompileErrorResourceKeys.StaticMemberCannotBeAccessedWithInstanceReference, CompileExceptionReason.TypeMismatch, MemberName);
             }
             else if (this.IsStatic == false && this.SupportsInstance == false)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.ReferenceToNonSharedMemberRequiresObjectReference, CompileExceptionReason.TypeMismatch, MyName);
+                base.ThrowCompileException(CompileErrorResourceKeys.ReferenceToNonSharedMemberRequiresObjectReference, CompileExceptionReason.TypeMismatch, MemberName);
             }
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            if ((MyPrevious != null))
+            if ((Previous != null))
             {
-                MyPrevious.Emit(ilg, services);
+                Previous.Emit(ilg, services);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Flee.ExpressionElements.Base
         {
             ilg.Emit(OpCodes.Ldarg_0);
 
-            Type ownerType = MyOptions.OwnerType;
+            Type ownerType = Options.OwnerType;
 
             if (ownerType.IsValueType == false)
             {
@@ -271,9 +271,9 @@ namespace Flee.ExpressionElements.Base
 
         public bool IsMemberAccessible(MemberInfo member)
         {
-            if (MyOptions.IsOwnerType(member.ReflectedType) == true)
+            if (Options.IsOwnerType(member.ReflectedType) == true)
             {
-                return IsOwnerMemberAccessible(member, MyOptions);
+                return IsOwnerMemberAccessible(member, Options);
             }
             else
             {
@@ -283,25 +283,25 @@ namespace Flee.ExpressionElements.Base
 
         protected MemberInfo[] GetMembers(MemberTypes targets)
         {
-            if (MyPrevious == null)
+            if (Previous == null)
             {
                 // Do we have a namespace?
-                if (MyImport == null)
+                if (Import == null)
                 {
                     // Get all members in the default namespace
-                    return this.GetDefaultNamespaceMembers(MyName, targets);
+                    return this.GetDefaultNamespaceMembers(MemberName, targets);
                 }
                 else
                 {
-                    return MyImport.FindMembers(MyName, targets);
+                    return Import.FindMembers(MemberName, targets);
                 }
             }
             else
             {
                 // We are not the first element; find all members with our name on the type of the previous member
                 // We are not the first element; find all members with our name on the type of the previous member
-                var foundMembers = MyPrevious.TargetType.FindMembers(targets, BindFlags, MyOptions.MemberFilter, MyName);
-                var importedMembers = MyContext.Imports.RootImport.FindMembers(MyName, targets);
+                var foundMembers = Previous.TargetType.FindMembers(targets, BindFlags, Options.MemberFilter, MemberName);
+                var importedMembers = Context.Imports.RootImport.FindMembers(MemberName, targets);
                 if (foundMembers.Length == 0) //If no members found search in root import
                     return importedMembers;
 
@@ -321,13 +321,13 @@ namespace Flee.ExpressionElements.Base
         protected MemberInfo[] GetDefaultNamespaceMembers(string name, MemberTypes memberType)
         {
             // Search the owner first
-            MemberInfo[] members = MyContext.Imports.FindOwnerMembers(name, memberType);
+            MemberInfo[] members = Context.Imports.FindOwnerMembers(name, memberType);
 
             // Keep only the accessible members
             members = this.GetAccessibleMembers(members);
 
             //Also search imports
-            var importedMembers = MyContext.Imports.RootImport.FindMembers(name, memberType);
+            var importedMembers = Context.Imports.RootImport.FindMembers(name, memberType);
 
             //if no members, just return imports
             if (members.Length == 0)
@@ -345,9 +345,7 @@ namespace Flee.ExpressionElements.Base
             return e.IsPublic;
         }
 
-        public string MemberName => MyName;
-
-        protected bool NextRequiresAddress => MyNext != null && MyNext.RequiresAddress;
+        protected bool NextRequiresAddress => Next != null && Next.RequiresAddress;
 
         protected virtual bool RequiresAddress => false;
 

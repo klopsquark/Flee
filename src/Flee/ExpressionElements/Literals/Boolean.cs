@@ -6,15 +6,15 @@ namespace Flee.ExpressionElements.Literals
 {
     internal class BooleanLiteralElement : LiteralElement
     {
-        private readonly bool _myValue;
+        private readonly bool _value;
         public BooleanLiteralElement(bool value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            EmitLoad(_myValue, ilg);
+            EmitLoad(_value, ilg);
         }
 
         public override System.Type ResultType => typeof(bool);

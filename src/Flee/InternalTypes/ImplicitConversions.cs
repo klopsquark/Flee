@@ -9,12 +9,12 @@ namespace Flee.InternalTypes
         /// <summary>
         /// Table of results for binary operations using primitives
         /// </summary>
-        private static readonly Type[,] OurBinaryResultTable;
+        private static readonly Type[,] BinaryResultTable;
 
         /// <summary>
         /// Primitive types we support
         /// </summary>
-        private static readonly Type[] OurBinaryTypes;
+        private static readonly Type[] BinaryTypes;
         static ImplicitConverter()
         {
             // Create a table with all the primitive types
@@ -31,9 +31,9 @@ namespace Flee.InternalTypes
             typeof(float),
             typeof(double)
         };
-            OurBinaryTypes = types;
+            BinaryTypes = types;
             Type[,] table = new Type[types.Length, types.Length];
-            OurBinaryResultTable = table;
+            BinaryResultTable = table;
             FillIdentities(types, table);
 
             // Fill the table
@@ -122,13 +122,13 @@ namespace Flee.InternalTypes
         {
             int index1 = GetTypeIndex(t1);
             int index2 = GetTypeIndex(t2);
-            OurBinaryResultTable[index1, index2] = result;
-            OurBinaryResultTable[index2, index1] = result;
+            BinaryResultTable[index1, index2] = result;
+            BinaryResultTable[index2, index1] = result;
         }
 
         private static int GetTypeIndex(Type t)
         {
-            return System.Array.IndexOf(OurBinaryTypes, t);
+            return System.Array.IndexOf(BinaryTypes, t);
         }
 
         public static bool EmitImplicitConvert(Type sourceType, Type destType, FleeILGenerator ilg)
@@ -435,7 +435,7 @@ namespace Flee.InternalTypes
             }
             else
             {
-                return OurBinaryResultTable[index1, index2];
+                return BinaryResultTable[index1, index2];
             }
         }
 

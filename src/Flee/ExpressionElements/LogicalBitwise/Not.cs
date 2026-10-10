@@ -9,20 +9,20 @@ namespace Flee.ExpressionElements.LogicalBitwise
     {
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            if (object.ReferenceEquals(MyChild.ResultType, typeof(bool)))
+            if (object.ReferenceEquals(Child.ResultType, typeof(bool)))
             {
                 this.EmitLogical(ilg, services);
             }
             else
             {
-                MyChild.Emit(ilg, services);
+                Child.Emit(ilg, services);
                 ilg.Emit(OpCodes.Not);
             }
         }
 
         private void EmitLogical(FleeILGenerator ilg, IServiceProvider services)
         {
-            MyChild.Emit(ilg, services);
+            Child.Emit(ilg, services);
             ilg.Emit(OpCodes.Ldc_I4_0);
             ilg.Emit(OpCodes.Ceq);
         }

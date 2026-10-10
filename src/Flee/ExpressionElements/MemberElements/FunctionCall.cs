@@ -12,30 +12,30 @@ namespace Flee.ExpressionElements.MemberElements
     [Obsolete("Represents a function call")]
     internal class FunctionCallElement : MemberElement
     {
-        private readonly ArgumentList _myArguments;
-        private readonly ICollection<MethodInfo> _myMethods;
-        private CustomMethodInfo _myTargetMethodInfo;
+        private readonly ArgumentList _arguments;
+        private readonly ICollection<MethodInfo> _methods;
+        private CustomMethodInfo _targetMethodInfo;
 
-        private Type _myOnDemandFunctionReturnType;
+        private Type _onDemandFunctionReturnType;
         public FunctionCallElement(string name, ArgumentList arguments)
         {
-            this.MyName = name;
-            _myArguments = arguments;
+            this.MemberName = name;
+            _arguments = arguments;
         }
 
         internal FunctionCallElement(string name, ICollection<MethodInfo> methods, ArgumentList arguments)
         {
-            MyName = name;
-            _myArguments = arguments;
-            _myMethods = methods;
+            MemberName = name;
+            _arguments = arguments;
+            _methods = methods;
         }
 
         protected override void ResolveInternal()
         {
             // Get the types of our arguments
-            Type[] argTypes = _myArguments.GetArgumentTypes();
+            Type[] argTypes = _arguments.GetArgumentTypes();
             // Find all methods with our name on the type
-            ICollection<MethodInfo> methods = _myMethods;
+            ICollection<MethodInfo> methods = _methods;
 
             if (methods == null)
             {
@@ -49,17 +49,17 @@ namespace Flee.ExpressionElements.MemberElements
             if (methods.Count > 0)
             {
                 // More than one method exists with this name			
-                this.BindToMethod(methods, MyPrevious, argTypes);
+                this.BindToMethod(methods, Previous, argTypes);
                 return;
             }
 
             // No methods with this name exist; try to bind to an on-demand function
-            _myOnDemandFunctionReturnType = MyContext.Variables.ResolveOnDemandFunction(MyName, argTypes);
+            _onDemandFunctionReturnType = Context.Variables.ResolveOnDemandFunction(MemberName, argTypes);
 
-            if (_myOnDemandFunctionReturnType == null)
+            if (_onDemandFunctionReturnType == null)
             {
                 // Failed to bind to a function
-                this.ThrowFunctionNotFoundException(MyPrevious);
+                this.ThrowFunctionNotFoundException(Previous);
             }
         }
 
@@ -67,11 +67,11 @@ namespace Flee.ExpressionElements.MemberElements
         {
             if (previous == null)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.UndefinedFunction, CompileExceptionReason.UndefinedName, MyName, _myArguments);
+                base.ThrowCompileException(CompileErrorResourceKeys.UndefinedFunction, CompileExceptionReason.UndefinedName, MemberName, _arguments);
             }
             else
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.UndefinedFunctionOnType, CompileExceptionReason.UndefinedName, MyName, _myArguments, previous.TargetType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.UndefinedFunctionOnType, CompileExceptionReason.UndefinedName, MemberName, _arguments, previous.TargetType.Name);
             }
         }
 
@@ -79,17 +79,17 @@ namespace Flee.ExpressionElements.MemberElements
         {
             if (previous == null)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.NoAccessibleMatches, CompileExceptionReason.AccessDenied, MyName, _myArguments);
+                base.ThrowCompileException(CompileErrorResourceKeys.NoAccessibleMatches, CompileExceptionReason.AccessDenied, MemberName, _arguments);
             }
             else
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.NoAccessibleMatchesOnType, CompileExceptionReason.AccessDenied, MyName, _myArguments, previous.TargetType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.NoAccessibleMatchesOnType, CompileExceptionReason.AccessDenied, MemberName, _arguments, previous.TargetType.Name);
             }
         }
 
         private void ThrowAmbiguousMethodCallException()
         {
-            base.ThrowCompileException(CompileErrorResourceKeys.AmbiguousCallOfFunction, CompileExceptionReason.AmbiguousMatch, MyName, _myArguments);
+            base.ThrowCompileException(CompileErrorResourceKeys.AmbiguousCallOfFunction, CompileExceptionReason.AmbiguousMatch, MemberName, _arguments);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Flee.ExpressionElements.MemberElements
 
             foreach (CustomMethodInfo cmi in arr)
             {
-                if (cmi.IsMatch(argTypes, MyPrevious, MyContext) == true)
+                if (cmi.IsMatch(argTypes, Previous, Context) == true)
                 {
                     customInfos.Add(cmi);
                 }
@@ -163,7 +163,7 @@ namespace Flee.ExpressionElements.MemberElements
             this.DetectAmbiguousMatches(infos);
 
             // If we get here, then there is only one best match
-            _myTargetMethodInfo = infos[0];
+            _targetMethodInfo = infos[0];
         }
 
         private CustomMethodInfo[] GetAccessibleInfos(CustomMethodInfo[] infos)
@@ -210,7 +210,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             base.Validate();
 
-            if ((_myOnDemandFunctionReturnType != null))
+            if ((_onDemandFunctionReturnType != null))
             {
                 return;
             }
@@ -218,7 +218,7 @@ namespace Flee.ExpressionElements.MemberElements
             // Any function reference in an expression must return a value
             if (object.ReferenceEquals(this.Method.ReturnType, typeof(void)))
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.FunctionHasNoReturnValue, CompileExceptionReason.FunctionHasNoReturnValue, MyName);
+                base.ThrowCompileException(CompileErrorResourceKeys.FunctionHasNoReturnValue, CompileExceptionReason.FunctionHasNoReturnValue, MemberName);
             }
         }
 
@@ -226,19 +226,19 @@ namespace Flee.ExpressionElements.MemberElements
         {
             base.Emit(ilg, services);
 
-            ExpressionElement[] elements = _myArguments.ToArray();
+            ExpressionElement[] elements = _arguments.ToArray();
 
             // If we are an on-demand function, then emit that and exit
-            if ((_myOnDemandFunctionReturnType != null))
+            if ((_onDemandFunctionReturnType != null))
             {
                 this.EmitOnDemandFunction(elements, ilg, services);
                 return;
             }
 
-            bool isOwnerMember = MyOptions.IsOwnerType(this.Method.ReflectedType);
+            bool isOwnerMember = Options.IsOwnerType(this.Method.ReflectedType);
 
             // Load the owner if required
-            if (MyPrevious == null && isOwnerMember == true && this.IsStatic == false)
+            if (Previous == null && isOwnerMember == true && this.IsStatic == false)
             {
                 this.EmitLoadOwner(ilg);
             }
@@ -251,12 +251,12 @@ namespace Flee.ExpressionElements.MemberElements
             // Load the variable collection
             EmitLoadVariables(ilg);
             // Load the function name
-            ilg.Emit(OpCodes.Ldstr, MyName);
+            ilg.Emit(OpCodes.Ldstr, MemberName);
             // Load the arguments array
             EmitElementArrayLoad(elements, typeof(object), ilg, services);
 
             // Call the function to get the result
-            MethodInfo mi = VariableCollection.GetFunctionInvokeMethod(_myOnDemandFunctionReturnType);
+            MethodInfo mi = VariableCollection.GetFunctionInvokeMethod(_onDemandFunctionReturnType);
 
             this.EmitMethodCall(mi, ilg);
         }
@@ -265,11 +265,11 @@ namespace Flee.ExpressionElements.MemberElements
         private void EmitParamArrayArguments(ParameterInfo[] parameters, ExpressionElement[] elements, FleeILGenerator ilg, IServiceProvider services)
         {
             // Get the fixed parameters
-            ParameterInfo[] fixedParameters = new ParameterInfo[_myTargetMethodInfo.MyFixedArgTypes.Length];
+            ParameterInfo[] fixedParameters = new ParameterInfo[_targetMethodInfo.FixedArgTypes.Length];
             Array.Copy(parameters, fixedParameters, fixedParameters.Length);
 
             // Get the corresponding fixed parameters
-            ExpressionElement[] fixedElements = new ExpressionElement[_myTargetMethodInfo.MyFixedArgTypes.Length];
+            ExpressionElement[] fixedElements = new ExpressionElement[_targetMethodInfo.FixedArgTypes.Length];
             Array.Copy(elements, fixedElements, fixedElements.Length);
 
             // Emit the fixed arguments
@@ -280,7 +280,7 @@ namespace Flee.ExpressionElements.MemberElements
             Array.Copy(elements, fixedElements.Length, paramArrayElements, 0, paramArrayElements.Length);
 
             // Emit them into an array
-            EmitElementArrayLoad(paramArrayElements, _myTargetMethodInfo.ParamArrayElementType, ilg, services);
+            EmitElementArrayLoad(paramArrayElements, _targetMethodInfo.ParamArrayElementType, ilg, services);
         }
 
         /// <summary>
@@ -324,12 +324,12 @@ namespace Flee.ExpressionElements.MemberElements
         public void EmitFunctionCall(bool nextRequiresAddress, FleeILGenerator ilg, IServiceProvider services)
         {
             ParameterInfo[] parameters = this.Method.GetParameters();
-            ExpressionElement[] elements = _myArguments.ToArray();
+            ExpressionElement[] elements = _arguments.ToArray();
 
             // Emit either a regular or paramArray call
-            if (_myTargetMethodInfo.IsParamArray == false)
+            if (_targetMethodInfo.IsParamArray == false)
             {
-                if (_myTargetMethodInfo.IsExtensionMethod == false)
+                if (_targetMethodInfo.IsExtensionMethod == false)
                     this.EmitRegularFunctionInternal(parameters, elements, ilg, services);
                 else
                     this.EmitExtensionFunctionInternal(parameters, elements, ilg, services);
@@ -345,7 +345,7 @@ namespace Flee.ExpressionElements.MemberElements
         private void EmitExtensionFunctionInternal(ParameterInfo[] parameters, ExpressionElement[] elements, FleeILGenerator ilg, IServiceProvider services)
         {
             Debug.Assert(parameters.Length == elements.Length + 1, "argument count mismatch");
-            if (MyPrevious == null) this.EmitLoadOwner(ilg);
+            if (Previous == null) this.EmitLoadOwner(ilg);
             //Emit each element and any required conversions to the actual parameter type
             for (int i = 1; i <= parameters.Length - 1; i++)
             {
@@ -382,15 +382,15 @@ namespace Flee.ExpressionElements.MemberElements
         /// <summary>
         /// The method info we will be calling
         /// </summary>	
-        private MethodInfo Method => _myTargetMethodInfo.Target;
+        private MethodInfo Method => _targetMethodInfo.Target;
 
         public override Type ResultType
         {
             get
             {
-                if ((_myOnDemandFunctionReturnType != null))
+                if ((_onDemandFunctionReturnType != null))
                 {
-                    return _myOnDemandFunctionReturnType;
+                    return _onDemandFunctionReturnType;
                 }
                 else
                 {
@@ -404,6 +404,6 @@ namespace Flee.ExpressionElements.MemberElements
         protected override bool IsPublic => this.Method.IsPublic;
 
         public override bool IsStatic => this.Method.IsStatic;
-        public override bool IsExtensionMethod => this._myTargetMethodInfo.IsExtensionMethod;
+        public override bool IsExtensionMethod => this._targetMethodInfo.IsExtensionMethod;
     }
 }

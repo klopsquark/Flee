@@ -13,31 +13,31 @@ namespace Flee.ExpressionElements
     internal class InElement : ExpressionElement
     {
         // Element we will search for
-        private ExpressionElement MyOperand;
+        private ExpressionElement _operand;
         // Elements we will compare against
-        private List<ExpressionElement> MyArguments;
+        private List<ExpressionElement> _arguments;
         // Collection to look in
-        private ExpressionElement MyTargetCollectionElement;
+        private ExpressionElement _targetCollectionElement;
         // Type of the collection
 
-        private Type MyTargetCollectionType;
+        private Type _targetCollectionType;
         // Initialize for searching a list of values
         public InElement(ExpressionElement operand, IList listElements)
         {
-            MyOperand = operand;
+            _operand = operand;
 
             ExpressionElement[] arr = new ExpressionElement[listElements.Count];
             listElements.CopyTo(arr, 0);
 
-            MyArguments = new List<ExpressionElement>(arr);
+            _arguments = new List<ExpressionElement>(arr);
             this.ResolveForListSearch();
         }
 
         // Initialize for searching a collection
         public InElement(ExpressionElement operand, ExpressionElement targetCollection)
         {
-            MyOperand = operand;
-            MyTargetCollectionElement = targetCollection;
+            _operand = operand;
+            _targetCollectionElement = targetCollection;
             this.ResolveForCollectionSearch();
         }
 
@@ -46,9 +46,9 @@ namespace Flee.ExpressionElements
             CompareElement ce = new CompareElement();
 
             // Validate that our operand is comparable to all elements in the list
-            foreach (ExpressionElement argumentElement in MyArguments)
+            foreach (ExpressionElement argumentElement in _arguments)
             {
-                ce.Initialize(MyOperand, argumentElement, LogicalCompareOperation.Equal);
+                ce.Initialize(_operand, argumentElement, LogicalCompareOperation.Equal);
                 ce.Validate();
             }
         }
@@ -56,26 +56,26 @@ namespace Flee.ExpressionElements
         private void ResolveForCollectionSearch()
         {
             // Try to find a collection type
-            MyTargetCollectionType = this.GetTargetCollectionType();
+            _targetCollectionType = this.GetTargetCollectionType();
 
-            if (MyTargetCollectionType == null)
+            if (_targetCollectionType == null)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.SearchArgIsNotKnownCollectionType, CompileExceptionReason.TypeMismatch, MyTargetCollectionElement.ResultType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.SearchArgIsNotKnownCollectionType, CompileExceptionReason.TypeMismatch, _targetCollectionElement.ResultType.Name);
             }
 
             // Validate that the operand type is compatible with the collection
             MethodInfo mi = this.GetCollectionContainsMethod();
             ParameterInfo p1 = mi.GetParameters()[0];
 
-            if (ImplicitConverter.EmitImplicitConvert(MyOperand.ResultType, p1.ParameterType, null) == false)
+            if (ImplicitConverter.EmitImplicitConvert(_operand.ResultType, p1.ParameterType, null) == false)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.OperandNotConvertibleToCollectionType, CompileExceptionReason.TypeMismatch, MyOperand.ResultType.Name, p1.ParameterType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.OperandNotConvertibleToCollectionType, CompileExceptionReason.TypeMismatch, _operand.ResultType.Name, p1.ParameterType.Name);
             }
         }
 
         private Type GetTargetCollectionType()
         {
-            Type collType = MyTargetCollectionElement.ResultType;
+            Type collType = _targetCollectionElement.ResultType;
 
             // Try to see if the collection is a generic ICollection or IDictionary
             Type[] interfaces = collType.GetInterfaces();
@@ -112,7 +112,7 @@ namespace Flee.ExpressionElements
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            if ((MyTargetCollectionType != null))
+            if ((_targetCollectionType != null))
             {
                 this.EmitCollectionIn(ilg, services);
             }
@@ -130,11 +130,11 @@ namespace Flee.ExpressionElements
             ParameterInfo p1 = mi.GetParameters()[0];
 
             // Load the collection
-            MyTargetCollectionElement.Emit(ilg, services);
+            _targetCollectionElement.Emit(ilg, services);
             // Load the argument
-            MyOperand.Emit(ilg, services);
+            _operand.Emit(ilg, services);
             // Do an implicit convert if necessary
-            ImplicitConverter.EmitImplicitConvert(MyOperand.ResultType, p1.ParameterType, ilg);
+            ImplicitConverter.EmitImplicitConvert(_operand.ResultType, p1.ParameterType, ilg);
             // Call the contains method
             ilg.Emit(OpCodes.Callvirt, mi);
         }
@@ -143,12 +143,12 @@ namespace Flee.ExpressionElements
         {
             string methodName = "Contains";
 
-            if (MyTargetCollectionType.IsGenericType == true && object.ReferenceEquals(MyTargetCollectionType.GetGenericTypeDefinition(), typeof(IDictionary<,>)))
+            if (_targetCollectionType.IsGenericType == true && object.ReferenceEquals(_targetCollectionType.GetGenericTypeDefinition(), typeof(IDictionary<,>)))
             {
                 methodName = "ContainsKey";
             }
 
-            return MyTargetCollectionType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            return _targetCollectionType.GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         }
 
         private void EmitListIn(FleeILGenerator ilg, IServiceProvider services)
@@ -158,17 +158,17 @@ namespace Flee.ExpressionElements
             Label trueTerminal = ilg.DefineLabel();
 
             // Cache the operand since we will be comparing against it a lot
-            LocalBuilder lb = ilg.DeclareLocal(MyOperand.ResultType);
+            LocalBuilder lb = ilg.DeclareLocal(_operand.ResultType);
             int targetIndex = lb.LocalIndex;
 
-            MyOperand.Emit(ilg, services);
+            _operand.Emit(ilg, services);
             Utility.EmitStoreLocal(ilg, targetIndex);
 
             // Wrap our operand in a local shim
-            LocalBasedElement targetShim = new LocalBasedElement(MyOperand, targetIndex);
+            LocalBasedElement targetShim = new LocalBasedElement(_operand, targetIndex);
 
             // Emit the compares
-            foreach (ExpressionElement argumentElement in MyArguments)
+            foreach (ExpressionElement argumentElement in _arguments)
             {
                 ce.Initialize(targetShim, argumentElement, LogicalCompareOperation.Equal);
                 ce.Emit(ilg, services);

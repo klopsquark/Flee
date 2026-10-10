@@ -7,15 +7,15 @@ namespace Flee.ExpressionElements.Literals
 {
     internal class StringLiteralElement : LiteralElement
     {
-        private readonly string _myValue;
+        private readonly string _value;
         public StringLiteralElement(string value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            ilg.Emit(OpCodes.Ldstr, _myValue);
+            ilg.Emit(OpCodes.Ldstr, _value);
         }
 
         public override System.Type ResultType => typeof(string);

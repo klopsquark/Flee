@@ -6,13 +6,13 @@ namespace Flee.CalcEngine.InternalTypes
     internal class IdentifierAnalyzer : Analyzer
     {
 
-        private readonly IDictionary<int, string> _myIdentifiers;
-        private int _myMemberExpressionCount;
+        private readonly IDictionary<int, string> _identifiers;
+        private int _memberExpressionCount;
 
-        private bool _myInFieldPropertyExpression;
+        private bool _inFieldPropertyExpression;
         public IdentifierAnalyzer()
         {
-            _myIdentifiers = new Dictionary<int, string>();
+            _identifiers = new Dictionary<int, string>();
         }
 
         public override Node Exit(Node node)
@@ -45,36 +45,36 @@ namespace Flee.CalcEngine.InternalTypes
 
         private void ExitIdentifier(Token node)
         {
-            if (_myInFieldPropertyExpression == false)
+            if (_inFieldPropertyExpression == false)
             {
                 return;
             }
 
-            if (_myIdentifiers.ContainsKey(_myMemberExpressionCount) == false)
+            if (_identifiers.ContainsKey(_memberExpressionCount) == false)
             {
-                _myIdentifiers.Add(_myMemberExpressionCount, node.Image);
+                _identifiers.Add(_memberExpressionCount, node.Image);
             }
         }
 
         private void EnterMemberExpression()
         {
-            _myMemberExpressionCount += 1;
+            _memberExpressionCount += 1;
         }
 
         private void EnterFieldPropertyExpression()
         {
-            _myInFieldPropertyExpression = true;
+            _inFieldPropertyExpression = true;
         }
 
         private void ExitFieldPropertyExpression()
         {
-            _myInFieldPropertyExpression = false;
+            _inFieldPropertyExpression = false;
         }
 
         public override void Reset()
         {
-            _myIdentifiers.Clear();
-            _myMemberExpressionCount = -1;
+            _identifiers.Clear();
+            _memberExpressionCount = -1;
         }
 
         public ICollection<string> GetIdentifiers(ExpressionContext context)
@@ -82,7 +82,7 @@ namespace Flee.CalcEngine.InternalTypes
             Dictionary<string, object> dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             ExpressionImports ei = context.Imports;
 
-            foreach (string identifier in _myIdentifiers.Values)
+            foreach (string identifier in _identifiers.Values)
             {
                 // Skip names registered as namespaces
                 if (ei.HasNamespace(identifier) == true)

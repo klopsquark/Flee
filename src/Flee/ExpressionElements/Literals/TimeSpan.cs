@@ -9,10 +9,10 @@ namespace Flee.ExpressionElements.Literals
 {
     internal class TimeSpanLiteralElement : LiteralElement
     {
-        private TimeSpan _myValue;
+        private TimeSpan _value;
         public TimeSpanLiteralElement(string image)
         {
-            if (TimeSpan.TryParse(image, out _myValue) == false)
+            if (TimeSpan.TryParse(image, out _value) == false)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.CannotParseType, CompileExceptionReason.InvalidFormat, typeof(TimeSpan).Name);
             }
@@ -24,7 +24,7 @@ namespace Flee.ExpressionElements.Literals
 
             Utility.EmitLoadLocalAddress(ilg, index);
 
-            LiteralElement.EmitLoad(_myValue.Ticks, ilg);
+            LiteralElement.EmitLoad(_value.Ticks, ilg);
 
             ConstructorInfo ci = typeof(TimeSpan).GetConstructor(new Type[] { typeof(long) });
 

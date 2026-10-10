@@ -8,18 +8,18 @@ namespace Flee.ExpressionElements.Literals.Integral
     internal class Int64LiteralElement : IntegralLiteralElement
     {
 
-        private Int64 _myValue;
+        private Int64 _value;
         private const string MinValue = "9223372036854775808";
 
-        private readonly bool _myIsMinValue;
+        private readonly bool _isMinValue;
         public Int64LiteralElement(Int64 value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         private Int64LiteralElement()
         {
-            _myIsMinValue = true;
+            _isMinValue = true;
         }
 
         public static Int64LiteralElement TryCreate(string image, bool isHex, bool negated)
@@ -62,18 +62,18 @@ namespace Flee.ExpressionElements.Literals.Integral
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            EmitLoad(_myValue, ilg);
+            EmitLoad(_value, ilg);
         }
 
         public void Negate()
         {
-            if (_myIsMinValue == true)
+            if (_isMinValue == true)
             {
-                _myValue = Int64.MinValue;
+                _value = Int64.MinValue;
             }
             else
             {
-                _myValue = -_myValue;
+                _value = -_value;
             }
         }
 

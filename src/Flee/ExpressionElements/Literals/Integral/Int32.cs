@@ -8,17 +8,17 @@ namespace Flee.ExpressionElements.Literals.Integral
 {
     internal class Int32LiteralElement : IntegralLiteralElement
     {
-        private Int32 _myValue;
+        private Int32 _value;
         private const string MinValue = "2147483648";
-        private readonly bool _myIsMinValue;
+        private readonly bool _isMinValue;
         public Int32LiteralElement(Int32 value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         private Int32LiteralElement()
         {
-            _myIsMinValue = true;
+            _isMinValue = true;
         }
 
         public static Int32LiteralElement TryCreate(string image, bool isHex, bool negated)
@@ -62,23 +62,23 @@ namespace Flee.ExpressionElements.Literals.Integral
 
         public void Negate()
         {
-            if (_myIsMinValue == true)
+            if (_isMinValue == true)
             {
-                _myValue = Int32.MinValue;
+                _value = Int32.MinValue;
             }
             else
             {
-                _myValue = -_myValue;
+                _value = -_value;
             }
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            EmitLoad(_myValue, ilg);
+            EmitLoad(_value, ilg);
         }
 
         public override System.Type ResultType => typeof(Int32);
 
-        public int Value => _myValue;
+        public int Value => _value;
     }
 }

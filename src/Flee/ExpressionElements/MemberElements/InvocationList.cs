@@ -9,13 +9,13 @@ namespace Flee.ExpressionElements.MemberElements
 {
     internal class InvocationListElement : ExpressionElement
     {
-        private readonly MemberElement _myTail;
+        private readonly MemberElement _tail;
         public InvocationListElement(IList elements, IServiceProvider services)
         {
             this.HandleFirstElement(elements, services);
             LinkElements(elements);
             Resolve(elements, services);
-            _myTail = (MemberElement)elements[elements.Count - 1];
+            _tail = (MemberElement)elements[elements.Count - 1];
         }
 
         /// <summary>
@@ -112,9 +112,9 @@ namespace Flee.ExpressionElements.MemberElements
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            _myTail.Emit(ilg, services);
+            _tail.Emit(ilg, services);
         }
 
-        public override System.Type ResultType => _myTail.ResultType;
+        public override System.Type ResultType => _tail.ResultType;
     }
 }

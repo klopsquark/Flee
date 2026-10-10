@@ -6,20 +6,20 @@ namespace Flee.InternalTypes
 {
     internal class FleeILGenerator
     {
-        private ILGenerator _myIlGenerator;
-        private int _myLength;
-        private int _myLabelCount;
+        private ILGenerator _ilGenerator;
+        private int _length;
+        private int _labelCount;
         private readonly Dictionary<Type, LocalBuilder> _localBuilderTemp;
-        private int _myPass;
+        private int _pass;
         private int _brContext;
         private BranchManager _bm;
 
         public FleeILGenerator(ILGenerator ilg)
         {
-            _myIlGenerator = ilg;
+            _ilGenerator = ilg;
             _localBuilderTemp = new Dictionary<Type, LocalBuilder>();
-            _myLength = 0;
-            _myPass = 1;
+            _length = 0;
+            _pass = 1;
             _bm = new BranchManager();
         }
 
@@ -29,7 +29,7 @@ namespace Flee.InternalTypes
 
             if (_localBuilderTemp.TryGetValue(localType, out local) == false)
             {
-                local = _myIlGenerator.DeclareLocal(localType);
+                local = _ilGenerator.DeclareLocal(localType);
                 _localBuilderTemp.Add(localType, local);
             }
 
@@ -55,98 +55,98 @@ namespace Flee.InternalTypes
         {
             _bm.ComputeBranches();
             _localBuilderTemp.Clear();
-            _myIlGenerator = ilg;
-            _myLength = 0;
-            _myPass++;
+            _ilGenerator = ilg;
+            _length = 0;
+            _pass++;
         }
 
         public void Emit(OpCode op)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op);
+            _ilGenerator.Emit(op);
         }
 
         public void Emit(OpCode op, Type arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, ConstructorInfo arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, MethodInfo arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, FieldInfo arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, byte arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, sbyte arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, short arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, int arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, long arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, float arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, double arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, string arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void Emit(OpCode op, Label arg)
         {
             this.RecordOpcode(op);
-            _myIlGenerator.Emit(op, arg);
+            _ilGenerator.Emit(op, arg);
         }
 
         public void EmitBranch(Label arg)
         {
-            if (_myPass == 1)
+            if (_pass == 1)
             {
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Br_S, arg);
@@ -163,7 +163,7 @@ namespace Flee.InternalTypes
 
         public void EmitBranchFalse(Label arg)
         {
-            if (_myPass == 1)
+            if (_pass == 1)
             {
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Brfalse_S, arg);
@@ -180,7 +180,7 @@ namespace Flee.InternalTypes
 
         public void EmitBranchTrue(Label arg)
         {
-            if (_myPass == 1)
+            if (_pass == 1)
             {
                 _bm.AddBranch(this, arg);
                 Emit(OpCodes.Brtrue_S, arg);
@@ -197,29 +197,29 @@ namespace Flee.InternalTypes
 
         public void MarkLabel(Label lbl)
         {
-            _myIlGenerator.MarkLabel(lbl);
+            _ilGenerator.MarkLabel(lbl);
             _bm.MarkLabel(this, lbl);
         }
 
 
         public Label DefineLabel()
         {
-            _myLabelCount += 1;
-            var label = _myIlGenerator.DefineLabel();
+            _labelCount += 1;
+            var label = _ilGenerator.DefineLabel();
             return label;
         }
 
 
         public LocalBuilder DeclareLocal(Type localType)
         {
-            return _myIlGenerator.DeclareLocal(localType);
+            return _ilGenerator.DeclareLocal(localType);
         }
 
         private void RecordOpcode(OpCode op)
         {
             //Trace.WriteLine(String.Format("{0:x}: {1}", MyLength, op.Name))
             int operandLength = GetOpcodeOperandSize(op.OperandType);
-            _myLength += op.Size + operandLength;
+            _length += op.Size + operandLength;
         }
 
         private static int GetOpcodeOperandSize(OperandType operand)
@@ -260,10 +260,10 @@ namespace Flee.InternalTypes
             Debug.Assert(this.Length == this.ILGeneratorLength, "ILGenerator length mismatch");
         }
 
-        public int Length => _myLength;
+        public int Length => _length;
 
-        public int LabelCount => _myLabelCount;
+        public int LabelCount => _labelCount;
 
-        private int ILGeneratorLength => Utility.GetILGeneratorLength(_myIlGenerator);
+        private int ILGeneratorLength => Utility.GetILGeneratorLength(_ilGenerator);
     }
 }

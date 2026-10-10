@@ -5,16 +5,16 @@ namespace Flee.PublicTypes
 {
     public class ExpressionParserOptions
     {
-        private PropertyDictionary _myProperties;
-        private readonly ExpressionContext _myOwner;
-        private readonly CultureInfo _myParseCulture;
+        private PropertyDictionary _properties;
+        private readonly ExpressionContext _owner;
+        private readonly CultureInfo _parseCulture;
 
         private NumberStyles NumberStyles = NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.None;
         internal ExpressionParserOptions(ExpressionContext owner)
         {
-            _myOwner = owner;
-            _myProperties = new PropertyDictionary();
-            _myParseCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            _owner = owner;
+            _properties = new PropertyDictionary();
+            _parseCulture = (CultureInfo)CultureInfo.InvariantCulture.Clone();
             this.InitializeProperties();
         }
 
@@ -22,7 +22,7 @@ namespace Flee.PublicTypes
 
         public void RecreateParser()
         {
-            _myOwner.RecreateParser();
+            _owner.RecreateParser();
         }
 
         #endregion
@@ -32,23 +32,23 @@ namespace Flee.PublicTypes
         internal ExpressionParserOptions Clone()
         {
             ExpressionParserOptions copy = (ExpressionParserOptions)this.MemberwiseClone();
-            copy._myProperties = _myProperties.Clone();
+            copy._properties = _properties.Clone();
             return copy;
         }
 
         internal double ParseDouble(string image)
         {
-            return double.Parse(image, NumberStyles, _myParseCulture);
+            return double.Parse(image, NumberStyles, _parseCulture);
         }
 
         internal float ParseSingle(string image)
         {
-            return float.Parse(image, NumberStyles, _myParseCulture);
+            return float.Parse(image, NumberStyles, _parseCulture);
         }
 
         internal decimal ParseDecimal(string image)
         {
-            return decimal.Parse(image, NumberStyles, _myParseCulture);
+            return decimal.Parse(image, NumberStyles, _parseCulture);
         }
         #endregion
 
@@ -68,30 +68,30 @@ namespace Flee.PublicTypes
 
         public string DateTimeFormat
         {
-            get { return _myProperties.GetValue<string>("DateTimeFormat"); }
-            set { _myProperties.SetValue("DateTimeFormat", value); }
+            get { return _properties.GetValue<string>("DateTimeFormat"); }
+            set { _properties.SetValue("DateTimeFormat", value); }
         }
 
         public bool RequireDigitsBeforeDecimalPoint
         {
-            get { return _myProperties.GetValue<bool>("RequireDigitsBeforeDecimalPoint"); }
-            set { _myProperties.SetValue("RequireDigitsBeforeDecimalPoint", value); }
+            get { return _properties.GetValue<bool>("RequireDigitsBeforeDecimalPoint"); }
+            set { _properties.SetValue("RequireDigitsBeforeDecimalPoint", value); }
         }
 
         public char DecimalSeparator
         {
-            get { return _myProperties.GetValue<char>("DecimalSeparator"); }
+            get { return _properties.GetValue<char>("DecimalSeparator"); }
             set
             {
-                _myProperties.SetValue("DecimalSeparator", value);
-                _myParseCulture.NumberFormat.NumberDecimalSeparator = value.ToString();
+                _properties.SetValue("DecimalSeparator", value);
+                _parseCulture.NumberFormat.NumberDecimalSeparator = value.ToString();
             }
         }
 
         public char FunctionArgumentSeparator
         {
-            get { return _myProperties.GetValue<char>("FunctionArgumentSeparator"); }
-            set { _myProperties.SetValue("FunctionArgumentSeparator", value); }
+            get { return _properties.GetValue<char>("FunctionArgumentSeparator"); }
+            set { _properties.SetValue("FunctionArgumentSeparator", value); }
         }
 
         #endregion

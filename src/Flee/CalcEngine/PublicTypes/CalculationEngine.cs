@@ -9,11 +9,11 @@ namespace Flee.CalcEngine.PublicTypes
     public class CalculationEngine
     {
         #region "Fields"
-        private readonly DependencyManager<ExpressionResultPair> _myDependencies;
+        private readonly DependencyManager<ExpressionResultPair> _dependencies;
         /// <summary>
         /// Map of name to node
         /// </summary>
-        private readonly Dictionary<string, ExpressionResultPair> _myNameNodeMap;
+        private readonly Dictionary<string, ExpressionResultPair> _nameNodeMap;
         #endregion
 
         #region "Events"
@@ -23,8 +23,8 @@ namespace Flee.CalcEngine.PublicTypes
         #region "Constructor"
         public CalculationEngine()
         {
-            _myDependencies = new DependencyManager<ExpressionResultPair>(new PairEqualityComparer());
-            _myNameNodeMap = new Dictionary<string, ExpressionResultPair>(StringComparer.OrdinalIgnoreCase);
+            _dependencies = new DependencyManager<ExpressionResultPair>(new PairEqualityComparer());
+            _nameNodeMap = new Dictionary<string, ExpressionResultPair>(StringComparer.OrdinalIgnoreCase);
         }
         #endregion
 
@@ -34,10 +34,10 @@ namespace Flee.CalcEngine.PublicTypes
             GenericExpressionResultPair<int> pair = new GenericExpressionResultPair<int>();
             pair.SetName(headName);
 
-            if (_myNameNodeMap.ContainsKey(headName) == false)
+            if (_nameNodeMap.ContainsKey(headName) == false)
             {
-                _myDependencies.AddTail(pair);
-                _myNameNodeMap.Add(headName, pair);
+                _dependencies.AddTail(pair);
+                _nameNodeMap.Add(headName, pair);
             }
             else
             {
@@ -62,7 +62,7 @@ namespace Flee.CalcEngine.PublicTypes
         {
             Utility.AssertNotNull(tailName, "name");
             ExpressionResultPair pair = null;
-            _myNameNodeMap.TryGetValue(tailName, out pair);
+            _nameNodeMap.TryGetValue(tailName, out pair);
             return pair;
         }
 
@@ -98,7 +98,7 @@ namespace Flee.CalcEngine.PublicTypes
             // No roots supplied so get everything
             if (roots.Length == 0)
             {
-                return _myDependencies.GetTails();
+                return _dependencies.GetTails();
             }
 
             // Get the tail for each name
@@ -126,9 +126,9 @@ namespace Flee.CalcEngine.PublicTypes
             pair.SetName(headName);
             pair.SetExpression(expression);
 
-            ExpressionResultPair oldPair = _myNameNodeMap[headName];
-            _myDependencies.ReplaceDependency(oldPair, pair);
-            _myNameNodeMap[headName] = pair;
+            ExpressionResultPair oldPair = _nameNodeMap[headName];
+            _dependencies.ReplaceDependency(oldPair, pair);
+            _nameNodeMap[headName] = pair;
 
             // Let the pair store the result of its expression
             pair.Recalculate();
@@ -146,7 +146,7 @@ namespace Flee.CalcEngine.PublicTypes
             ExpressionResultPair actualHead = this.GetTail(headName);
 
             // An expression could depend on the same reference more than once (ie: "a + a * a")
-            _myDependencies.AddDepedency(actualTail, actualHead);
+            _dependencies.AddDepedency(actualTail, actualHead);
         }
 
         internal Type ResolveTailType(string tailName)
@@ -157,7 +157,7 @@ namespace Flee.CalcEngine.PublicTypes
 
         internal bool HasTail(string tailName)
         {
-            return _myNameNodeMap.ContainsKey(tailName);
+            return _nameNodeMap.ContainsKey(tailName);
         }
 
         internal void EmitLoad(string tailName, FleeILGenerator ilg)
@@ -211,12 +211,12 @@ namespace Flee.CalcEngine.PublicTypes
                 return false;
             }
 
-            ExpressionResultPair[] dependents = _myDependencies.GetDependents(tail);
-            _myDependencies.Remove(dependents);
+            ExpressionResultPair[] dependents = _dependencies.GetDependents(tail);
+            _dependencies.Remove(dependents);
 
             foreach (ExpressionResultPair pair in dependents)
             {
-                _myNameNodeMap.Remove(pair.Name);
+                _nameNodeMap.Remove(pair.Name);
             }
 
             return true;
@@ -277,7 +277,7 @@ namespace Flee.CalcEngine.PublicTypes
 
             if ((pair != null))
             {
-                _myDependencies.GetDirectDependents(pair, dependents);
+                _dependencies.GetDirectDependents(pair, dependents);
             }
 
             return this.GetNames(dependents);
@@ -290,7 +290,7 @@ namespace Flee.CalcEngine.PublicTypes
 
             if ((pair != null))
             {
-                _myDependencies.GetDirectPrecedents(pair, dependents);
+                _dependencies.GetDirectPrecedents(pair, dependents);
             }
 
             return this.GetNames(dependents);
@@ -299,19 +299,19 @@ namespace Flee.CalcEngine.PublicTypes
         public bool HasDependents(string name)
         {
             ExpressionResultPair pair = this.GetTail(name);
-            return (pair != null) && _myDependencies.HasDependents(pair);
+            return (pair != null) && _dependencies.HasDependents(pair);
         }
 
         public bool HasPrecedents(string name)
         {
             ExpressionResultPair pair = this.GetTail(name);
-            return (pair != null) && _myDependencies.HasPrecedents(pair);
+            return (pair != null) && _dependencies.HasPrecedents(pair);
         }
 
         public bool Contains(string name)
         {
             Utility.AssertNotNull(name, "name");
-            return _myNameNodeMap.ContainsKey(name);
+            return _nameNodeMap.ContainsKey(name);
         }
 
         public void Recalculate(params string[] roots)
@@ -319,7 +319,7 @@ namespace Flee.CalcEngine.PublicTypes
             // Get the tails corresponding to the names
             ExpressionResultPair[] rootTails = this.GetRootTails(roots);
             // Create a dependency list based on the tails
-            DependencyManager<ExpressionResultPair> tempDependents = _myDependencies.CloneDependents(rootTails);
+            DependencyManager<ExpressionResultPair> tempDependents = _dependencies.CloneDependents(rootTails);
             // Get the sources (ie: nodes with no incoming edges) since that's what the sort requires
             Queue<ExpressionResultPair> sources = tempDependents.GetSources(rootTails);
             // Do the topological sort
@@ -341,8 +341,8 @@ namespace Flee.CalcEngine.PublicTypes
 
         public void Clear()
         {
-            _myDependencies.Clear();
-            _myNameNodeMap.Clear();
+            _dependencies.Clear();
+            _nameNodeMap.Clear();
         }
 
         #endregion
@@ -350,12 +350,12 @@ namespace Flee.CalcEngine.PublicTypes
         #region "Properties - Public"
         public int Count
         {
-            get { return _myDependencies.Count; }
+            get { return _dependencies.Count; }
         }
 
         public string DependencyGraph
         {
-            get { return _myDependencies.DependencyGraph; }
+            get { return _dependencies.DependencyGraph; }
         }
         #endregion
     }

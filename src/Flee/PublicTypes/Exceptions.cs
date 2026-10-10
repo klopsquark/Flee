@@ -23,33 +23,33 @@ namespace Flee.PublicTypes
     [Serializable()]
     public sealed class ExpressionCompileException : Exception
     {
-        private readonly CompileExceptionReason _myReason;
+        private readonly CompileExceptionReason _reason;
         internal ExpressionCompileException(string message, CompileExceptionReason reason) : base(message)
         {
-            _myReason = reason;
+            _reason = reason;
         }
 
         internal ExpressionCompileException(ParserLogException parseException) : base(string.Empty, parseException)
         {
-            _myReason = CompileExceptionReason.SyntaxError;
+            _reason = CompileExceptionReason.SyntaxError;
         }
 
         private ExpressionCompileException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
         {
-            _myReason = (CompileExceptionReason)info.GetInt32("Reason");
+            _reason = (CompileExceptionReason)info.GetInt32("Reason");
         }
 
         public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("Reason", Convert.ToInt32(_myReason));
+            info.AddValue("Reason", Convert.ToInt32(_reason));
         }
 
         public override string Message
         {
             get
             {
-                if (_myReason == CompileExceptionReason.SyntaxError)
+                if (_reason == CompileExceptionReason.SyntaxError)
                 {
                     Exception innerEx = this.InnerException;
                     string msg = $"{Utility.GetCompileErrorMessage(CompileErrorResourceKeys.SyntaxError)}: {innerEx.Message}";
@@ -62,6 +62,6 @@ namespace Flee.PublicTypes
             }
         }
 
-        public CompileExceptionReason Reason => _myReason;
+        public CompileExceptionReason Reason => _reason;
     }
 }

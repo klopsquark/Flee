@@ -29,10 +29,10 @@ namespace Flee.ExpressionElements.LogicalBitwise
         {
             Type resultType = this.ResultType;
 
-            MyLeftChild.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(MyLeftChild.ResultType, resultType, ilg);
-            MyRightChild.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(MyRightChild.ResultType, resultType, ilg);
+            LeftChild.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(LeftChild.ResultType, resultType, ilg);
+            RightChild.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(RightChild.ResultType, resultType, ilg);
             ilg.Emit(OpCodes.Xor);
         }
 

@@ -12,9 +12,9 @@ namespace Flee.ExpressionElements.Base
     internal abstract class BinaryExpressionElement : ExpressionElement
     {
 
-        protected ExpressionElement MyLeftChild;
-        protected ExpressionElement MyRightChild;
-        private Type _myResultType;
+        protected ExpressionElement LeftChild;
+        protected ExpressionElement RightChild;
+        private Type _resultType;
 
         protected BinaryExpressionElement()
         {
@@ -47,18 +47,18 @@ namespace Flee.ExpressionElements.Base
 
         protected void ValidateInternal(object op)
         {
-            _myResultType = this.GetResultType(MyLeftChild.ResultType, MyRightChild.ResultType);
+            _resultType = this.GetResultType(LeftChild.ResultType, RightChild.ResultType);
 
-            if (_myResultType == null)
+            if (_resultType == null)
             {
-                this.ThrowOperandTypeMismatch(op, MyLeftChild.ResultType, MyRightChild.ResultType);
+                this.ThrowOperandTypeMismatch(op, LeftChild.ResultType, RightChild.ResultType);
             }
         }
 
         protected MethodInfo GetOverloadedBinaryOperator(string name, object operation)
         {
-            Type leftType = MyLeftChild.ResultType;
-            Type rightType = MyRightChild.ResultType;
+            Type leftType = LeftChild.ResultType;
+            Type rightType = RightChild.ResultType;
             BinaryOperatorBinder binder = new BinaryOperatorBinder(leftType, rightType);
 
             // If both arguments are of the same type, pick either as the owner type
@@ -106,8 +106,8 @@ namespace Flee.ExpressionElements.Base
             ParameterInfo pLeft = @params[0];
             ParameterInfo pRight = @params[1];
 
-            EmitChildWithConvert(MyLeftChild, pLeft.ParameterType, ilg, services);
-            EmitChildWithConvert(MyRightChild, pRight.ParameterType, ilg, services);
+            EmitChildWithConvert(LeftChild, pLeft.ParameterType, ilg, services);
+            EmitChildWithConvert(RightChild, pRight.ParameterType, ilg, services);
             ilg.Emit(OpCodes.Call, method);
         }
 
@@ -127,12 +127,12 @@ namespace Flee.ExpressionElements.Base
 
         protected bool AreBothChildrenOfType(Type target)
         {
-            return IsChildOfType(MyLeftChild, target) & IsChildOfType(MyRightChild, target);
+            return IsChildOfType(LeftChild, target) & IsChildOfType(RightChild, target);
         }
 
         protected bool IsEitherChildOfType(Type target)
         {
-            return IsChildOfType(MyLeftChild, target) || IsChildOfType(MyRightChild, target);
+            return IsChildOfType(LeftChild, target) || IsChildOfType(RightChild, target);
         }
 
         protected static bool IsChildOfType(ExpressionElement child, Type t)
@@ -148,13 +148,13 @@ namespace Flee.ExpressionElements.Base
         /// <param name="op"></param>
         private void Configure(ExpressionElement leftChild, ExpressionElement rightChild, object op)
         {
-            MyLeftChild = leftChild;
-            MyRightChild = rightChild;
+            LeftChild = leftChild;
+            RightChild = rightChild;
             this.GetOperation(op);
 
             this.ValidateInternal(op);
         }
 
-        public sealed override System.Type ResultType => _myResultType;
+        public sealed override System.Type ResultType => _resultType;
     }
 }

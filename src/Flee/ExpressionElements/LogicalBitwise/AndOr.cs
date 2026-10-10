@@ -8,10 +8,10 @@ namespace Flee.ExpressionElements.LogicalBitwise
 {
     internal class AndOrElement : BinaryExpressionElement
     {
-        private AndOrOperation _myOperation;
-        private static readonly object OurTrueTerminalKey = new object();
-        private static readonly object OurFalseTerminalKey = new object();
-        private static readonly object OurEndLabelKey = new object();
+        private AndOrOperation _operation;
+        private static readonly object TrueTerminalKey = new object();
+        private static readonly object FalseTerminalKey = new object();
+        private static readonly object EndLabelKey = new object();
 
         public void New()
         {
@@ -19,7 +19,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
 
         protected override void GetOperation(object operation)
         {
-            _myOperation = (AndOrOperation)operation;
+            _operation = (AndOrOperation)operation;
         }
 
         protected override System.Type GetResultType(System.Type leftType, System.Type rightType)
@@ -49,11 +49,11 @@ namespace Flee.ExpressionElements.LogicalBitwise
             }
             else
             {
-                MyLeftChild.Emit(ilg, services);
-                ImplicitConverter.EmitImplicitConvert(MyLeftChild.ResultType, resultType, ilg);
-                MyRightChild.Emit(ilg, services);
-                ImplicitConverter.EmitImplicitConvert(MyRightChild.ResultType, resultType, ilg);
-                EmitBitwiseOperation(ilg, _myOperation);
+                LeftChild.Emit(ilg, services);
+                ImplicitConverter.EmitImplicitConvert(LeftChild.ResultType, resultType, ilg);
+                RightChild.Emit(ilg, services);
+                ImplicitConverter.EmitImplicitConvert(RightChild.ResultType, resultType, ilg);
+                EmitBitwiseOperation(ilg, _operation);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
         private static void EmitBranch(AndOrElement op, FleeILGenerator ilg, Label target, ShortCircuitInfo info)
         {
             // Get the branch opcode
-            if (op._myOperation == AndOrOperation.And)
+            if (op._operation == AndOrOperation.And)
                 ilg.EmitBranchFalse(target);
             else
                 ilg.EmitBranchTrue(target);
@@ -178,7 +178,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
                 AndOrElement top = (AndOrElement)cloneOperators.Pop();
 
                 // Is is a different operation?
-                if (top._myOperation != current._myOperation)
+                if (top._operation != current._operation)
                 {
                     // Yes, so return a label to its right operand
                     object nextOperand = cloneOperands.Pop();
@@ -192,19 +192,19 @@ namespace Flee.ExpressionElements.LogicalBitwise
             }
 
             // We've reached the end of the stack so return the label for the appropriate true/false terminal
-            if (current._myOperation == AndOrOperation.And)
+            if (current._operation == AndOrOperation.And)
             {
-                return GetLabel(OurFalseTerminalKey, ilg, info);
+                return GetLabel(FalseTerminalKey, ilg, info);
             }
             else
             {
-                return GetLabel(OurTrueTerminalKey, ilg, info);
+                return GetLabel(TrueTerminalKey, ilg, info);
             }
         }
 
         private void PopRightChild(Stack operands, Stack operators)
         {
-            AndOrElement andOrChild = MyRightChild as AndOrElement;
+            AndOrElement andOrChild = RightChild as AndOrElement;
 
             // What kind of child do we have?
             if ((andOrChild != null))
@@ -228,7 +228,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
         {
             operators.Pop();
 
-            AndOrElement andOrChild = MyLeftChild as AndOrElement;
+            AndOrElement andOrChild = LeftChild as AndOrElement;
             if (andOrChild == null)
             {
                 operands.Pop();
@@ -238,7 +238,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
                 andOrChild.Pop(operands, operators);
             }
 
-            andOrChild = MyRightChild as AndOrElement;
+            andOrChild = RightChild as AndOrElement;
 
             if (andOrChild == null)
             {
@@ -273,9 +273,9 @@ namespace Flee.ExpressionElements.LogicalBitwise
         private static void EmitTerminals(ShortCircuitInfo info, FleeILGenerator ilg, Label endLabel)
         {
             // Emit the false case if it was used
-            if (info.HasLabel(OurFalseTerminalKey) == true)
+            if (info.HasLabel(FalseTerminalKey) == true)
             {
-                Label falseLabel = info.FindLabel(OurFalseTerminalKey);
+                Label falseLabel = info.FindLabel(FalseTerminalKey);
 
                 // Mark the label and note its position
                 ilg.MarkLabel(falseLabel);
@@ -283,7 +283,7 @@ namespace Flee.ExpressionElements.LogicalBitwise
                 ilg.Emit(OpCodes.Ldc_I4_0);
 
                 // If we also have a true terminal, then skip over it
-                if (info.HasLabel(OurTrueTerminalKey) == true)
+                if (info.HasLabel(TrueTerminalKey) == true)
                 {
                     // only 1-3 opcodes, always a short branch
                     ilg.Emit(OpCodes.Br_S, endLabel);
@@ -291,9 +291,9 @@ namespace Flee.ExpressionElements.LogicalBitwise
             }
 
             // Emit the true case if it was used
-            if (info.HasLabel(OurTrueTerminalKey) == true)
+            if (info.HasLabel(TrueTerminalKey) == true)
             {
-                Label trueLabel = info.FindLabel(OurTrueTerminalKey);
+                Label trueLabel = info.FindLabel(TrueTerminalKey);
 
                 // Mark the label and note its position
                 ilg.MarkLabel(trueLabel);
@@ -317,11 +317,11 @@ namespace Flee.ExpressionElements.LogicalBitwise
         private void PopulateData(ShortCircuitInfo info)
         {
             // Is our right child a leaf or another And/Or expression?
-            AndOrElement andOrChild = MyRightChild as AndOrElement;
+            AndOrElement andOrChild = RightChild as AndOrElement;
             if (andOrChild == null)
             {
                 // Leaf so push it on the stack
-                info.Operands.Push(MyRightChild);
+                info.Operands.Push(RightChild);
             }
             else
             {
@@ -333,11 +333,11 @@ namespace Flee.ExpressionElements.LogicalBitwise
             info.Operators.Push(this);
 
             // Do the same thing for the left child
-            andOrChild = MyLeftChild as AndOrElement;
+            andOrChild = LeftChild as AndOrElement;
 
             if (andOrChild == null)
             {
-                info.Operands.Push(MyLeftChild);
+                info.Operands.Push(LeftChild);
             }
             else
             {

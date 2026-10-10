@@ -6,23 +6,23 @@ namespace Flee.ExpressionElements.Base
     internal abstract class UnaryElement : ExpressionElement
     {
 
-        protected ExpressionElement MyChild;
+        protected ExpressionElement Child;
 
-        private Type _myResultType;
+        private Type _resultType;
         public void SetChild(ExpressionElement child)
         {
-            MyChild = child;
-            _myResultType = this.GetResultType(child.ResultType);
+            Child = child;
+            _resultType = this.GetResultType(child.ResultType);
 
-            if (_myResultType == null)
+            if (_resultType == null)
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.OperationNotDefinedForType, CompileExceptionReason.TypeMismatch, MyChild.ResultType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.OperationNotDefinedForType, CompileExceptionReason.TypeMismatch, Child.ResultType.Name);
             }
         }
 
         protected abstract Type GetResultType(Type childType);
 
-        public override System.Type ResultType => _myResultType;
+        public override System.Type ResultType => _resultType;
     }
 
 }

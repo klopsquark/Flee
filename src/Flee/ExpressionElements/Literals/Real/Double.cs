@@ -8,7 +8,7 @@ namespace Flee.ExpressionElements.Literals.Real
 {
     internal class DoubleLiteralElement : RealLiteralElement
     {
-        private readonly double _myValue;
+        private readonly double _value;
 
         private DoubleLiteralElement()
         {
@@ -16,7 +16,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
         public DoubleLiteralElement(double value)
         {
-            _myValue = value;
+            _value = value;
         }
 
         public static DoubleLiteralElement Parse(string image, IServiceProvider services)
@@ -45,7 +45,7 @@ namespace Flee.ExpressionElements.Literals.Real
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            ilg.Emit(OpCodes.Ldc_R8, _myValue);
+            ilg.Emit(OpCodes.Ldc_R8, _value);
         }
 
         public override System.Type ResultType => typeof(double);

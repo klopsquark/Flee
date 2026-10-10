@@ -8,33 +8,33 @@ namespace Flee.ExpressionElements
 {
     internal class ConditionalElement : ExpressionElement
     {
-        private readonly ExpressionElement _myCondition;
-        private readonly ExpressionElement _myWhenTrue;
-        private readonly ExpressionElement _myWhenFalse;
-        private readonly Type _myResultType;
+        private readonly ExpressionElement _condition;
+        private readonly ExpressionElement _whenTrue;
+        private readonly ExpressionElement _whenFalse;
+        private readonly Type _resultType;
         public ConditionalElement(ExpressionElement condition, ExpressionElement whenTrue, ExpressionElement whenFalse)
         {
-            _myCondition = condition;
-            _myWhenTrue = whenTrue;
-            _myWhenFalse = whenFalse;
+            _condition = condition;
+            _whenTrue = whenTrue;
+            _whenFalse = whenFalse;
 
-            if ((!object.ReferenceEquals(_myCondition.ResultType, typeof(bool))))
+            if ((!object.ReferenceEquals(_condition.ResultType, typeof(bool))))
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.FirstArgNotBoolean, CompileExceptionReason.TypeMismatch);
             }
 
             // The result type is the type that is common to the true/false operands
-            if (ImplicitConverter.EmitImplicitConvert(_myWhenFalse.ResultType, _myWhenTrue.ResultType, null) == true)
+            if (ImplicitConverter.EmitImplicitConvert(_whenFalse.ResultType, _whenTrue.ResultType, null) == true)
             {
-                _myResultType = _myWhenTrue.ResultType;
+                _resultType = _whenTrue.ResultType;
             }
-            else if (ImplicitConverter.EmitImplicitConvert(_myWhenTrue.ResultType, _myWhenFalse.ResultType, null) == true)
+            else if (ImplicitConverter.EmitImplicitConvert(_whenTrue.ResultType, _whenFalse.ResultType, null) == true)
             {
-                _myResultType = _myWhenFalse.ResultType;
+                _resultType = _whenFalse.ResultType;
             }
             else
             {
-                base.ThrowCompileException(CompileErrorResourceKeys.NeitherArgIsConvertibleToTheOther, CompileExceptionReason.TypeMismatch, _myWhenTrue.ResultType.Name, _myWhenFalse.ResultType.Name);
+                base.ThrowCompileException(CompileErrorResourceKeys.NeitherArgIsConvertibleToTheOther, CompileExceptionReason.TypeMismatch, _whenTrue.ResultType.Name, _whenFalse.ResultType.Name);
             }
         }
 
@@ -49,14 +49,14 @@ namespace Flee.ExpressionElements
             Label endLabel = ilg.DefineLabel();
 
             // Emit the condition
-            _myCondition.Emit(ilg, services);
+            _condition.Emit(ilg, services);
 
             // On false go to the false operand
             ilg.EmitBranchFalse(falseLabel);
 
             // Emit the true operand
-            _myWhenTrue.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(_myWhenTrue.ResultType, _myResultType, ilg);
+            _whenTrue.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(_whenTrue.ResultType, _resultType, ilg);
 
             // Jump to end
             ilg.EmitBranch(endLabel);
@@ -64,12 +64,12 @@ namespace Flee.ExpressionElements
             ilg.MarkLabel(falseLabel);
 
             // Emit the false operand
-            _myWhenFalse.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(_myWhenFalse.ResultType, _myResultType, ilg);
+            _whenFalse.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(_whenFalse.ResultType, _resultType, ilg);
             // Fall through to end
             ilg.MarkLabel(endLabel);
         }
 
-        public override System.Type ResultType => _myResultType;
+        public override System.Type ResultType => _resultType;
     }
 }

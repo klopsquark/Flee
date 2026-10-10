@@ -73,14 +73,14 @@ namespace Flee.InternalTypes
 
     internal class ExplicitOperatorMethodBinder : CustomBinder
     {
-        private readonly Type _myReturnType;
-        private readonly Type _myArgType;
+        private readonly Type _returnType;
+        private readonly Type _argType;
         private CustomBinder _customBinderImplementation;
 
         public ExplicitOperatorMethodBinder(Type returnType, Type argType)
         {
-            _myReturnType = returnType;
-            _myArgType = argType;
+            _returnType = returnType;
+            _argType = argType;
         }
 
         public override MethodBase BindToMethod(BindingFlags bindingAttr, MethodBase[] match, ref object[] args, ParameterModifier[] modifiers,
@@ -95,7 +95,7 @@ namespace Flee.InternalTypes
             {
                 ParameterInfo[] parameters = mi.GetParameters();
                 ParameterInfo firstParameter = parameters[0];
-                if (object.ReferenceEquals(firstParameter.ParameterType, _myArgType) & object.ReferenceEquals(mi.ReturnType, _myReturnType))
+                if (object.ReferenceEquals(firstParameter.ParameterType, _argType) & object.ReferenceEquals(mi.ReturnType, _returnType))
                 {
                     return mi;
                 }
@@ -107,14 +107,14 @@ namespace Flee.InternalTypes
     internal class BinaryOperatorBinder : CustomBinder
     {
 
-        private readonly Type _myLeftType;
-        private readonly Type _myRightType;
+        private readonly Type _leftType;
+        private readonly Type _rightType;
         private CustomBinder _customBinderImplementation;
 
         public BinaryOperatorBinder(Type leftType, Type rightType)
         {
-            _myLeftType = leftType;
-            _myRightType = rightType;
+            _leftType = leftType;
+            _rightType = rightType;
         }
 
         public override MethodBase BindToMethod(BindingFlags bindingAttr, MethodBase[] match, ref object[] args, ParameterModifier[] modifiers,
@@ -128,8 +128,8 @@ namespace Flee.InternalTypes
             foreach (MethodInfo mi in match)
             {
                 ParameterInfo[] parameters = mi.GetParameters();
-                bool leftValid = ImplicitConverter.EmitImplicitConvert(_myLeftType, parameters[0].ParameterType, null);
-                bool rightValid = ImplicitConverter.EmitImplicitConvert(_myRightType, parameters[1].ParameterType, null);
+                bool leftValid = ImplicitConverter.EmitImplicitConvert(_leftType, parameters[0].ParameterType, null);
+                bool rightValid = ImplicitConverter.EmitImplicitConvert(_rightType, parameters[1].ParameterType, null);
 
                 if (leftValid == true & rightValid == true)
                 {
@@ -149,13 +149,11 @@ namespace Flee.InternalTypes
     {
 
 
-        private static readonly DefaultExpressionOwner OurInstance = new DefaultExpressionOwner();
-
         private DefaultExpressionOwner()
         {
         }
 
-        public static object Instance => OurInstance;
+        public static object Instance { get; } = new DefaultExpressionOwner();
     }
 
     [Obsolete("Helper class to resolve overloads")]
@@ -164,44 +162,44 @@ namespace Flee.InternalTypes
         /// <summary>
         /// Method we are wrapping
         /// </summary>
-        private readonly MethodInfo _myTarget;
+        private readonly MethodInfo _target;
         /// <summary>
         /// The rating of how close the method matches the given arguments (0 is best)
         /// </summary>
-        private float _myScore;
+        private float _score;
         public bool IsParamArray;
-        public Type[] MyFixedArgTypes;
-        public Type[] MyParamArrayArgTypes;
+        public Type[] FixedArgTypes;
+        public Type[] ParamArrayArgTypes;
         public bool IsExtensionMethod;
         public Type ParamArrayElementType;
         public CustomMethodInfo(MethodInfo target)
         {
-            _myTarget = target;
+            _target = target;
         }
 
         public void ComputeScore(Type[] argTypes)
         {
-            ParameterInfo[] @params = _myTarget.GetParameters();
+            ParameterInfo[] @params = _target.GetParameters();
 
             if (@params.Length == 0)
             {
-                _myScore = 0.0F;
+                _score = 0.0F;
             }
             else if (@params.Length == 1 && argTypes.Length == 0)//extension method without parameter support -> prefer members
             {
-                _myScore = 0.1F;
+                _score = 0.1F;
             }
             else if (IsParamArray == true)
             {
-                _myScore = this.ComputeScoreForParamArray(@params, argTypes);
+                _score = this.ComputeScoreForParamArray(@params, argTypes);
             }
             else if (IsExtensionMethod == true)
             {
-                _myScore = this.ComputeScoreExtensionMethodInternal(@params, argTypes);
+                _score = this.ComputeScoreExtensionMethodInternal(@params, argTypes);
             }
             else
             {
-                _myScore = this.ComputeScoreInternal(@params, argTypes);
+                _score = this.ComputeScoreInternal(@params, argTypes);
             }
         }
 
@@ -260,13 +258,13 @@ namespace Flee.InternalTypes
 
             System.Array.Copy(parameters, fixedParameters, fixedParameterCount);
 
-            int fixedSum = ComputeSum(fixedParameters, MyFixedArgTypes);
+            int fixedSum = ComputeSum(fixedParameters, FixedArgTypes);
 
             Type paramArrayElementType = paramArrayParameter.ParameterType.GetElementType();
 
             int paramArraySum = 0;
 
-            foreach (Type argType in MyParamArrayArgTypes)
+            foreach (Type argType in ParamArrayArgTypes)
             {
                 paramArraySum += ImplicitConverter.GetImplicitConvertScore(argType, paramArrayElementType);
             }
@@ -288,7 +286,7 @@ namespace Flee.InternalTypes
 
         public bool IsAccessible(MemberElement owner)
         {
-            return owner.IsMemberAccessible(_myTarget);
+            return owner.IsMemberAccessible(_target);
         }
 
         /// <summary>
@@ -298,7 +296,7 @@ namespace Flee.InternalTypes
         /// <returns></returns>
         public bool IsMatch(Type[] argTypes, MemberElement previous, ExpressionContext context)
         {
-            ParameterInfo[] parameters = _myTarget.GetParameters();
+            ParameterInfo[] parameters = _target.GetParameters();
 
             // If there are no parameters and no arguments were passed, then we are a match.
             if (parameters.Length == 0 & argTypes.Length == 0)
@@ -386,8 +384,8 @@ namespace Flee.InternalTypes
                 }
             }
 
-            MyFixedArgTypes = fixedArgTypes;
-            MyParamArrayArgTypes = paramArrayArgTypes;
+            FixedArgTypes = fixedArgTypes;
+            ParamArrayArgTypes = paramArrayArgTypes;
 
             // They all match, so we are a match
             return true;
@@ -440,19 +438,19 @@ namespace Flee.InternalTypes
 
         public int CompareTo(CustomMethodInfo other)
         {
-            return _myScore.CompareTo(other._myScore);
+            return _score.CompareTo(other._score);
         }
 
         private bool Equals1(CustomMethodInfo other)
         {
-            return _myScore == other._myScore;
+            return _score == other._score;
         }
         bool System.IEquatable<CustomMethodInfo>.Equals(CustomMethodInfo other)
         {
             return Equals1(other);
         }
 
-        public MethodInfo Target => _myTarget;
+        public MethodInfo Target => _target;
     }
 
     internal class ShortCircuitInfo
@@ -495,37 +493,37 @@ namespace Flee.InternalTypes
     [Obsolete("Wraps an expression element so that it is loaded from a local slot")]
     internal class LocalBasedElement : ExpressionElement
     {
-        private readonly int _myIndex;
+        private readonly int _index;
 
-        private readonly ExpressionElement _myTarget;
+        private readonly ExpressionElement _target;
         public LocalBasedElement(ExpressionElement target, int index)
         {
-            _myTarget = target;
-            _myIndex = index;
+            _target = target;
+            _index = index;
         }
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            Utility.EmitLoadLocal(ilg, _myIndex);
+            Utility.EmitLoadLocal(ilg, _index);
         }
 
-        public override System.Type ResultType => _myTarget.ResultType;
+        public override System.Type ResultType => _target.ResultType;
     }
 
     [Obsolete("Helper class for storing strongly-typed properties")]
     internal class PropertyDictionary
     {
-        private readonly Dictionary<string, object> _myProperties;
+        private readonly Dictionary<string, object> _properties;
         public PropertyDictionary()
         {
-            _myProperties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            _properties = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         }
 
         public PropertyDictionary Clone()
         {
             PropertyDictionary copy = new PropertyDictionary();
 
-            foreach (KeyValuePair<string, object> pair in _myProperties)
+            foreach (KeyValuePair<string, object> pair in _properties)
             {
                 copy.SetValue(pair.Key, pair.Value);
             }
@@ -536,7 +534,7 @@ namespace Flee.InternalTypes
         public T GetValue<T>(string name)
         {
             object value = default(T);
-            if (_myProperties.TryGetValue(name, out value) == false)
+            if (_properties.TryGetValue(name, out value) == false)
             {
                 Debug.Fail($"Unknown property '{name}'");
             }
@@ -551,12 +549,12 @@ namespace Flee.InternalTypes
 
         public void SetValue(string name, object value)
         {
-            _myProperties[name] = value;
+            _properties[name] = value;
         }
 
         public bool Contains(string name)
         {
-            return _myProperties.ContainsKey(name);
+            return _properties.ContainsKey(name);
         }
     }
 }

@@ -38,8 +38,8 @@ namespace Flee.ExpressionElements
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
             Type resultType = this.ResultType;
-            MyChild.Emit(ilg, services);
-            ImplicitConverter.EmitImplicitConvert(MyChild.ResultType, resultType, ilg);
+            Child.Emit(ilg, services);
+            ImplicitConverter.EmitImplicitConvert(Child.ResultType, resultType, ilg);
 
             MethodInfo mi = Utility.GetSimpleOverloadedOperator("UnaryNegation", resultType, null);
 

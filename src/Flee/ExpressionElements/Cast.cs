@@ -10,25 +10,25 @@ namespace Flee.ExpressionElements
 {
     internal class CastElement : ExpressionElement
     {
-        private readonly ExpressionElement _myCastExpression;
-        private readonly Type _myDestType;
+        private readonly ExpressionElement _castExpression;
+        private readonly Type _destType;
         public CastElement(ExpressionElement castExpression, string[] destTypeParts, bool isArray, IServiceProvider services)
         {
-            _myCastExpression = castExpression;
+            _castExpression = castExpression;
 
-            _myDestType = GetDestType(destTypeParts, services);
+            _destType = GetDestType(destTypeParts, services);
 
-            if (_myDestType == null)
+            if (_destType == null)
             {
                 base.ThrowCompileException(CompileErrorResourceKeys.CouldNotResolveType, CompileExceptionReason.UndefinedName, GetDestTypeString(destTypeParts, isArray));
             }
 
             if (isArray == true)
             {
-                _myDestType = _myDestType.MakeArrayType();
+                _destType = _destType.MakeArrayType();
             }
 
-            if (this.IsValidCast(_myCastExpression.ResultType, _myDestType) == false)
+            if (this.IsValidCast(_castExpression.ResultType, _destType) == false)
             {
                 this.ThrowInvalidCastException();
             }
@@ -256,7 +256,7 @@ namespace Flee.ExpressionElements
 
         private void ThrowInvalidCastException()
         {
-            base.ThrowCompileException(CompileErrorResourceKeys.CannotConvertType, CompileExceptionReason.InvalidExplicitCast, _myCastExpression.ResultType.Name, _myDestType.Name);
+            base.ThrowCompileException(CompileErrorResourceKeys.CannotConvertType, CompileExceptionReason.InvalidExplicitCast, _castExpression.ResultType.Name, _destType.Name);
         }
 
         private static bool IsCastableNumericType(Type t)
@@ -278,10 +278,10 @@ namespace Flee.ExpressionElements
 
         public override void Emit(FleeILGenerator ilg, IServiceProvider services)
         {
-            _myCastExpression.Emit(ilg, services);
+            _castExpression.Emit(ilg, services);
 
-            Type sourceType = _myCastExpression.ResultType;
-            Type destType = _myDestType;
+            Type sourceType = _castExpression.ResultType;
+            Type destType = _destType;
 
             this.EmitCast(ilg, sourceType, destType, services);
         }
@@ -508,6 +508,6 @@ namespace Flee.ExpressionElements
             }
         }
 
-        public override System.Type ResultType => _myDestType;
+        public override System.Type ResultType => _destType;
     }
 }
