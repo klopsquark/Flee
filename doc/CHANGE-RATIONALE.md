@@ -53,6 +53,8 @@ Entry template:
 | R-016 | Benchmarks run on net6.0, net8.0 and net10.0 | build | Phase 3 |
 | R-017 | Nullable reference types off in the library | build | Phase 3 |
 | R-018 | .editorconfig describing the existing style | build | Phase 3 |
+| R-019 | Generated code no longer inlines Flee's helpers (.NET 10 first-call cost) | perf, fix | Phase 4 |
+| R-020 | Expected reasons in InvalidExpressions.txt updated | test | Phase 4 |
 
 ## Entries
 
@@ -356,3 +358,22 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none; the build output is identical (450 warnings, 0 errors).
 - **Verified:** full rebuild.
 - **Discussed:** not needed. Warnings as errors moves to the end of Phase 4.
+
+### R-020: Expected reasons in InvalidExpressions.txt updated
+
+- **Kind / phase:** test / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** The expected `CompileExceptionReason` on 63 lines of `InvalidExpressions.txt` is
+  changed to the reason the library reports today. The 63 matching entries (categories
+  `wrong-reason` and `script-error`) leave `KnownFailures.txt`. Every changed line, with the old
+  and new reason and why they differ, is listed in `doc/known-failures.md`, section "Expected
+  reasons updated in Phase 4". Line 333 had a result value (`200`) where the reason belongs.
+- **Why:** The original harness never compared these reasons, so the script had drifted from the
+  library. Every expression is still rejected; only the reported reason differs, and today's
+  reasons are reasonable (an unknown function is `UndefinedName`, a malformed `if` is a
+  `SyntaxError`). The library is unchanged.
+- **Behaviour:** none (test data only).
+- **Verified:** net8.0 and net10.0: 1,769 pass, 89 skipped (87 script known failures and 2
+  fixture tests), 0 fail.
+- **Discussed:** decided by the maintainer on 2026-10-10: update the script and document the
+  difference.
