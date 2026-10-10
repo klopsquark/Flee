@@ -81,6 +81,7 @@ Entry template:
 | R-044 | Warnings are errors | build | Phase 4 |
 | R-045 | cast(x, char) converts properly (and no longer throws after R-035) | fix | Phase 4 |
 | R-046 | Documentation examples run as tests | test | Phase 6 |
+| R-047 | API guide examples run as tests and are kept in sync | test | Phase 6 |
 
 ## Entries
 
@@ -903,4 +904,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none (test only).
 - **Verified:** all 124 examples pass on net8.0 and net10.0; changing one documented result makes
   the test fail.
+- **Discussed:** not needed (plan item).
+
+### R-047: API guide examples run as tests and are kept in sync
+
+- **Kind / phase:** test / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** Every C# example in `doc/api-guide.md` sits in a `#region doc:Name` of
+  `DocumentationTests/ApiGuideExamples.cs`, where it runs with assertions. `ApiGuideSyncTests`
+  reads both files from the test output (linked in `Flee.Test.csproj`) and fails if a guide block
+  and its region differ, or if either has no partner.
+- **Why:** Plan, Phase 6: documentation examples cannot go stale. Code examples need more than one
+  expression row, so they live as real test code and the guide is checked against it.
+- **Behaviour:** none (test only).
+- **Verified:** the 11 examples pass on net8.0 and net10.0; editing a line in the guide makes the
+  sync test fail. Writing them found that `AddMethod` by name throws `AmbiguousMatchException` for
+  overloaded methods, so the guide shows the `MethodInfo` overload.
 - **Discussed:** not needed (plan item).
