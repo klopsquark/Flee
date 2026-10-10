@@ -482,8 +482,26 @@ namespace Flee.ExpressionElements
                 case TypeCode.Single:
                     op = OpCodes.Conv_R4;
                     break;
+                case TypeCode.Char:
+                    // As for UInt16: a char is an unsigned 16-bit value. Upstream had no case here and
+                    // emitted no conversion at all (R-045).
+                    if (unsigned && @checked)
+                    {
+                        op = OpCodes.Conv_Ovf_U2_Un;
+                    }
+                    else if (@checked)
+                    {
+                        op = OpCodes.Conv_Ovf_U2;
+                    }
+                    else
+                    {
+                        op = OpCodes.Conv_U2;
+                    }
+                    break;
                 default:
-                    throw new InvalidOperationException("Flee internal error: unknown numeric cast destination type");
+                    // Other primitive targets (for example IntPtr) emit no conversion, as upstream did.
+                    // R-035 made this throw, which broke cast(x, char); reverted by R-045.
+                    break;
             }
 
             if (!op.Equals(OpCodes.Nop))

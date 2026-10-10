@@ -219,3 +219,7 @@ decimal;cast(100.25, decimal);100.25
 decimal;cast('a', decimal);97
 decimal;cast(-100, decimal);-100
 decimal;cast(bytea, decimal);50
+' Casts to char (added in Phase 4, R-045)
+char;cast(65, char);A
+char;cast(65L, char);A
+int32;cast(cast(65, char), int);65

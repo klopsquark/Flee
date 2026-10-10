@@ -79,6 +79,7 @@ Entry template:
 | R-042 | Keywords parse under the Turkish culture (upstream #105) | fix | Phase 4 |
 | R-043 | Overload resolution test records today's choices | test | Phase 4 |
 | R-044 | Warnings are errors | build | Phase 4 |
+| R-045 | cast(x, char) converts properly (and no longer throws after R-035) | fix | Phase 4 |
 
 ## Entries
 
@@ -863,3 +864,26 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Behaviour:** none in the library. A new warning now fails the build, locally and in CI.
 - **Verified:** full rebuild in Debug and Release: 0 errors, 2 warnings (NETSDK1138); tests green.
 - **Discussed:** not needed (plan item). Each exception points to its entry in `doc/deferred.md`.
+
+### R-045: cast(x, char) converts properly (and no longer throws after R-035)
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** The explicit numeric cast gets a case for `char`, emitting `conv.u2` (with the overflow
+  checking variants when `Checked` is on), as for `UInt16`. Its `default` branch emits no conversion
+  again instead of throwing.
+- **Why:** Writing the language reference turned up that `cast(65, char)` threw "Flee internal
+  error". Upstream had no `char` case; the `default` branch only asserted and emitted no
+  conversion, which happened to give the right character for small values but never truncated or
+  checked for overflow. R-035 assumed that default was unreachable and made it throw, which broke
+  the cast. That assumption was wrong for this one switch, so R-035's claim "only paths that were
+  already broken" does not hold here.
+- **Behaviour:** `cast(65, char)` is `'A'` again. Values outside the char range now wrap like C#'s
+  unchecked `(char)` cast, or raise `OverflowException` when `Checked` is on; upstream left them
+  unconverted.
+- **Verified:** six new script cases (three in `ValidCasts.txt`, three in `CheckedTests.txt`, all
+  appended at the end so earlier line numbers stay) fail without the fix and pass with it; full
+  suite green in Debug and Release on net8.0 and net10.0. The other 15 places R-035 changed were
+  probed with unusual operand types (shifts on `char` and `double`, `and` on mixed types, negating
+  unsigned values): type checking rejects them before the throwing branch is reached.
+- **Discussed:** not needed (bug fix, and a regression of this branch).

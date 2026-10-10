@@ -156,3 +156,7 @@ cast(9.2233720368547758E+18, ulong);true;false
 cast(1.8e+19, ulong);true;false
 cast(9.8e+19, ulong);true;true
 cast(-1.25, ulong);true;true
+' Casts to char (added in Phase 4, R-045)
+cast(70000, char);true;true
+cast(70000, char);false;false
+cast(-1, char);true;true
