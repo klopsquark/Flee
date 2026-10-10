@@ -39,14 +39,13 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "Comparing namespace imports that are not attached to a context")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure: NullReferenceException in NamespaceImport.EqualsInternal")]
         public void DetachedNamespaceImportsCanBeCompared()
         {
             var a = new NamespaceImport("a");
 
             Assert.IsFalse(a.Equals(new NamespaceImport("b")));
             Assert.IsTrue(a.Equals(new NamespaceImport("a")));
+            Assert.IsTrue(a.Equals(new NamespaceImport("A")), "case-insensitive, as Flee's default options");
         }
     }
 }

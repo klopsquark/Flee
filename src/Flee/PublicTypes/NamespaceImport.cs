@@ -102,9 +102,10 @@ namespace Flee.PublicTypes
         protected override bool EqualsInternal(ImportBase? import)
         {
             NamespaceImport? otherSameType = import as NamespaceImport;
-            // Assumes the import belongs to a context; on a detached NamespaceImport this throws
-            // NullReferenceException, as before.
-            return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, this.Context!.Options.MemberStringComparison);
+            // An import not yet attached to a context compares like Flee's default options,
+            // case-insensitively; it used to throw NullReferenceException (R-041).
+            StringComparison comparison = this.Context?.Options.MemberStringComparison ?? StringComparison.OrdinalIgnoreCase;
+            return (otherSameType != null) && _namespace.Equals(otherSameType._namespace, comparison);
         }
 
         public override bool IsContainer => true;

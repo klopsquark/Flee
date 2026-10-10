@@ -75,6 +75,7 @@ Entry template:
 | R-038 | Public API annotated for nullable reference types | api | Phase 4 |
 | R-039 | Unknown names in calculation-engine expressions are compile errors | fix | Phase 4 |
 | R-040 | A failed CalculationEngine.Add leaves nothing behind | fix | Phase 4 |
+| R-041 | Detached NamespaceImports can be compared | fix | Phase 4 |
 
 ## Entries
 
@@ -788,4 +789,19 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   caller sees is unchanged.
 - **Verified:** `FailedAddLeavesNoAtomBehind` failed before and passes now; circular-reference and
   batch-load tests and the full suite green.
+- **Discussed:** not needed (bug fix).
+
+### R-041: Detached NamespaceImports can be compared
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** 2303840 (pinning test), the commit that adds this entry
+- **What:** `NamespaceImport.EqualsInternal` uses the context's member string comparison when the
+  import is attached, and case-insensitive ordinal comparison (the comparison of Flee's default
+  options) when it is not.
+- **Why:** It dereferenced the context unconditionally, so `Equals`, and `Contains` or `Remove` on a
+  namespace with a `NamespaceImport` argument, threw `NullReferenceException` for imports not yet
+  added to a context. Found while annotating the public API (R-038).
+- **Behaviour:** comparing detached imports works; attached imports compare exactly as before.
+- **Verified:** `DetachedNamespaceImportsCanBeCompared` failed before and passes now; full suite
+  green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).
