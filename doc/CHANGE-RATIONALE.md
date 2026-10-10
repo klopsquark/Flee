@@ -67,6 +67,7 @@ Entry template:
 | R-030 | Comparisons with true and false removed | cleanup | Phase 4 |
 | R-031 | Converter TODO markers on loop exits checked and removed | cleanup | Phase 4 |
 | R-032 | Boolean & and \| replaced by && and \|\| | cleanup | Phase 4 |
+| R-033 | ArithmeticElement looks up its helper methods once | cleanup | Phase 4 |
 
 ## Entries
 
@@ -623,4 +624,21 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `&&` (needed nowhere).
 - **Behaviour:** none; right sides without side effects are now skipped when the left side decides.
 - **Verified:** tests green in Debug and Release on net8.0 and net10.0; warnings unchanged.
+- **Discussed:** not needed (plan item).
+
+### R-033: ArithmeticElement looks up its helper methods once
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** The three `MethodInfo` fields of `ArithmeticElement` (`Math.Pow` and two
+  `string.Concat` overloads) are `static readonly` and initialised once, instead of being
+  reassigned by every instance constructor.
+- **Why:** Plan item. Static fields written from an instance constructor are a race between
+  threads compiling expressions at the same time (harmless here, since every thread writes the
+  same value) and cost three reflection lookups for every arithmetic operator parsed. The plan
+  names this class; it is the only one in the library with that pattern.
+- **Behaviour:** none.
+- **Verified:** tests green; no benchmark run for this change alone (the saving is three
+  reflection lookups per `+`, `-`, `*`, `/`, `%` or `^` parsed, too small to separate from noise
+  in the stage benchmarks without a dedicated run).
 - **Discussed:** not needed (plan item).

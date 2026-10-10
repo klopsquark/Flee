@@ -11,17 +11,11 @@ namespace Flee.ExpressionElements
 {
     internal class ArithmeticElement : BinaryExpressionElement
     {
-        private static MethodInfo _powerMethodInfo;
-        private static MethodInfo _stringConcatMethodInfo;
-        private static MethodInfo _objectConcatMethodInfo;
+        // Looked up once per process, not in every constructor call (R-033).
+        private static readonly MethodInfo PowerMethodInfo = typeof(Math).GetMethod("Pow", BindingFlags.Public | BindingFlags.Static);
+        private static readonly MethodInfo StringConcatMethodInfo = typeof(string).GetMethod("Concat", new Type[] { typeof(string), typeof(string) }, null);
+        private static readonly MethodInfo ObjectConcatMethodInfo = typeof(string).GetMethod("Concat", new Type[] { typeof(object), typeof(object) }, null);
         private BinaryArithmeticOperation _operation;
-
-        public ArithmeticElement()
-        {
-            _powerMethodInfo = typeof(Math).GetMethod("Pow", BindingFlags.Public | BindingFlags.Static);
-            _stringConcatMethodInfo = typeof(string).GetMethod("Concat", new Type[] { typeof(string), typeof(string) }, null);
-            _objectConcatMethodInfo = typeof(string).GetMethod("Concat", new Type[] { typeof(object), typeof(object) }, null);
-        }
 
         protected override void GetOperation(object operation)
         {
@@ -226,7 +220,7 @@ namespace Flee.ExpressionElements
             }
             else
             {
-                ilg.Emit(OpCodes.Call, _powerMethodInfo);
+                ilg.Emit(OpCodes.Call, PowerMethodInfo);
             }
         }
 
@@ -291,13 +285,13 @@ namespace Flee.ExpressionElements
             // Pick the most specific concat method
             if (this.AreBothChildrenOfType(typeof(string)))
             {
-                concatMethodInfo = _stringConcatMethodInfo;
+                concatMethodInfo = StringConcatMethodInfo;
                 argType = typeof(string);
             }
             else
             {
                 Debug.Assert(this.IsEitherChildOfType(typeof(string)), "one child must be a string");
-                concatMethodInfo = _objectConcatMethodInfo;
+                concatMethodInfo = ObjectConcatMethodInfo;
                 argType = typeof(object);
             }
 
