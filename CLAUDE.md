@@ -30,6 +30,8 @@ These come from the plan and from the maintainer, and apply to every change.
   known-failures list.
 - **Do not touch the parser** (`src/Flee/Parsing`) before the first release. Parser and grammar
   experiments come afterwards, behind a switch that checks old and new against every script case.
+  The one approved exception so far is the Turkish keyword fix (R-042). Parser cleanup waits in
+  `doc/deferred.md` (D-03).
 - **Phase 5 (own adjustments) is on hold.** Do not start API changes or extensions.
 - **Licence:** LGPL 2.1 or later (`LICENSE`). Keep every existing copyright notice.
 - **`README.markdown` is upstream's README and stays untouched.** `README.md` is the fork's own.

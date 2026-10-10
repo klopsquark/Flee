@@ -27,7 +27,7 @@ namespace Flee.Parsing
 
             if (caseInsensitive)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             if (c < 128)
             {
@@ -68,7 +68,7 @@ namespace Flee.Parsing
             }
             if (caseInsensitive)
             {
-                c = Char.ToLower((char)c);
+                c = Char.ToLowerInvariant((char)c);
             }
             if (c < 128)
             {
@@ -150,7 +150,7 @@ namespace Flee.Parsing
         {
             if (lowerCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             if (_value == '\0' || _value == c)
             {
@@ -170,7 +170,7 @@ namespace Flee.Parsing
         {
             if (lowerCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             if (_value == '\0')
             {

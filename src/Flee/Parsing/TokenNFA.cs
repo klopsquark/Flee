@@ -185,8 +185,8 @@
                 {
                     state = new NFAState();
                 }
-                AddOut(new NFACharTransition(Char.ToLower(ch), state));
-                AddOut(new NFACharTransition(Char.ToUpper(ch), state));
+                AddOut(new NFACharTransition(Char.ToLowerInvariant(ch), state));
+                AddOut(new NFACharTransition(Char.ToUpperInvariant(ch), state));
                 return state;
             }
             else
@@ -433,7 +433,7 @@
         {
             if (IgnoreCase)
             {
-                c = Char.ToLower(c);
+                c = Char.ToLowerInvariant(c);
             }
             AddContent(c);
         }
@@ -442,8 +442,8 @@
         {
             if (IgnoreCase)
             {
-                min = Char.ToLower(min);
-                max = Char.ToLower(max);
+                min = Char.ToLowerInvariant(min);
+                max = Char.ToLowerInvariant(max);
             }
             AddContent(new Range(min, max));
         }
@@ -462,7 +462,7 @@
 
             if (IgnoreCase)
             {
-                ch = Char.ToLower(ch);
+                ch = Char.ToLowerInvariant(ch);
             }
             for (int i = 0; i < _contents.Length; i++)
             {

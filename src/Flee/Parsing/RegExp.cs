@@ -402,7 +402,7 @@ namespace Flee.Parsing
 
         private char FixChar(char c)
         {
-            return _ignoreCase ? Char.ToLower(c) : c;
+            return _ignoreCase ? Char.ToLowerInvariant(c) : c;
         }
 
         private int ReadNumber()

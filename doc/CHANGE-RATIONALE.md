@@ -76,6 +76,7 @@ Entry template:
 | R-039 | Unknown names in calculation-engine expressions are compile errors | fix | Phase 4 |
 | R-040 | A failed CalculationEngine.Add leaves nothing behind | fix | Phase 4 |
 | R-041 | Detached NamespaceImports can be compared | fix | Phase 4 |
+| R-042 | Keywords parse under the Turkish culture (upstream #105) | fix | Phase 4 |
 
 ## Entries
 
@@ -805,3 +806,22 @@ Recorded after the fact: these commits landed on `develop` before this file exis
 - **Verified:** `DetachedNamespaceImportsCanBeCompared` failed before and passes now; full suite
   green in Debug and Release on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).
+
+### R-042: Keywords parse under the Turkish culture (upstream #105)
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** the commit that adds this entry (the behaviour was pinned by `CultureTests` since
+  R-004)
+- **What:** the tokenizer's case-insensitive matching in `src/Flee/Parsing` (`Automaton`,
+  `CharacterSetElement`, `RegExp`, `StringElement`, `TokenNFA`, `TokenStringDFA`) uses
+  `Char.ToLowerInvariant`/`ToUpperInvariant` instead of the culture-sensitive `ToLower`/`ToUpper`.
+- **Why:** Under tr-TR, `Char.ToLower('I')` is the dotless `ı`, so upper-case keywords containing
+  an I (`IF`, `IN`, `NOT`...) did not match and failed with a syntax error. Keywords are ASCII; their
+  case folding must not depend on the user's culture.
+- **Behaviour:** upper-case keywords parse under every culture. Nothing changes for other cultures,
+  where invariant and culture lowercasing agree for the ASCII characters the grammar uses.
+- **Verified:** `CultureTests.TurkishCulture_UpperCaseKeywordsWithI_Parse` (formerly `..._FailToParse`,
+  which recorded the bug) now expects `IF`, `IN`, `NOT` and `AND` to work and passes; full suite
+  green in Debug and Release on net8.0 and net10.0.
+- **Discussed:** the parser is not touched before the release; this fix is the exception the
+  maintainer approved on 2026-10-10.

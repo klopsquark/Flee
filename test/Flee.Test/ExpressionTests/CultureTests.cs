@@ -65,22 +65,20 @@ namespace Flee.Test.ExpressionTests
         }
 
         /// <summary>
-        /// Known bug, upstream issue #105: keywords are lowercased with the current culture, so in
-        /// Turkish an upper-case "I" becomes a dotless "ı" and "IF" or "IN" no longer parse. Lower-case
-        /// keywords work. This test records today's behaviour; Phase 4 fixes it and flips the test.
+        /// Upstream issue #105: keywords were lowercased with the current culture, so in Turkish an
+        /// upper-case "I" became a dotless "ı" and "IF" or "IN" did not parse. Fixed in Phase 4 by
+        /// lowercasing with the invariant culture in the tokenizer (R-042).
         /// </summary>
         [Test]
         [SetCulture("tr-TR")]
-        public void TurkishCulture_UpperCaseKeywordsWithI_FailToParse()
+        public void TurkishCulture_UpperCaseKeywordsWithI_Parse()
         {
             ExpressionContext context = CreateContext();
 
             Assert.AreEqual(1, context.CompileDynamic("if(1 < 2; 1; 2)").Evaluate());
-
-            var ex = Assert.Throws<ExpressionCompileException>(() => context.CompileDynamic("IF(1 < 2; 1; 2)"));
-            Assert.AreEqual(CompileExceptionReason.SyntaxError, ex!.Reason);
-            ex = Assert.Throws<ExpressionCompileException>(() => context.CompileDynamic("1 IN (1; 2)"));
-            Assert.AreEqual(CompileExceptionReason.SyntaxError, ex!.Reason);
+            Assert.AreEqual(1, context.CompileDynamic("IF(1 < 2; 1; 2)").Evaluate());
+            Assert.AreEqual(true, context.CompileDynamic("1 IN (1; 2)").Evaluate());
+            Assert.AreEqual(true, context.CompileDynamic("NOT FALSE AND TRUE").Evaluate());
         }
     }
 }

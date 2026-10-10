@@ -12,6 +12,17 @@
 
 Code checks were done by reading and grepping `src/Flee` only. Nothing was built or run, so "present" and "fixed" are based on reading the code.
 
+## Status in the fork
+
+| Issue | Status |
+| --- | --- |
+| #64, #111 | Fixed (R-026) |
+| #105 | Fixed (R-042) |
+| #76, #70 | Deferred until after the release (`doc/deferred.md`, D-01) |
+| #54, #99 (#23), #26 | Phase 5 (D-10, D-11, D-09) |
+| #84 (remaining half) | With the overload decisions (D-13) |
+| #110, #82 (Debug builds on .NET 8+) | Fixed (R-010, the same change as upstream PR #117) |
+
 ## Reproducible candidates still present at f3b4fe2
 
 | Issue | Title | Area | Repro (expected vs actual) | Code at f3b4fe2 |
