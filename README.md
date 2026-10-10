@@ -9,7 +9,7 @@ Upstream has been inactive since March 2022 (Flee 2.0.0). The fork starts from t
 (upstream commit `f3b4fe2`, tagged `upstream-baseline`) and aims for a release that builds on a
 current .NET SDK, is covered by a real regression suite, and is documented.
 
-Upstream's original README is kept unchanged as [README.markdown](README.markdown).
+Upstream's original README is kept unchanged as [LEGACY.README.markdown](LEGACY.README.markdown).
 
 ## Status
 
