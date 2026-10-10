@@ -6,7 +6,7 @@ namespace Flee.Parsing
      * based on recursive descent parser, this implementation removes recursion
      * and uses a stack instead. This parser handles LL(n) grammars,
      * selecting the appropriate pattern to parse based on the next few
-     * tokens. 
+     * tokens.
      */
     internal class StackParser : Parser
     {
@@ -194,7 +194,7 @@ namespace Flee.Parsing
                         nextpattern = ParseAlternative(state, defaultAlt);
                     }
                 }
-                
+
                 if (nextpattern != null)
                 {
                     _stack.Push(NewState(nextpattern));
@@ -203,7 +203,7 @@ namespace Flee.Parsing
                 // we finished current pattern, so back up to previous state.
                 else
                 {
-                    // if we have a node set, add it to the parent 
+                    // if we have a node set, add it to the parent
                     var child = state.node;
                     _stack.Pop();
                     if (_stack.Count == 0)
@@ -271,7 +271,7 @@ namespace Flee.Parsing
                         // continue from next token when we return
                         state.tokenindex = i + 1;
                         // return to start processing the new pattern at this state
-                        return GetPattern(elem.Id); ;
+                        return GetPattern(elem.Id);
                     }
                 }
                 else
