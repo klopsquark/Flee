@@ -241,6 +241,9 @@ namespace Flee.CalcEngine.PublicTypes
             }
         }
 
+        // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
+        // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetResult<T>(string name)
         {
             ExpressionResultPair tail = this.GetTailWithValidate(name);

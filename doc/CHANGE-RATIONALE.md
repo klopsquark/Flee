@@ -377,3 +377,27 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   fixture tests), 0 fail.
 - **Discussed:** decided by the maintainer on 2026-10-10: update the script and document the
   difference.
+
+### R-019: Generated code no longer inlines Flee's helpers (.NET 10 first-call cost)
+
+- **Kind / phase:** perf, fix / Phase 4
+- **Commits:** 63a7928 (benchmark stage), the commit that adds this entry
+- **What:** `[MethodImpl(MethodImplOptions.NoInlining)]` on the methods that generated IL calls:
+  `VariableCollection.GetVariableValueInternal<T>`, `GetFunctionResultInternal<T>`,
+  `GetVirtualPropertyValueInternal<T>`, `CalculationEngine.GetResult<T>` and the getter of
+  `ExpressionContext.CalculationEngine`. The benchmarks gain a `CompileAndEvaluate` stage.
+- **Why:** On .NET 10 every compiled expression that reads a variable (or calls an on-demand
+  function, or references a calculation-engine atom) took about 1.4 ms on its first call, against
+  about 0.05 ms on .NET 8. Loading 100 calculation-engine atoms took 444 ms instead of 17 ms. The
+  JIT with tiered PGO inlined these helpers into each generated method. Found by tracing with
+  dotnet-trace, confirmed by `DOTNET_TieredPGO=0` and by a minimal `DynamicMethod` repro that
+  calls `GetVariableValueInternal<int>`. Marking them `NoInlining` is the smallest change that
+  removes the cost without asking applications to change runtime settings. The maintainer uses
+  the calculation engine, so this was the first Phase 4 item.
+- **Behaviour:** none functionally. Performance on .NET 10: first call of a variable-reading
+  expression 2.2 ms -> 0.11 ms (ArithmeticVariables, compile included); calculation-engine load
+  444 ms -> 14.4 ms. Steady-state evaluation is unchanged or faster on both runtimes.
+- **Verified:** tests unchanged (1,769 pass, 89 skipped); before-and-after benchmarks on .NET 8 and
+  10 in `benchmarks/results/phase4-net10-first-call`. The calculation engine still loads 1.6
+  times slower on .NET 10 than on .NET 8; recorded, not investigated further.
+- **Discussed:** maintainer asked for the investigation (2026-10-10); not needed for the fix.

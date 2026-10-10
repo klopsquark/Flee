@@ -226,6 +226,9 @@ namespace Flee.PublicTypes
             this.DefineVariableInternal(name, variableType, null);
         }
 
+        // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
+        // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetVariableValueInternal<T>(string name)
         {
             if (_myVariables.TryGetValue(name, out IVariable variable))
@@ -247,6 +250,9 @@ namespace Flee.PublicTypes
             return (T)result.GetValue();
         }
 
+        // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
+        // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetVirtualPropertyValueInternal<T>(string name, object component)
         {
             PropertyDescriptorCollection coll = TypeDescriptor.GetProperties(component);
@@ -257,6 +263,9 @@ namespace Flee.PublicTypes
             return ReturnGenericValue<T>(value);
         }
 
+        // Called from generated IL. NoInlining keeps the .NET 10 JIT from inlining this method into
+        // every compiled expression, which made each expression's first call cost about 1.4 ms (R-019).
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public T GetFunctionResultInternal<T>(string name, object[] arguments)
         {
             InvokeFunctionEventArgs args = new InvokeFunctionEventArgs(name, arguments);

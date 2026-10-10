@@ -242,7 +242,13 @@ namespace Flee.PublicTypes
 
         public VariableCollection Variables => _myVariables;
 
-        public CalculationEngine CalculationEngine => _myProperties.GetValue<CalculationEngine>("CalculationEngine");
+        // Called from generated IL (calculation-engine atoms). NoInlining keeps the .NET 10 JIT from
+        // inlining it into every compiled expression (R-019).
+        public CalculationEngine CalculationEngine
+        {
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+            get => _myProperties.GetValue<CalculationEngine>("CalculationEngine");
+        }
 
         public ExpressionParserOptions ParserOptions => _myProperties.GetValue<ExpressionParserOptions>("ParserOptions");
 
