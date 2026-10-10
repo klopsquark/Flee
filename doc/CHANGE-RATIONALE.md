@@ -90,6 +90,7 @@ Entry template:
 | R-053 | A defined variable without a value reads as its type's default | fix | Phase 6 |
 | R-054 | Cloned contexts no longer share options, parser and imports with the original | fix | Phase 6 |
 | R-055 | A failed SimpleCalcEngine add keeps the context's variables | fix | Phase 6 |
+| R-056 | Upstream wiki examples run as tests | test | Phase 6 |
 
 ## Entries
 
@@ -1084,3 +1085,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   `SimpleCalcEngineTests` script cases pass; full suite green on net8.0 and net10.0 in Debug and
   Release.
 - **Discussed:** yes, 2026-10-10 (D-25 to D-29 fixed before the release).
+
+### R-056: Upstream wiki examples run as tests
+
+- **Kind / phase:** test / Phase 6
+- **Commits:** the commit that adds this entry
+- **What:** `DocumentationTests/UpstreamWikiTests` runs every code example of the upstream wiki (12
+  pages) against the fork, 21 tests. `doc/upstream-wiki.md` maps each page to the fork's
+  documentation and lists where the wiki is out of date. The API guide now mentions instance
+  members and indexers of variables and `params` methods, which the wiki covers and the guide did
+  not.
+- **Why:** the maintainer asked whether the wiki had been studied. It is upstream's only user
+  documentation besides the README, so code written from it should keep working on the fork.
+- **Behaviour:** none (tests and docs only).
+- **Verified:** all 21 pass on net8.0 and net10.0. Five examples need a correction to compile or run
+  (a property on the wrong object, a call with a parameter that does not exist and a method that
+  is not public, a wrong cast, a missing method body, console input); each is marked in the test.
+- **Discussed:** yes, 2026-10-10: the maintainer asked about the wiki.

@@ -75,6 +75,9 @@ string[] used = total.Info.GetReferencedVariables();   // price, quantity
 - A variable's type is fixed once it exists. Assigning a value of another type is not checked and
   fails later (upstream issue #26, `doc/deferred.md` D-09); remove and re-add the variable instead.
 - `Info.GetReferencedVariables()` lists the variables an expression uses.
+- A variable acts as an instance of its type: expressions can use its public instance members
+  (`s.Length`, `s.Remove(0, 1)`, `rand.NextDouble()`) and index it if it is an array or has an
+  indexer (`list[1]`).
 - A compiled expression can itself be a variable value: other expressions then use its result.
 
 ## Imports
@@ -99,6 +102,7 @@ object? max = context.CompileDynamic("cast(int.MaxValue, long) + 1").Evaluate();
   through values, are visible to expressions.
 - `AddMethod(name, type, ns)` imports a single static method by name; for an overloaded method it
   throws `AmbiguousMatchException`, so pass the `MethodInfo` (`AddMethod(methodInfo, ns)`).
+- Methods with a `params` array take any number of arguments (`text.join` above).
 - `ImportBuiltinTypes()` adds the C# type names (`int`, `long`, `string`, ...) for `cast(...)` and
   for static members such as `int.MaxValue`.
 - Nested namespaces can be built with `NamespaceImport` and `TypeImport` and added to
