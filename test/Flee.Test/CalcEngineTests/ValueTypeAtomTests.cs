@@ -15,8 +15,6 @@ namespace Flee.Test.CalcEngineTests
     public class ValueTypeAtomTests
     {
         [Test(Description = "Upstream #64: calling a method on a DateTime atom")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure (crash): the generated IL calls the member without loading the atom value's address; the test host dies")]
         public void MethodCallOnDateTimeAtom()
         {
             var engine = new CalculationEngine();
@@ -30,8 +28,6 @@ namespace Flee.Test.CalcEngineTests
         }
 
         [Test(Description = "Upstream #111: reading a property of a TimeSpan atom")]
-        [Category("KnownFailure")]
-        [Ignore("Known failure (crash): the generated IL calls the member without loading the atom value's address; the test host dies")]
         public void PropertyOfTimeSpanAtom()
         {
             var engine = new CalculationEngine();

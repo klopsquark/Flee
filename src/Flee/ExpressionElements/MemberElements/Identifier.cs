@@ -166,6 +166,13 @@ namespace Flee.ExpressionElements.MemberElements
         {
             ilg.Emit(OpCodes.Ldarg_1);
             MyContext.CalculationEngine.EmitLoad(MyName, ilg);
+
+            // A member access on a value-type result needs its address, as for variables
+            // (EmitMethodCall does this there). Missing here, it crashed (upstream #64, #111; R-026).
+            if (this.ResultType.IsValueType && this.NextRequiresAddress)
+            {
+                EmitValueTypeLoadAddress(ilg, this.ResultType);
+            }
         }
 
         private void EmitFirst(FleeILGenerator ilg)

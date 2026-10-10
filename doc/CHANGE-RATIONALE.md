@@ -60,6 +60,7 @@ Entry template:
 | R-023 | Out-of-range real literals report ConstantOverflow again | fix | Phase 4 |
 | R-024 | Method calls on value types use the value-type path (GetType crash) | fix | Phase 4 |
 | R-025 | Debug IL length check passes for 0xFFFFFFFF as a long | fix | Phase 4 |
+| R-026 | Member access on value-type calculation-engine atoms (upstream #64, #111) | fix | Phase 4 |
 
 ## Entries
 
@@ -495,4 +496,21 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   runtime already produced.
 - **Verified:** the last 2 script known failures pass; `KnownFailures.txt` is empty. Debug and
   Release: 1,856 pass, 2 skipped (fixture known failures), net8.0 and net10.0.
+- **Discussed:** not needed (bug fix).
+
+### R-026: Member access on value-type calculation-engine atoms (upstream #64, #111)
+
+- **Kind / phase:** fix / Phase 4
+- **Commits:** 044429f (pinning tests), the commit that adds this entry
+- **What:** `IdentifierElement.EmitReferenceLoad` loads the address of a value-type atom result
+  when the next element calls a member on it, as the variable path already did.
+- **Why:** An atom such as `d = now` (a `DateTime`) followed by `res = d.AddDays(1)`, or
+  `Duration = end - start` followed by `Duration.TotalHours`, produced invalid IL. Upstream users
+  saw `NullReferenceException` (#64) and `InvalidProgramException` (#111); on .NET 10 the test
+  host dies with an internal CLR error. The maintainer uses the calculation engine.
+- **Behaviour:** such expressions now compile and evaluate correctly. Atoms of reference types and
+  atoms used without a member access emit the same IL as before.
+- **Verified:** new `ValueTypeAtomTests` (two tests, from the two issues) crashed before the fix
+  (committed as ignored known failures) and pass after it; full suite green in Debug and Release
+  on net8.0 and net10.0.
 - **Discussed:** not needed (bug fix).
