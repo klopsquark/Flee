@@ -34,10 +34,10 @@ namespace Flee.ExpressionElements.Base.Literals
                 }
             }
 
-            bool hasUSuffix = image.EndsWith("u", comparison) & !image.EndsWith("lu", comparison);
-            bool hasLSuffix = image.EndsWith("l", comparison) & !image.EndsWith("ul", comparison);
-            bool hasUlSuffix = image.EndsWith("ul", comparison) | image.EndsWith("lu", comparison);
-            bool hasSuffix = hasUSuffix | hasLSuffix | hasUlSuffix;
+            bool hasUSuffix = image.EndsWith("u", comparison) && !image.EndsWith("lu", comparison);
+            bool hasLSuffix = image.EndsWith("l", comparison) && !image.EndsWith("ul", comparison);
+            bool hasUlSuffix = image.EndsWith("ul", comparison) || image.EndsWith("lu", comparison);
+            bool hasSuffix = hasUSuffix || hasLSuffix || hasUlSuffix;
 
             LiteralElement constant = default(LiteralElement);
             System.Globalization.NumberStyles numStyles = NumberStyles.Integer;

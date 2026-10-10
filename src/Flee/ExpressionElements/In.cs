@@ -89,7 +89,7 @@ namespace Flee.ExpressionElements
 
                 Type genericTypeDef = interfaceType.GetGenericTypeDefinition();
 
-                if (object.ReferenceEquals(genericTypeDef, typeof(ICollection<>)) | object.ReferenceEquals(genericTypeDef, typeof(IDictionary<,>)))
+                if (object.ReferenceEquals(genericTypeDef, typeof(ICollection<>)) || object.ReferenceEquals(genericTypeDef, typeof(IDictionary<,>)))
                 {
                     return interfaceType;
                 }

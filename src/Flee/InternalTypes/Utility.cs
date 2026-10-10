@@ -25,7 +25,7 @@ namespace Flee.InternalTypes
 
         public static void EmitStoreLocal(FleeILGenerator ilg, int index)
         {
-            if (index >= 0 & index <= 3)
+            if (index >= 0 && index <= 3)
             {
                 switch (index)
                 {
@@ -58,7 +58,7 @@ namespace Flee.InternalTypes
         {
             Debug.Assert(index >= 0, "Invalid index");
 
-            if (index >= 0 & index <= 3)
+            if (index >= 0 && index <= 3)
             {
                 switch (index)
                 {

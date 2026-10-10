@@ -76,7 +76,7 @@ namespace Flee.ExpressionElements.Base
             rightMethod = Utility.GetOverloadedOperator(name, rightType, binder, leftType, rightType);
 
             // Pick the right one
-            if (leftMethod == null & rightMethod == null)
+            if (leftMethod == null && rightMethod == null)
             {
                 // No operator defined for either
                 return null;
@@ -129,7 +129,7 @@ namespace Flee.ExpressionElements.Base
 
         protected bool AreBothChildrenOfType(Type target)
         {
-            return IsChildOfType(LeftChild, target) & IsChildOfType(RightChild, target);
+            return IsChildOfType(LeftChild, target) && IsChildOfType(RightChild, target);
         }
 
         protected bool IsEitherChildOfType(Type target)

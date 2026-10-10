@@ -202,14 +202,14 @@ namespace Flee.InternalTypes
         private static bool ImplicitConvertToValueType(Type sourceType, Type destType, FleeILGenerator ilg)
         {
             // We only handle value types
-            if (!sourceType.IsValueType & !destType.IsValueType)
+            if (!sourceType.IsValueType && !destType.IsValueType)
             {
                 return false;
             }
 
             // No implicit conversion to enum.  Have to do this check here since calling GetTypeCode on an enum will return the typecode
             // of the underlying type which screws us up.
-            if (sourceType.IsEnum | destType.IsEnum)
+            if (sourceType.IsEnum || destType.IsEnum)
             {
                 return false;
             }
@@ -429,7 +429,7 @@ namespace Flee.InternalTypes
             int index1 = GetTypeIndex(t1);
             int index2 = GetTypeIndex(t2);
 
-            if (index1 == -1 | index2 == -1)
+            if (index1 == -1 || index2 == -1)
             {
                 return null;
             }

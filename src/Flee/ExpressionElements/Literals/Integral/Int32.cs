@@ -23,7 +23,7 @@ namespace Flee.ExpressionElements.Literals.Integral
 
         public static Int32LiteralElement TryCreate(string image, bool isHex, bool negated)
         {
-            if (negated & image == MinValue)
+            if (negated && image == MinValue)
             {
                 return new Int32LiteralElement();
             }
@@ -36,7 +36,7 @@ namespace Flee.ExpressionElements.Literals.Integral
                 {
                     return null;
                 }
-                else if (value >= 0 & value <= Int32.MaxValue)
+                else if (value >= 0 && value <= Int32.MaxValue)
                 {
                     return new Int32LiteralElement(value);
                 }

@@ -16,11 +16,11 @@ namespace Flee.ExpressionElements.Base.Literals
 
         public static void EmitLoad(Int32 value, FleeILGenerator ilg)
         {
-            if (value >= -1 & value <= 8)
+            if (value >= -1 && value <= 8)
             {
                 EmitSuperShort(value, ilg);
             }
-            else if (value >= sbyte.MinValue & value <= sbyte.MaxValue)
+            else if (value >= sbyte.MinValue && value <= sbyte.MaxValue)
             {
                 ilg.Emit(OpCodes.Ldc_I4_S, Convert.ToSByte(value));
             }
@@ -32,12 +32,12 @@ namespace Flee.ExpressionElements.Base.Literals
 
         protected static void EmitLoad(Int64 value, FleeILGenerator ilg)
         {
-            if (value >= Int32.MinValue & value <= Int32.MaxValue)
+            if (value >= Int32.MinValue && value <= Int32.MaxValue)
             {
                 EmitLoad(Convert.ToInt32(value), ilg);
                 ilg.Emit(OpCodes.Conv_I8);
             }
-            else if (value >= 0 & value <= UInt32.MaxValue)
+            else if (value >= 0 && value <= UInt32.MaxValue)
             {
                 // Through the Int32 overload, which picks the short opcode forms itself. The runtime's
                 // ILGenerator shortens ldc.i4 -1 (0xFFFFFFFF) to one byte, which Flee's own length

@@ -51,7 +51,7 @@ namespace Flee.ExpressionElements
                     return binaryResultType;
                 }
             }
-            else if (this.IsEitherChildOfType(typeof(string)) & (_operation == BinaryArithmeticOperation.Add))
+            else if (this.IsEitherChildOfType(typeof(string)) && (_operation == BinaryArithmeticOperation.Add))
             {
                 // String concatenation
                 return typeof(string);
@@ -127,7 +127,7 @@ namespace Flee.ExpressionElements
 
         private static bool IsUnsignedForArithmetic(Type t)
         {
-            return object.ReferenceEquals(t, typeof(UInt32)) | object.ReferenceEquals(t, typeof(UInt64));
+            return object.ReferenceEquals(t, typeof(UInt32)) || object.ReferenceEquals(t, typeof(UInt64));
         }
 
         /// <summary>
@@ -139,9 +139,9 @@ namespace Flee.ExpressionElements
         private void EmitArithmeticOperation(BinaryArithmeticOperation op, FleeILGenerator ilg, IServiceProvider services)
         {
             ExpressionOptions options = (ExpressionOptions)services.GetService(typeof(ExpressionOptions));
-            bool unsigned = IsUnsignedForArithmetic(LeftChild.ResultType) & IsUnsignedForArithmetic(RightChild.ResultType);
-            bool integral = Utility.IsIntegralType(LeftChild.ResultType) & Utility.IsIntegralType(RightChild.ResultType);
-            bool emitOverflow = integral & options.Checked;
+            bool unsigned = IsUnsignedForArithmetic(LeftChild.ResultType) && IsUnsignedForArithmetic(RightChild.ResultType);
+            bool integral = Utility.IsIntegralType(LeftChild.ResultType) && Utility.IsIntegralType(RightChild.ResultType);
+            bool emitOverflow = integral && options.Checked;
 
             EmitChildWithConvert(LeftChild, this.ResultType, ilg, services);
 

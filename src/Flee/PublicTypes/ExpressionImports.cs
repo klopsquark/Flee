@@ -168,7 +168,7 @@ namespace Flee.PublicTypes
 
             _context.AssertTypeIsAccessible(mi.ReflectedType);
 
-            if (!mi.IsStatic | !mi.IsPublic)
+            if (!mi.IsStatic || !mi.IsPublic)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.OnlyPublicStaticMethodsCanBeImported);
                 throw new ArgumentException(msg);

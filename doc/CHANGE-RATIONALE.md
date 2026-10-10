@@ -66,6 +66,7 @@ Entry template:
 | R-029 | Misplaced [Obsolete] attributes turned back into doc comments | cleanup | Phase 4 |
 | R-030 | Comparisons with true and false removed | cleanup | Phase 4 |
 | R-031 | Converter TODO markers on loop exits checked and removed | cleanup | Phase 4 |
+| R-032 | Boolean & and \| replaced by && and \|\| | cleanup | Phase 4 |
 
 ## Entries
 
@@ -606,4 +607,20 @@ Recorded after the fact: these commits landed on `develop` before this file exis
   between, so it does exactly what the VB code did.
 - **Behaviour:** none (comments only).
 - **Verified:** by reading each loop; build and tests unchanged.
+- **Discussed:** not needed (plan item).
+
+### R-032: Boolean & and | replaced by && and ||
+
+- **Kind / phase:** cleanup / Phase 4
+- **Commits:** the commit that adds this entry
+- **What:** 71 uses of `&` and `|` on `bool` operands in 17 files outside the parser become `&&`
+  and `||`.
+- **Why:** Plan item: the non-short-circuit operators always evaluate both sides, which is a bug
+  wherever the right side relies on the left (`x != null & x.Foo`). The review found no such case:
+  every right side is a pure check (type tests, comparisons, `EndsWith`). The conversion is still
+  worth doing as idiomatic C# that does not invite that bug in later edits. Done with a Roslyn
+  rewriter that only touches `bool` operands and would add parentheses where `||` ends up under
+  `&&` (needed nowhere).
+- **Behaviour:** none; right sides without side effects are now skipped when the left side decides.
+- **Verified:** tests green in Debug and Release on net8.0 and net10.0; warnings unchanged.
 - **Discussed:** not needed (plan item).

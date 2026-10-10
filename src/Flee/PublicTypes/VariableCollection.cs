@@ -92,7 +92,7 @@ namespace Flee.PublicTypes
             IVariable value = null;
             bool success = _variables.TryGetValue(name, out value);
 
-            if (!success & throwOnNotFound)
+            if (!success && throwOnNotFound)
             {
                 string msg = Utility.GetGeneralErrorMessage(GeneralErrorResourceKeys.UndefinedVariable, name);
                 throw new ArgumentException(msg);

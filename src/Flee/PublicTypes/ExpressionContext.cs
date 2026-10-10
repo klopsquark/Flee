@@ -64,7 +64,7 @@ namespace Flee.PublicTypes
             bool isSameModuleAsOwner = object.ReferenceEquals(t.Module, this.ExpressionOwner.GetType().Module);
 
             // Public types are always accessible.  Otherwise they have to be in the same module as the owner
-            bool isAccessible = isPublic | isSameModuleAsOwner;
+            bool isAccessible = isPublic || isSameModuleAsOwner;
 
             if (!isAccessible)
             {

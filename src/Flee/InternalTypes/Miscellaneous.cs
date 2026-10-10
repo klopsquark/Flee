@@ -95,7 +95,7 @@ namespace Flee.InternalTypes
             {
                 ParameterInfo[] parameters = mi.GetParameters();
                 ParameterInfo firstParameter = parameters[0];
-                if (object.ReferenceEquals(firstParameter.ParameterType, _argType) & object.ReferenceEquals(mi.ReturnType, _returnType))
+                if (object.ReferenceEquals(firstParameter.ParameterType, _argType) && object.ReferenceEquals(mi.ReturnType, _returnType))
                 {
                     return mi;
                 }
@@ -131,7 +131,7 @@ namespace Flee.InternalTypes
                 bool leftValid = ImplicitConverter.EmitImplicitConvert(_leftType, parameters[0].ParameterType, null);
                 bool rightValid = ImplicitConverter.EmitImplicitConvert(_rightType, parameters[1].ParameterType, null);
 
-                if (leftValid & rightValid)
+                if (leftValid && rightValid)
                 {
                     return mi;
                 }
@@ -301,13 +301,13 @@ namespace Flee.InternalTypes
             ParameterInfo[] parameters = _target.GetParameters();
 
             // If there are no parameters and no arguments were passed, then we are a match.
-            if (parameters.Length == 0 & argTypes.Length == 0)
+            if (parameters.Length == 0 && argTypes.Length == 0)
             {
                 return true;
             }
 
             // If there are no parameters but there are arguments, we cannot be a match
-            if (parameters.Length == 0 & argTypes.Length > 0)
+            if (parameters.Length == 0 && argTypes.Length > 0)
             {
                 return false;
             }

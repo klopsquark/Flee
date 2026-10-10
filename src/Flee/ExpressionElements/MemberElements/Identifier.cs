@@ -191,7 +191,7 @@ namespace Flee.ExpressionElements.MemberElements
                 // Load variables
                 EmitLoadVariables(ilg);
             }
-            else if (Options.IsOwnerType(this.MemberOwnerType) & !this.IsStatic)
+            else if (Options.IsOwnerType(this.MemberOwnerType) && !this.IsStatic)
             {
                 this.EmitLoadOwner(ilg);
             }
@@ -210,7 +210,7 @@ namespace Flee.ExpressionElements.MemberElements
             {
                 EmitLiteral(fi, ilg, services);
             }
-            else if (this.ResultType.IsValueType & this.NextRequiresAddress)
+            else if (this.ResultType.IsValueType && this.NextRequiresAddress)
             {
                 EmitLdfld(fi, true, ilg);
             }
@@ -391,7 +391,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             get
             {
-                if ((_variableType != null) | (_calcEngineReferenceType != null))
+                if ((_variableType != null) || (_calcEngineReferenceType != null))
                 {
                     return true;
                 }
@@ -473,7 +473,7 @@ namespace Flee.ExpressionElements.MemberElements
         {
             get
             {
-                if ((_variableType != null) | (_calcEngineReferenceType != null))
+                if ((_variableType != null) || (_calcEngineReferenceType != null))
                 {
                     return false;
                 }
