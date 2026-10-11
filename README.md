@@ -78,6 +78,15 @@ dotnet test Flee.sln
 Build output goes to `build/`. Pass `/p:SkipSbom=true` to skip the SBOM step. [CLAUDE.md](CLAUDE.md)
 has the details for contributors.
 
+## How this fork was made
+
+Most of the work in this fork was done by Claude, Anthropic's AI coding assistant, working as an
+agent: analysing the code, writing tests, fixing bugs, cleaning up, measuring and writing the
+documentation. klopsquark, the maintainer, set the goals and priorities, made the decisions,
+reviewed the results and merged them. Every change is recorded with its reason and how it was
+verified in [doc/CHANGE-RATIONALE.md](doc/CHANGE-RATIONALE.md), and behaviour is pinned by the
+test suite, so the work can be checked independently of who did it.
+
 ## License
 
 Flee is licensed under the GNU Lesser General Public License, version 2.1 or (at your option)

@@ -41,6 +41,7 @@ tests, and is documented here.
 | Know what Flee cannot do | [Limitations](Limitations) |
 | Upgrade from Flee 2.0.0 | [Migration Guide](Migration-Guide) and the [Changelog](Changelog) |
 | Understand how it works inside | [Internals](Internals) |
+| Know how fast it is | [Benchmarks](Benchmarks) |
 | Build, test or change the library | [Development](Development) |
 | Know what has been done and what is open | [Project Status](Project-Status) and [Deferred Work](Deferred-Work) |
 | Check an issue reported upstream | [Upstream Issues](Upstream-Issues) and [Upstream Wiki](Upstream-Wiki) |
@@ -50,6 +51,15 @@ tests, and is documented here.
 Version 2.6.0 is prepared and not yet released. The package keeps the ID `Flee` and is published to
 a private feed only, not to nuget.org, where `Flee` belongs to upstream. Details:
 [Project Status](Project-Status).
+
+## How this fork was made
+
+Most of the work in this fork was done by Claude, Anthropic's AI coding assistant, working as an
+agent: analysing the code, writing tests, fixing bugs, cleaning up, measuring and writing this
+documentation. klopsquark, the maintainer, set the goals and priorities, made the decisions,
+reviewed the results and merged them. Every change is recorded with its reason and how it was
+verified (`doc/CHANGE-RATIONALE.md`), and behaviour is pinned by about 2,000 tests, so the work can
+be checked independently of who did it.
 
 ## Licence
 

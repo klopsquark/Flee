@@ -67,7 +67,8 @@ postponed is in [Deferred Work](Deferred-Work).
 
 **Performance**
 
-- On .NET 10 the fork parses, compiles and evaluates about 45 % faster than Flee 2.0.0 on .NET 6.
+- On .NET 10 the release parses and compiles in about half the time of Flee 2.0.0 on .NET 6, and
+  evaluates in about 40 % of it (geometric means over 15 benchmark vectors; [Benchmarks](Benchmarks)).
 - A .NET 10 regression found on the way, where the JIT inlined Flee's helpers into every expression,
   is fixed: the first evaluation of an expression that reads variables is about 20 times faster,
   loading a calculation engine about 30 times.
