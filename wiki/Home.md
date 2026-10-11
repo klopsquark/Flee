@@ -48,7 +48,7 @@ tests, and is documented here.
 
 ## Status
 
-Version 2.6.0 is prepared and not yet released. The package keeps the ID `Flee` and is published to
+Version 2.6.0 is the fork's first release (2026-10-11). The package keeps the ID `Flee` and is published to
 a private feed only, not to nuget.org, where `Flee` belongs to upstream. Details:
 [Project Status](Project-Status).
 

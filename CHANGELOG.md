@@ -5,7 +5,7 @@ notes: [doc/migration-from-flee-2.0.md](doc/migration-from-flee-2.0.md). The rea
 verification for each change: [doc/CHANGE-RATIONALE.md](doc/CHANGE-RATIONALE.md) (ids in
 brackets).
 
-## 2.6.0 (unreleased)
+## 2.6.0 (2026-10-11)
 
 ### Added
 
@@ -13,7 +13,8 @@ brackets).
 - Nullable reference type annotations on the public API [R-038].
 - XML documentation (`Flee.xml`) for the public API, so IntelliSense shows it [R-048, R-049].
 - Symbol package and Source Link [R-014].
-- Documentation: language reference, API guide, architecture, limitations, migration notes.
+- Documentation: language reference, API guide, internals, limitations, migration notes, and a
+  wiki built from them (https://github.com/klopsquark/Flee/wiki) [R-046 to R-058].
 
 ### Changed
 
@@ -24,6 +25,8 @@ brackets).
 - `System.Reflection.Emit` packages are only referenced for netstandard2.0 [R-012].
 - Faster first evaluation on .NET 10 for expressions that read variables, call on-demand functions
   or use calculation-engine atoms [R-019].
+- On .NET 10, parsing and compiling take about half the time of Flee 2.0.0 on .NET 6, evaluating
+  about 40 % (`benchmarks/results/release-2.6.0`).
 
 ### Deprecated
 

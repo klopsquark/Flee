@@ -9,7 +9,7 @@ postponed is in [Deferred Work](Deferred-Work).
 
 | | |
 | --- | --- |
-| Version | 2.6.0, prepared, not yet released |
+| Version | 2.6.0, released 2026-10-11 |
 | Compatibility | Source-compatible with Flee 2.0.0; behaviour changes are bug fixes, listed in [Migration Guide](Migration-Guide) |
 | Targets | netstandard2.0, netstandard2.1, net8.0, net10.0 |
 | Package | ID `Flee`, private feed only |
@@ -81,10 +81,6 @@ postponed is in [Deferred Work](Deferred-Work).
   malformed doc comments).
 
 ## What is open
-
-**Before the first release**
-
-- Tag the release and publish the package to the private feed (steps in [Development](Development#releasing)).
 
 **Next release (2.7.0)**
 

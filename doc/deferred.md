@@ -20,7 +20,7 @@ How to use it:
 | D-05 | Nullable annotations for the internals, then project-wide | After the first release | Open |
 | D-06 | `EmitToAssembly` on net10.0 with `PersistedAssemblyBuilder` | After the first release | Open |
 | D-07 | Remaining .NET 10 gap when loading the calculation engine | Phase 7 or later | Open |
-| D-08 | Constant expression evaluates 5 ns slower on .NET 10 | Phase 7 or later | Open |
+| D-08 | Constant expression evaluates a few ns slower than the baseline | Phase 7 or later | Open |
 | D-09 | Changing a variable's type through the indexer (upstream #26) | Phase 5 | Open |
 | D-10 | User-defined `&` and `\|` operators for `and`/`or` (upstream #54) | Phase 5 | Open |
 | D-11 | Evaluating one expression with different owners in parallel (upstream #99, #23) | Phase 5 | Open |
@@ -118,11 +118,13 @@ How to use it:
 - **Pick up:** Phase 7, with a profile; possibly report to dotnet/runtime with the minimal repro
   (a `DynamicMethod` calling a non-trivial generic method).
 
-### D-08: Constant expression evaluates 5 ns slower on .NET 10
+### D-08: Constant expression evaluates a few ns slower than the baseline
 
-- **What:** `1 + 2 * 3` evaluates in 11.9 ns on .NET 10 against 6.7 ns in the baseline; every
-  other vector is faster on .NET 10. Probably call overhead of a trivially small delegate.
-- **Where:** `benchmarks/results/phase3-runtimes/README.md`.
+- **What:** `1 + 2 * 3` evaluated in 11.9 ns on .NET 10 against 6.7 ns in the baseline (Phase 3).
+  In the release run it takes 6.9 ns on .NET 10, but 9.5 ns on .NET 8 and 7.5 ns on .NET 6; every
+  other vector is faster. Probably call overhead of a trivially small delegate, varying with the
+  runtime.
+- **Where:** `benchmarks/results/phase3-runtimes/README.md`, `benchmarks/results/release-2.6.0/README.md`.
 - **Pick up:** Phase 7, only if it matters in a real workload.
 
 ### D-09: Changing a variable's type through the indexer (upstream #26)

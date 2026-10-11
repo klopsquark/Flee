@@ -183,11 +183,11 @@ This ranking is a reading of the code, not a measurement. The profile may reorde
 
 ## First release checklist
 
-- [ ] CI is green on every target.
-- [ ] The known-failures list is empty, or each remaining entry is documented as a limitation.
-- [ ] Benchmarks show no regression beyond the threshold against the baseline.
-- [ ] Documentation, changelog and migration notes are complete.
-- [ ] Package ID, version number and license metadata are final.
+- [x] CI is green on every target.
+- [x] The known-failures list is empty, or each remaining entry is documented as a limitation. Empty.
+- [x] Benchmarks show no regression beyond the threshold against the baseline. `benchmarks/results/release-2.6.0`; the release run found and R-061 fixed an allocation regression; constant evaluation on .NET 6 and 8 stays 1 to 3 ns slower (D-08).
+- [x] Documentation, changelog and migration notes are complete.
+- [x] Package ID, version number and license metadata are final: `Flee` 2.6.0, LGPL-2.1-or-later.
 - [ ] The package is published and the release is tagged.
 
 ## After the first release: parser and grammar experiments
