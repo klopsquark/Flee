@@ -9,3 +9,4 @@ CHANGELOG.md = Changelog
 doc/deferred.md = Deferred-Work
 doc/upstream-issues.md = Upstream-Issues
 doc/upstream-wiki.md = Upstream-Wiki
+benchmarks/results/release-2.6.0/README.md = Benchmarks

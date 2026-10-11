@@ -30,11 +30,11 @@ These come from the plan and from the maintainer, and apply to every change.
   known-failures list.
 - **Do not touch the parser** (`src/Flee/Parsing`) before the first release. Parser and grammar
   experiments come afterwards, behind a switch that checks old and new against every script case.
-  Approved exceptions so far: the Turkish keyword fix (R-042) and two doc comments (R-050). Parser cleanup waits in
-  `doc/deferred.md` (D-03).
+  Approved exceptions so far: the Turkish keyword fix (R-042), two doc comments (R-050) and a
+  whitespace cleanup by the maintainer (R-060). Parser cleanup waits in `doc/deferred.md` (D-03).
 - **Phase 5 (own adjustments) is on hold.** Do not start API changes or extensions.
 - **Licence:** LGPL 2.1 or later (`LICENSE`). Keep every existing copyright notice.
-- **`README.markdown` is upstream's README and stays untouched.** `README.md` is the fork's own.
+- **`LEGACY.README.markdown` is upstream's README (renamed, content untouched).** `README.md` is the fork's own.
 - Keep the plan current: tick off finished items and record decisions in its Open decisions table.
 - **Everything postponed, and every alternative not taken, goes into `doc/deferred.md`** (id,
   origin, why it waits, when to pick it up), in the same pull request that defers it.
@@ -99,7 +99,7 @@ dotnet test Flee.sln
 
 ## State of the tests
 
-About 1,860 tests per runtime: the 1,756 script cases (data-driven, `test/Flee.Test/ScriptTests`)
+About 2,050 tests per runtime: the 1,756 script cases (data-driven, `test/Flee.Test/ScriptTests`)
 plus fixture tests, many ported from the original VB.NET Flee test project. Known failures are
 listed in `test/Flee.Test/TestScripts/KnownFailures.txt` (empty since Phase 4; history in
 `doc/known-failures.md`) or marked `[Category("KnownFailure")]` with `[Ignore]`, and reported as

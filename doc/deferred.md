@@ -20,7 +20,7 @@ How to use it:
 | D-05 | Nullable annotations for the internals, then project-wide | After the first release | Open |
 | D-06 | `EmitToAssembly` on net10.0 with `PersistedAssemblyBuilder` | After the first release | Open |
 | D-07 | Remaining .NET 10 gap when loading the calculation engine | Phase 7 or later | Open |
-| D-08 | Constant expression evaluates 5 ns slower on .NET 10 | Phase 7 or later | Open |
+| D-08 | Constant expression evaluates a few ns slower than the baseline | Phase 7 or later | Open |
 | D-09 | Changing a variable's type through the indexer (upstream #26) | Phase 5 | Open |
 | D-10 | User-defined `&` and `\|` operators for `and`/`or` (upstream #54) | Phase 5 | Open |
 | D-11 | Evaluating one expression with different owners in parallel (upstream #99, #23) | Phase 5 | Open |
@@ -45,6 +45,8 @@ How to use it:
 | D-30 | Changing `Options.CaseSensitive` empties the variables | Phase 5 | Open |
 | D-31 | `ParseCulture`: LCID comparison and multi-character separators | Phase 5 | Open |
 | D-32 | Small oddities found while writing the XML comments | When touched | Open |
+| D-33 | Phase 7: performance optimization | Next release (2.7.0) | Open |
+| D-34 | Relative links in the package README | When convenient | Open |
 
 ## Entries
 
@@ -116,11 +118,13 @@ How to use it:
 - **Pick up:** Phase 7, with a profile; possibly report to dotnet/runtime with the minimal repro
   (a `DynamicMethod` calling a non-trivial generic method).
 
-### D-08: Constant expression evaluates 5 ns slower on .NET 10
+### D-08: Constant expression evaluates a few ns slower than the baseline
 
-- **What:** `1 + 2 * 3` evaluates in 11.9 ns on .NET 10 against 6.7 ns in the baseline; every
-  other vector is faster on .NET 10. Probably call overhead of a trivially small delegate.
-- **Where:** `benchmarks/results/phase3-runtimes/README.md`.
+- **What:** `1 + 2 * 3` evaluated in 11.9 ns on .NET 10 against 6.7 ns in the baseline (Phase 3).
+  In the release run it takes 6.9 ns on .NET 10, but 9.5 ns on .NET 8 and 7.5 ns on .NET 6; every
+  other vector is faster. Probably call overhead of a trivially small delegate, varying with the
+  runtime.
+- **Where:** `benchmarks/results/phase3-runtimes/README.md`, `benchmarks/results/release-2.6.0/README.md`.
 - **Pick up:** Phase 7, only if it matters in a real workload.
 
 ### D-09: Changing a variable's type through the indexer (upstream #26)
@@ -323,3 +327,24 @@ How to use it:
 - `VariableCollection.Copy` subscribes to `CaseSensitiveChanged` a second time; harmless.
 - ~~Two malformed comments in the parser reported as CS1570 suggestions.~~ Done (R-050).
 - **Pick up:** when the code is touched.
+
+### D-33: Phase 7: performance optimization
+
+- **What:** the plan's Phase 7: profile the benchmark vectors and optimize from the evidence
+  (candidates in the plan: variable reads at evaluation, the compile path, context cloning and
+  locking, parser allocations). Includes D-07, D-08 and D-21, and the on-demand variable read,
+  which creates two `GenericVariable<T>` objects per read (`GetVariableValueInternal<T>`, found
+  with R-061).
+- **Origin:** the plan; the maintainer decided on 2026-10-10 to leave it out of the first release.
+- **Why it waits:** the first release ships the bug fixes, documentation and modernization; the
+  maintainer tests it in applications first.
+- **Pick up:** the next release (2.7.0). Each change needs before-and-after numbers against
+  `benchmarks/results/baseline-net6.0` and the 2.6.0 release run.
+
+### D-34: Relative links in the package README
+
+- **What:** the package carries `README.md`, whose links (`doc/...`, `CHANGELOG.md`,
+  `LEGACY.README.markdown`) are relative to the repository. Package viewers do not resolve them.
+- **Origin:** pre-release review of develop, 2026-10-10.
+- **Choice:** absolute GitHub links in the README, or a separate, shorter package readme.
+- **Pick up:** when convenient; it does not affect the library.

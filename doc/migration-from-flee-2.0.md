@@ -58,8 +58,9 @@ All of these fix bugs; most turn an exception or a crash into a working result.
 - On .NET 10 the first evaluation of an expression that reads variables is about 20 times faster
   than with an unmodified Flee 2.0.0 on .NET 10, and loading a calculation engine about 30 times
   (R-019). Steady-state evaluation is unchanged or faster.
-- Compared with Flee 2.0.0 on .NET 6, the fork on .NET 10 parses, compiles and evaluates about 45 %
-  faster (`benchmarks/results/phase3-runtimes`).
+- Compared with Flee 2.0.0 on .NET 6, release 2.6.0 on .NET 10 parses and compiles in about half
+  the time and evaluates in about 40 % of it (geometric means over 15 vectors,
+  `benchmarks/results/release-2.6.0`). On .NET 6 itself it is about 30 % faster.
 
 ## Unchanged on purpose
 

@@ -22,6 +22,7 @@ Code checks were done by reading and grepping `src/Flee` only. Nothing was built
 | #54, #99 (#23), #26 | Phase 5 (D-10, D-11, D-09) |
 | #84 (remaining half) | With the overload decisions (D-13) |
 | #110, #82 (Debug builds on .NET 8+) | Fixed (R-010, the same change as upstream PR #117) |
+| #61 (ArgumentNullException in the calculation engine) | Probably fixed (R-039): an unknown name in an engine expression threw `ArgumentNullException`; the issue has only a stack trace, so this is inferred |
 
 ## Reproducible candidates still present at f3b4fe2
 

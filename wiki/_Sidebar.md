@@ -13,6 +13,7 @@
 
 **Inside Flee**
 - [Internals](Internals)
+- [Benchmarks](Benchmarks)
 - [Development](Development)
 
 **Project**

@@ -168,6 +168,8 @@ Documentation is written after the API settles, so it describes what ships. Upst
 
 ## Phase 7: Performance optimization (stretch)
 
+**Decided 2026-10-10:** Phase 7 moves to the next release (2.7.0); the first release ships without it. Tracked as D-33 in `doc/deferred.md`.
+
 Optimization is the last, optional goal for the first release: it gets a fixed time box, and the release ships without it if the box runs out. Each change needs before-and-after numbers from the Phase 2 vectors and must leave behaviour untouched.
 
 Start by profiling the vectors, then pick from the evidence. From reading the code, these are the candidates, most promising first:
@@ -181,11 +183,11 @@ This ranking is a reading of the code, not a measurement. The profile may reorde
 
 ## First release checklist
 
-- [ ] CI is green on every target.
-- [ ] The known-failures list is empty, or each remaining entry is documented as a limitation.
-- [ ] Benchmarks show no regression beyond the threshold against the baseline.
-- [ ] Documentation, changelog and migration notes are complete.
-- [ ] Package ID, version number and license metadata are final.
+- [x] CI is green on every target.
+- [x] The known-failures list is empty, or each remaining entry is documented as a limitation. Empty.
+- [x] Benchmarks show no regression beyond the threshold against the baseline. `benchmarks/results/release-2.6.0`; the release run found and R-061 fixed an allocation regression; constant evaluation on .NET 6 and 8 stays 1 to 3 ns slower (D-08).
+- [x] Documentation, changelog and migration notes are complete.
+- [x] Package ID, version number and license metadata are final: `Flee` 2.6.0, LGPL-2.1-or-later.
 - [ ] The package is published and the release is tagged.
 
 ## After the first release: parser and grammar experiments
@@ -213,4 +215,4 @@ Other post-release ideas:
 | Nullable reference types | Phase 3 | **Decided 2026-10-09:** off now, files opt in once annotated, public API first (Phase 4) |
 | Rename the `_my` and `_our` prefixes | Phase 4 | **Decided 2026-10-10:** rename to common C# conventions |
 | Your list of API changes and extensions | Phase 5 | Open |
-| Time box for performance work | Phase 7 | Open |
+| Time box for performance work | Phase 7 | **Decided 2026-10-10:** Phase 7 moves to the next release (D-33) |

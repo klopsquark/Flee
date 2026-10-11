@@ -9,7 +9,7 @@ postponed is in [Deferred Work](Deferred-Work).
 
 | | |
 | --- | --- |
-| Version | 2.6.0, prepared, not yet released |
+| Version | 2.6.0, released 2026-10-11 |
 | Compatibility | Source-compatible with Flee 2.0.0; behaviour changes are bug fixes, listed in [Migration Guide](Migration-Guide) |
 | Targets | netstandard2.0, netstandard2.1, net8.0, net10.0 |
 | Package | ID `Flee`, private feed only |
@@ -28,7 +28,7 @@ postponed is in [Deferred Work](Deferred-Work).
 | 4 | Bug fixes and mechanical cleanup, warnings as errors, nullable annotations on the public API | Done |
 | 5 | Own API changes and extensions | On hold by decision |
 | 6 | Documentation: language reference, API guide, XML comments, internals, limitations, migration notes, changelog, this wiki | Done |
-| 7 | Performance optimization (stretch goal) | Open: skip or time-box, to be decided |
+| 7 | Performance optimization (stretch goal) | Moved to the next release (2.7.0) |
 
 ## What was done
 
@@ -67,7 +67,8 @@ postponed is in [Deferred Work](Deferred-Work).
 
 **Performance**
 
-- On .NET 10 the fork parses, compiles and evaluates about 45 % faster than Flee 2.0.0 on .NET 6.
+- On .NET 10 the release parses and compiles in about half the time of Flee 2.0.0 on .NET 6, and
+  evaluates in about 40 % of it (geometric means over 15 benchmark vectors; [Benchmarks](Benchmarks)).
 - A .NET 10 regression found on the way, where the JIT inlined Flee's helpers into every expression,
   is fixed: the first evaluation of an expression that reads variables is about 20 times faster,
   loading a calculation engine about 30 times.
@@ -81,11 +82,10 @@ postponed is in [Deferred Work](Deferred-Work).
 
 ## What is open
 
-**Before the first release**
+**Next release (2.7.0)**
 
-- Decide about Phase 7 (performance): skip it, or set a time box.
-- Release checklist: final benchmark comparison with the baseline, tag the release, publish the
-  package to the private feed.
+- Phase 7, performance optimization from profiling evidence (D-33), including the remaining .NET 10
+  gaps (D-07, D-08) and a benchmark vector with real-world expressions (D-21).
 
 **After the first release** (details in [Deferred Work](Deferred-Work))
 
@@ -93,7 +93,6 @@ postponed is in [Deferred Work](Deferred-Work).
   new on every script case (D-02), cleanup (D-03), typed collections (D-04).
 - Nullable annotations for the internals, then project-wide (D-05).
 - `EmitToAssembly` on net10.0 with `PersistedAssemblyBuilder`, to inspect generated IL (D-06).
-- Remaining .NET 10 performance gaps (D-07, D-08).
 
 **Phase 5, on hold** (API changes that need a decision)
 

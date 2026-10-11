@@ -13,8 +13,7 @@ Upstream's original README is kept unchanged as [LEGACY.README.markdown](LEGACY.
 
 ## Status
 
-Pre-release, version 2.6.0. All planned bug fixes and cleanup for the first release are done; see
-[CHANGELOG.md](CHANGELOG.md). The package keeps the ID `Flee` and goes to a private feed only;
+Version 2.6.0, the fork's first release (2026-10-11); see [CHANGELOG.md](CHANGELOG.md). The package keeps the ID `Flee` and goes to a private feed only;
 nothing is published on nuget.org. The release is source-compatible with Flee 2.0.0; what you may
 notice when upgrading is in [doc/migration-from-flee-2.0.md](doc/migration-from-flee-2.0.md).
 
@@ -77,6 +76,15 @@ dotnet test Flee.sln
 
 Build output goes to `build/`. Pass `/p:SkipSbom=true` to skip the SBOM step. [CLAUDE.md](CLAUDE.md)
 has the details for contributors.
+
+## How this fork was made
+
+Most of the work in this fork was done by Claude, Anthropic's AI coding assistant, working as an
+agent: analysing the code, writing tests, fixing bugs, cleaning up, measuring and writing the
+documentation. klopsquark, the maintainer, set the goals and priorities, made the decisions,
+reviewed the results and merged them. Every change is recorded with its reason and how it was
+verified in [doc/CHANGE-RATIONALE.md](doc/CHANGE-RATIONALE.md), and behaviour is pinned by the
+test suite, so the work can be checked independently of who did it.
 
 ## License
 
