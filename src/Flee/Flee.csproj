@@ -49,6 +49,11 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <!-- Investigation: Parlot as the replacement for the bundled Grammatica parser (src/Flee/Syntax). -->
+        <PackageReference Include="Parlot" Version="1.5.11" />
+    </ItemGroup>
+
     <!-- netstandard2.0 lacks Reflection.Emit; every other target has it built in. -->
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />

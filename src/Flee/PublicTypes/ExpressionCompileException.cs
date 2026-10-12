@@ -27,6 +27,11 @@ namespace Flee.PublicTypes
             _reason = CompileExceptionReason.SyntaxError;
         }
 
+        internal ExpressionCompileException(Flee.Syntax.SyntaxErrorException syntaxError) : base(string.Empty, syntaxError)
+        {
+            _reason = CompileExceptionReason.SyntaxError;
+        }
+
 #pragma warning disable SYSLIB0051, CS0672 // Formatter-based serialization is obsolete on .NET 8+; kept for API compatibility (doc/deferred.md, D-19)
         private ExpressionCompileException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
         {

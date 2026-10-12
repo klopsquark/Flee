@@ -54,10 +54,8 @@ namespace Flee.CalcEngine.PublicTypes
 
         private ExpressionContext ParseAndLink(string expressionName, string expression)
         {
-            IdentifierAnalyzer analyzer = Context.ParseIdentifiers(expression);
-
             ExpressionContext context2 = _context.CloneInternal(true);
-            this.LinkExpression(expressionName, context2, analyzer);
+            this.LinkExpression(expressionName, context2, expression);
 
             // Tell the expression not to clone the context since it's already been cloned
             context2.NoClone = true;
@@ -65,9 +63,9 @@ namespace Flee.CalcEngine.PublicTypes
             return context2;
         }
 
-        private void LinkExpression(string expressionName, ExpressionContext context, IdentifierAnalyzer analyzer)
+        private void LinkExpression(string expressionName, ExpressionContext context, string expression)
         {
-            foreach (string identifier in analyzer.GetIdentifiers(context))
+            foreach (string identifier in Context.GetReferencedIdentifiers(expression, context))
             {
                 this.LinkIdentifier(identifier, expressionName, context);
             }

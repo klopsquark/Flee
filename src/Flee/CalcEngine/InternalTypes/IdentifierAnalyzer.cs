@@ -80,12 +80,14 @@ namespace Flee.CalcEngine.InternalTypes
             _memberExpressionCount = -1;
         }
 
-        public ICollection<string> GetIdentifiers(ExpressionContext context)
+        public ICollection<string> GetIdentifiers(ExpressionContext context) => Filter(_identifiers.Values, context);
+
+        public static ICollection<string> Filter(IEnumerable<string> identifiers, ExpressionContext context)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             ExpressionImports ei = context.Imports;
 
-            foreach (string identifier in _identifiers.Values)
+            foreach (string identifier in identifiers)
             {
                 // Skip names registered as namespaces
                 if (ei.HasNamespace(identifier))

@@ -5,6 +5,7 @@ using Flee.ExpressionElements.Base;
 using Flee.InternalTypes;
 using Flee.Parsing;
 using Flee.Resources;
+using Flee.Syntax;
 
 namespace Flee.PublicTypes
 {
@@ -45,6 +46,8 @@ namespace Flee.PublicTypes
         #region "Fields"
 
         private PropertyDictionary _properties;
+
+        private FleeGrammar? _grammar;
 
         private readonly object _syncRoot = new object();
 
@@ -158,6 +161,13 @@ namespace Flee.PublicTypes
 
         internal ExpressionElement Parse(string expression, IServiceProvider services)
         {
+            if (ParserSwitch.UseParlot)
+            {
+                // Investigation: the Parlot grammar, snapshotted with the options by RecreateParser.
+                SyntaxNode syntax = ParseSyntax(expression);
+                return ElementBuilder.Build(syntax, services);
+            }
+
             lock (_syncRoot)
             {
                 System.IO.StringReader sr = new System.IO.StringReader(expression);
@@ -180,6 +190,13 @@ namespace Flee.PublicTypes
         {
             lock (_syncRoot)
             {
+                _grammar = FleeGrammar.For(this.ParserOptions);
+                if (ParserSwitch.UseParlot)
+                {
+                    // The Grammatica parser is not needed; building its tokenizer is most of the cost of a new context.
+                    return;
+                }
+
                 FleeExpressionAnalyzer analyzer = new FleeExpressionAnalyzer();
                 ExpressionParser parser = new ExpressionParser(TextReader.Null, analyzer, this);
                 _properties.SetValue("ExpressionParser", parser);
@@ -206,6 +223,31 @@ namespace Flee.PublicTypes
         {
             _properties.SetValue("CalculationEngine", engine);
             _properties.SetValue("CalcEngineExpressionName", calcEngineExpressionName);
+        }
+
+        private SyntaxNode ParseSyntax(string expression)
+        {
+            try
+            {
+                return _grammar!.Parse(expression);
+            }
+            catch (SyntaxErrorException ex)
+            {
+                throw new ExpressionCompileException(ex);
+            }
+        }
+
+        /// <summary>The names an expression refers to that are not namespaces or variables; for the calculation engines.</summary>
+        /// <param name="expression">The expression text.</param>
+        /// <param name="filterContext">The context whose imports and variables are filtered out; this one if null.</param>
+        internal ICollection<string> GetReferencedIdentifiers(string expression, ExpressionContext? filterContext = null)
+        {
+            if (ParserSwitch.UseParlot)
+            {
+                return IdentifierAnalyzer.Filter(IdentifierCollector.Collect(ParseSyntax(expression)), filterContext ?? this);
+            }
+
+            return this.ParseIdentifiers(expression).GetIdentifiers(filterContext ?? this);
         }
 
         internal IdentifierAnalyzer ParseIdentifiers(string expression)

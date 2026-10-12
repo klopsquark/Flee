@@ -95,9 +95,7 @@ namespace Flee.CalcEngine.PublicTypes
 
         private ICollection<string> GetReferences(string expression, ExpressionContext context)
         {
-            IdentifierAnalyzer analyzer = context.ParseIdentifiers(expression);
-
-            return analyzer.GetIdentifiers(context);
+            return context.GetReferencedIdentifiers(expression);
         }
     }
 
